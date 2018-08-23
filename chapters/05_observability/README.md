@@ -13,7 +13,7 @@ This chapter is concerned with two "Cloud-Native" concepts: Observability, which
 
 #### Contents:
 
-- [What is observability](#) (TODO)
+- [What is observability](pages/observability.md) (TODO)
   - [How do we apply observability principals to the ToDo app](#) (TODO)
 - [Picking a metrics framework[(#) (TODO)
   - [Prometheus Metrics in the ToDo app](#) (TODO)
