@@ -4,6 +4,7 @@ This chapter is concerned with two "Cloud-Native" concepts: Observability, which
 
 #### Major key points:
 
+- Why do we care about how the app behaves?
 - Adding metrics to the app (what do we measure?)
 - How do we respond to the measurements?
 - Exposing data to make the service more "observable"
