@@ -26,21 +26,27 @@ public class TodoControllerTest {
 
     @Test
     public void getAllTodoItems__empty() throws Exception {
-        this.mvc.perform(get("/todo").accept(MediaType.APPLICATION_JSON))
+        this.mvc.perform(get("/todos").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().json("{\"todo_items\": []}"));
+                .andExpect(content().json("[]"));
     }
 
 
     @Test
     public void getAllTodoItems__two() throws Exception {
 
-        todoSource.save(new ToDoItem("Bop it"));
-        todoSource.save(new ToDoItem("Twist it"));
+        todoSource.save(new TodoItem("Bop it"));
+        todoSource.save(new TodoItem("Twist it"));
 
-        this.mvc.perform(get("/todo").accept(MediaType.APPLICATION_JSON))
+        this.mvc.perform(get("/todos").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().json("{\"todo_items\": [{\"title\":\"Bop it\",\"done\":false},{\"title\":\"Twist it\",\"done\":false}]}"));
+                .andExpect(content().json("[{\"title\":\"Bop it\",\"completed\":false},{\"title\":\"Twist it\",\"completed\":false}]"));
     }
 
+    @Test
+    public void getTodo__notfound() throws Exception {
+        this.mvc.perform(get("/todos/99999").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is(404))
+                .andExpect(content().json("{\"error\":\"item not found\"}"));
+    }
 }

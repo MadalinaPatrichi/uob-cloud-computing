@@ -6,7 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 @Entity
-public class ToDoItem {
+public class TodoItem {
 
     @Id
     @GeneratedValue
@@ -16,29 +16,37 @@ public class ToDoItem {
     private String title;
 
     @Column()
-    private boolean done;
+    private boolean completed;
 
-    protected ToDoItem() {}
+    protected TodoItem() {}
 
-    public ToDoItem(String title) {
+    public TodoItem(String title) {
         this.title = title;
-        this.done = false;
+        this.completed = false;
     }
 
     public String getTitle() {
         return title;
     }
 
-    public boolean isDone() {
-        return done;
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
     }
 
     @Override
     public String toString() {
-        return "ToDoItem{" +
+        return "TodoItem{" +
                 "id=" + id +
                 ", title='" + title + '\'' +
-                ", done='" + done + '\'' +
+                ", completed='" + completed + '\'' +
                 '}';
     }
 }
