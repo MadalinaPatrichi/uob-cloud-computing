@@ -33,6 +33,10 @@ public class TodoItem {
         return completed;
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public void setTitle(String title) {
         this.title = title;
     }

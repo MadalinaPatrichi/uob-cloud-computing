@@ -2,10 +2,8 @@ package uob_todo;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestClientResponseException;
-
-import java.util.*;
+import uob_todo.exceptions.BadRequestException;
+import uob_todo.exceptions.NotFoundException;
 
 @RestController
 public class TodoController {
@@ -29,12 +27,18 @@ public class TodoController {
     }
 
     @PostMapping("/todos")
-    public TodoItem createTodo(@RequestBody TodoItem item) {
+    public TodoItem createTodo(@RequestBody TodoItem item) throws Exception {
+        if (item.getTitle().equals("")) {
+            throw new BadRequestException("empty 'title'");
+        }
         return todoSource.save(item);
     }
 
     @PostMapping("/todos/{id}")
     public TodoItem updateTodo(@PathVariable("id") Long id, @RequestBody TodoItem item) throws Exception {
+        if (item.getTitle().equals("")) {
+            throw new BadRequestException("empty 'title'");
+        }
         TodoItem existingItem = todoSource.findById(id).orElseThrow(() -> new NotFoundException("item not found"));
         existingItem.setCompleted(item.isCompleted());
         existingItem.setTitle(item.getTitle());
@@ -43,4 +47,3 @@ public class TodoController {
     }
 
 }
-
