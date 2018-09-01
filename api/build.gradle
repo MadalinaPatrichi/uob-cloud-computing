@@ -7,6 +7,10 @@ buildscript {
     }
 }
 
+plugins {
+    id "com.moowork.node" version "1.2.0"
+}
+
 apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'idea'
@@ -22,11 +26,18 @@ repositories {
     mavenCentral()
 }
 
+node {
+    version = '10.9.0'
+    npmVersion = '6.2.0'
+    download = true
+}
+
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-web")
+    compile 'org.springframework.boot:spring-boot-starter-freemarker'
     compile("org.springframework.boot:spring-boot-starter-actuator")
     compile("org.springframework.boot:spring-boot-starter-data-jpa")
     compile("org.hsqldb:hsqldb")
@@ -35,3 +46,16 @@ dependencies {
     testCompile("junit:junit")
     testCompile("org.springframework.boot:spring-boot-starter-test")
 }
+
+task webpack(type: NodeTask, dependsOn: 'npmInstall') {
+    def osName = System.getProperty("os.name").toLowerCase();
+    if (osName.contains("windows")) {
+        script = project.file('node_modules/webpack/bin/webpack.js')
+    } else {
+        script = project.file('node_modules/.bin/webpack')
+    }
+}
+
+processResources.dependsOn 'webpack'
+
+clean.delete << file('node_modules')
