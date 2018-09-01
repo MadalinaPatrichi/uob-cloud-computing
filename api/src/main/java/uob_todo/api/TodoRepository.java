@@ -1,4 +1,4 @@
-package uob_todo;
+package uob_todo.api;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

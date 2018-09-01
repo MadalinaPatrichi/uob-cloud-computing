@@ -1,11 +1,12 @@
-package uob_todo;
+package uob_todo.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import uob_todo.exceptions.BadRequestException;
-import uob_todo.exceptions.NotFoundException;
+import uob_todo.api.exceptions.BadRequestException;
+import uob_todo.api.exceptions.NotFoundException;
 
 @RestController
+@RequestMapping(path = "/api/todos")
 public class TodoController {
 
     @Autowired
@@ -16,17 +17,17 @@ public class TodoController {
         this.todoSource = todoSource;
     }
 
-    @GetMapping("/todos/{id}")
+    @GetMapping("/{id}")
     public TodoItem getTodo(@PathVariable("id") Long id) throws Exception {
         return todoSource.findById(id).orElseThrow(() -> new NotFoundException("item not found"));
     }
 
-    @GetMapping("/todos")
+    @GetMapping()
     public Iterable<TodoItem> listTodos() {
         return todoSource.findAll();
     }
 
-    @PostMapping("/todos")
+    @PostMapping()
     public TodoItem createTodo(@RequestBody TodoItem item) throws Exception {
         if (item.getTitle().equals("")) {
             throw new BadRequestException("empty 'title'");
@@ -34,7 +35,7 @@ public class TodoController {
         return todoSource.save(item);
     }
 
-    @PostMapping("/todos/{id}")
+    @PostMapping("/{id}")
     public TodoItem updateTodo(@PathVariable("id") Long id, @RequestBody TodoItem item) throws Exception {
         if (item.getTitle().equals("")) {
             throw new BadRequestException("empty 'title'");

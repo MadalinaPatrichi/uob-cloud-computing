@@ -1,4 +1,4 @@
-package uob_todo;
+package uob_todo.api;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import uob_todo.exceptions.NotFoundException;
+import uob_todo.api.exceptions.NotFoundException;
 
 @ControllerAdvice
 public class ExceptionAdvice {

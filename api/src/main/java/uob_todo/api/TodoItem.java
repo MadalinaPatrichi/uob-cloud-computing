@@ -1,4 +1,4 @@
-package uob_todo;
+package uob_todo.api;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

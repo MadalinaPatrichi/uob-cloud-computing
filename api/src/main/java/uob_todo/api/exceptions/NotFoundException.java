@@ -1,4 +1,4 @@
-package uob_todo.exceptions;
+package uob_todo.api.exceptions;
 
 public class NotFoundException extends Exception {
 
