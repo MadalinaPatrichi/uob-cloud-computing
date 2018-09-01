@@ -4,6 +4,6 @@ This repository contains lecture material, an example app, and various tutorials
 
 See the wiki [here](https://github.com/MadalinaPatrichi/uob-cloud-computing/wiki) for more information.
 
-### Project directories
+## Project directories
 
-- `api/` : A Spring Boot API serving Todo items. [README](api/README.md)
+- `app/` : A Spring Boot server serving an API and a static Vue.js app. [README](app/README.md)
