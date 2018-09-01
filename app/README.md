@@ -42,7 +42,7 @@ Run the server
 $ java -jar build/libs/uob-todo-app-0.1.0.jar
 ```
 
-You should now be able to curl `localhost:8080/api/todos` and see the API responding.
+You should not be able to navigate to `localhost:8080` and see the landing page or `localhost:8080/api/todos` and see the API responding.
 
 ### Proxy
 
