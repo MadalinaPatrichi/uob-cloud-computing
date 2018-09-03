@@ -57,3 +57,33 @@ systemProp.https.proxyHost=hostname-or-ip
 systemProp.https.proxyPort=80
 EOF
 ```
+
+### Development Database
+
+By default this will use an in memory database that will be dropped immediately when the application closes. If you wish to use a Mysql database, you can do the following:
+
+```
+$ docker run --rm -d \
+    -p 3306:43306 \
+    -e MYSQL_ROOT_PASSWORD=secret \
+    -e MYSQL_DATABASE=uob \
+    -v mysqldata:/var/lib/mysql \
+    --name mysql \
+    mysql:8
+```
+
+And then launch the application Jar as follows:
+
+```
+$ java \
+    -Dspring.datasource.url=jdbc:mysql://localhost:3306/uob \
+    -Dspring.datasource.username=root \
+    -Dspring.datasource.password=secret \
+    -jar build/libs/uob-todo-app-0.1.0.jar
+```
+
+To access the mysql database you can do the following:
+
+```
+$ docker exec -ti mysql mysql -hlocalhost -p3306 -uroot -psecret
+```
