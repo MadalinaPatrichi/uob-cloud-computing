@@ -50,6 +50,7 @@ dependencies {
 }
 
 task webpack(type: NodeTask, dependsOn: 'npmInstall') {
+    inputs.files(fileTree("src/main/js"))
     def osName = System.getProperty("os.name").toLowerCase();
     if (osName.contains("windows")) {
         script = project.file('node_modules/webpack/bin/webpack.js')

@@ -14,7 +14,7 @@
         <table class="table table-bordered">
           <tbody>
           <tr>
-            <td>(checkbox!)</td><td>Some task</td>
+            <td>(checkbox)</td><td>Some task</td>
           </tr>
           </tbody>
         </table>

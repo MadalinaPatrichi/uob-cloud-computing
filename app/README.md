@@ -58,6 +58,20 @@ systemProp.https.proxyPort=80
 EOF
 ```
 
+### Development Running
+
+```
+$ ./gradlew bootRun
+```
+
+If you want to hot-reload the webpack content, execute the following in another terminal:
+
+```
+$ ./gradlew -t webpack
+```
+
+This will hot recompile the webpacked javascript from `src/main/js`.
+
 ### Development Database
 
 By default this will use an in memory database that will be dropped immediately when the application closes. If you wish to use a Mysql database, you can do the following:
