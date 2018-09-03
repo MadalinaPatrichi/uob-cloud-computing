@@ -42,6 +42,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-data-jpa")
     compile("org.hsqldb:hsqldb")
     compile("mysql:mysql-connector-java")
+    compile("org.springframework.boot:spring-boot-devtools")
     compile("javax.xml.bind:jaxb-api")
     compile("io.micrometer:micrometer-registry-prometheus")
     testCompile("junit:junit")
