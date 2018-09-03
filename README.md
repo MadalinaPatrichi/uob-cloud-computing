@@ -7,3 +7,4 @@ See the wiki [here](https://github.com/MadalinaPatrichi/uob-cloud-computing/wiki
 ## Project directories
 
 - `app/` : A Spring Boot server serving an API and a static Vue.js app. [README](app/README.md)
+- `content/` : Gitbooks course content to support lectures and tutorials. [README](content/README.md)
