@@ -3,5 +3,5 @@ build/
 
 !gradle-wrapper.jar
 
-api/.idea
+.idea/
 api/out
