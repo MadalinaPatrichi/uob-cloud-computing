@@ -1,3 +1,5 @@
+# Introduction
+
 This chapter is concerned with two "Cloud-Native" concepts: 
 
 - Observability, which includes metrics and external observability of the system, and 

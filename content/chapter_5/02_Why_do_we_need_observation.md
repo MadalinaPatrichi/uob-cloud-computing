@@ -1,3 +1,5 @@
+# Why do we need observation
+
 At this point in the coursework, the "ToDo" application has been successfully developed and migrated from local hosting, to a VM in the cloud, to a containerized service, and finally to an orchestrated Kubernetes Pod. While these changes have given us large improvements in our development flow, deployment and rollback reproducability; we have introduced more and more layers between the app and its hardware host which have made the behaviour of the app more and more opaque to us.
 
 When the app was running locally on our machine, we had immediate access to all of the console output in real time. We also had immediate access to any stacktraces and panics produced if our app had exceptions. We could also see how the app used resources by bringing up the task manager or activity monitor. However if we wanted to work out how many requests our app received or how long it took to process them, we would need to perform some complex log message processing.

@@ -1,6 +1,6 @@
 # Summary
 
-* [Introduction](README.md)
+* [Introduction](INTRODUCTION.md)
 
 ## 1: Overview of the App
 

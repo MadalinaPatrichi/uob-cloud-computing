@@ -1,7 +1,6 @@
 # Course Content
 
-The course content source is held in a Gitbooks format. To interact with this content you should use a `gitbooks` cli 
-or view the raw markdown directly.
+The course content source is held in a Gitbooks format. To interact with this content you should use a `gitbooks` cli or view the raw markdown directly.
 
 The suggested development method is the following:
 
