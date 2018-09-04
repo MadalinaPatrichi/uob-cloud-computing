@@ -8,6 +8,6 @@ The suggested development method is the following:
 
     - Alternatively, use a Docker image that packages `gitbooks` for you
 
-2. To start the server execute `gitbooks serve` in this `/content` directory.
+2. To start the server execute `gitbooks serve ./book`.
 
 This will hot reload the content as you modify it.
