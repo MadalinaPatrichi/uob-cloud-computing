@@ -1,0 +1,51 @@
+- Deployment architecture, how does that map onto: VMs, networks, loadbalancers, etc.
+- - Alternative architectures
+- VM is an analogue to a "real host". We can stand up lots of these easily - more than we could get hold of physical hardware
+- - well done! now you need to manage more operating system instances
+- - start by looking at doing this "manually", look at automation afterwards
+- network setup
+- booting
+- - with an ssh key
+- - making an ssh key 
+- Security groups
+- - What is the path of a request from a user's browser to the app (and to the DB)?
+- - Need to ensure these pieces can communicate
+- host firewalls
+- - defence in depth. Quick cookbook for opening up ports.
+- - Use of something like nc as a testing tool.
+- installing the software
+- - mysql:
+- - - making it run
+- - - testing: mysql command-line tool
+- - - making it run on reboot
+- - - configuring credentials
+- - - checking communication
+- - - What about backups?
+- - - - maybe dumps something to object store.
+- - - robustness: clustering? (exercise for the reader?)
+- - java
+- - - making it run
+- - - making it run on reboot
+- - - configuring in the same credentials
+- - - schema management, different creds.
+- - - What about db migrations?
+- - - backups?
+- - - - well, the state is stored in the DB. what about the configuration?
+- - - robustness: clustering
+- - implications for the "Google login" - can't guarantee that the callback hits the same host that the subsequent user request will.
+- Locating the app on the web
+- - By IP address
+- - By name
+- - DNS
+- - - your own domains
+- - Securing it
+- - - security certs
+- - - - self-signed?
+- - - - let's encrypt?
+- - - what about securing internal traffic?
+- - LBaaS at the front end
+- Checking it all works
+- Repeatability
+- - from the web console to command-line tools, scripting
+- - targeted scripting tools (eg terraform, others..?)
+- - - some tools target host configuration, some target infrastructure layout, some try to do a bit of both.

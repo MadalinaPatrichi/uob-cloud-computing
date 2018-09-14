@@ -1,0 +1,6 @@
+% ssh opc@129.213.119.230
+The authenticity of host '129.213.119.230 (129.213.119.230)' can't be established.
+ECDSA key fingerprint is SHA256:j01Kp0TAJTJgcKdlhecIH7b3KfghdMDoIA5viaMuNWY.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added '129.213.119.230' (ECDSA) to the list of known hosts.
+[opc@web1 ~]$ 
