@@ -4,4 +4,4 @@ build/
 !gradle-wrapper.jar
 
 .idea/
-api/out
+app/out
