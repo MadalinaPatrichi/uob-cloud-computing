@@ -1,0 +1,145 @@
+[opc@web1 ~]$ sudo yum install -y java-1.8.0-openjdk-headless
+Loaded plugins: langpacks, ulninfo
+Resolving Dependencies
+--> Running transaction check
+---> Package java-1.8.0-openjdk-headless.x86_64 1:1.8.0.181-3.b13.el7_5 will be installed
+--> Processing Dependency: tzdata-java >= 2015d for package: 1:java-1.8.0-openjdk-headless-1.8.0.181-3.b13.el7_5.x86_64
+--> Processing Dependency: copy-jdk-configs >= 2.2 for package: 1:java-1.8.0-openjdk-headless-1.8.0.181-3.b13.el7_5.x86_64
+--> Processing Dependency: lksctp-tools(x86-64) for package: 1:java-1.8.0-openjdk-headless-1.8.0.181-3.b13.el7_5.x86_64
+--> Processing Dependency: jpackage-utils for package: 1:java-1.8.0-openjdk-headless-1.8.0.181-3.b13.el7_5.x86_64
+--> Running transaction check
+---> Package copy-jdk-configs.noarch 0:3.3-10.el7_5 will be installed
+---> Package javapackages-tools.noarch 0:3.4.1-11.el7 will be installed
+--> Processing Dependency: python-javapackages = 3.4.1-11.el7 for package: javapackages-tools-3.4.1-11.el7.noarch
+--> Processing Dependency: libxslt for package: javapackages-tools-3.4.1-11.el7.noarch
+---> Package lksctp-tools.x86_64 0:1.0.17-2.el7 will be installed
+---> Package tzdata-java.noarch 0:2018e-3.el7 will be installed
+--> Running transaction check
+---> Package libxslt.x86_64 0:1.1.28-5.0.1.el7 will be installed
+---> Package python-javapackages.noarch 0:3.4.1-11.el7 will be installed
+--> Processing Dependency: python-lxml for package: python-javapackages-3.4.1-11.el7.noarch
+--> Running transaction check
+---> Package python-lxml.x86_64 0:3.2.1-4.el7 will be installed
+--> Finished Dependency Resolution
+
+Dependencies Resolved
+
+================================================================================
+ Package                     Arch   Version                    Repository  Size
+================================================================================
+Installing:
+ java-1.8.0-openjdk-headless x86_64 1:1.8.0.181-3.b13.el7_5    ol7_latest  32 M
+Installing for dependencies:
+ copy-jdk-configs            noarch 3.3-10.el7_5               ol7_latest  21 k
+ javapackages-tools          noarch 3.4.1-11.el7               ol7_latest  72 k
+ libxslt                     x86_64 1.1.28-5.0.1.el7           ol7_latest 241 k
+ lksctp-tools                x86_64 1.0.17-2.el7               ol7_latest  87 k
+ python-javapackages         noarch 3.4.1-11.el7               ol7_latest  31 k
+ python-lxml                 x86_64 3.2.1-4.el7                ol7_latest 758 k
+ tzdata-java                 noarch 2018e-3.el7                ol7_latest 184 k
+
+Transaction Summary
+================================================================================
+Install  1 Package (+7 Dependent packages)
+
+Total download size: 33 M
+Installed size: 107 M
+Downloading packages:
+(1/8): copy-jdk-configs-3.3-10.el7_5.noarch.rpm            |  21 kB   00:00     
+(2/8): javapackages-tools-3.4.1-11.el7.noarch.rpm          |  72 kB   00:00     
+(3/8): libxslt-1.1.28-5.0.1.el7.x86_64.rpm                 | 241 kB   00:00     
+(4/8): lksctp-tools-1.0.17-2.el7.x86_64.rpm                |  87 kB   00:00     
+(5/8): python-javapackages-3.4.1-11.el7.noarch.rpm         |  31 kB   00:00     
+(6/8): python-lxml-3.2.1-4.el7.x86_64.rpm                  | 758 kB   00:00     
+(7/8): tzdata-java-2018e-3.el7.noarch.rpm                  | 184 kB   00:00     
+(8/8): java-1.8.0-openjdk-headless-1.8.0.181-3.b13.el7_5.x |  32 MB   00:00     
+--------------------------------------------------------------------------------
+Total                                               91 MB/s |  33 MB  00:00     
+Running transaction check
+Running transaction test
+Transaction test succeeded
+Running transaction
+  Installing : libxslt-1.1.28-5.0.1.el7.x86_64                              1/8 
+  Installing : python-lxml-3.2.1-4.el7.x86_64                               2/8 
+  Installing : python-javapackages-3.4.1-11.el7.noarch                      3/8 
+  Installing : javapackages-tools-3.4.1-11.el7.noarch                       4/8 
+  Installing : lksctp-tools-1.0.17-2.el7.x86_64                             5/8 
+  Installing : tzdata-java-2018e-3.el7.noarch                               6/8 
+  Installing : copy-jdk-configs-3.3-10.el7_5.noarch                         7/8 
+  Installing : 1:java-1.8.0-openjdk-headless-1.8.0.181-3.b13.el7_5.x86_64   8/8 
+  Verifying  : 1:java-1.8.0-openjdk-headless-1.8.0.181-3.b13.el7_5.x86_64   1/8 
+  Verifying  : python-lxml-3.2.1-4.el7.x86_64                               2/8 
+  Verifying  : copy-jdk-configs-3.3-10.el7_5.noarch                         3/8 
+  Verifying  : python-javapackages-3.4.1-11.el7.noarch                      4/8 
+  Verifying  : libxslt-1.1.28-5.0.1.el7.x86_64                              5/8 
+  Verifying  : tzdata-java-2018e-3.el7.noarch                               6/8 
+  Verifying  : javapackages-tools-3.4.1-11.el7.noarch                       7/8 
+  Verifying  : lksctp-tools-1.0.17-2.el7.x86_64                             8/8 
+
+Installed:
+  java-1.8.0-openjdk-headless.x86_64 1:1.8.0.181-3.b13.el7_5                    
+
+Dependency Installed:
+  copy-jdk-configs.noarch 0:3.3-10.el7_5                                        
+  javapackages-tools.noarch 0:3.4.1-11.el7                                      
+  libxslt.x86_64 0:1.1.28-5.0.1.el7                                             
+  lksctp-tools.x86_64 0:1.0.17-2.el7                                            
+  python-javapackages.noarch 0:3.4.1-11.el7                                     
+  python-lxml.x86_64 0:3.2.1-4.el7                                              
+  tzdata-java.noarch 0:2018e-3.el7                                              
+
+Complete!
+[opc@web1 ~]$ java -version
+openjdk version "1.8.0_181"
+OpenJDK Runtime Environment (build 1.8.0_181-b13)
+OpenJDK 64-Bit Server VM (build 25.181-b13, mixed mode)
+[opc@web1 ~]$ java ^C
+[opc@web1 ~]$ vi launch
+[opc@web1 ~]$ cat launch
+java \
+    -Dspring.datasource.url=jdbc:mysql://db1:3306/app \
+    -Dspring.datasource.username=app \
+    -Dspring.datasource.password='DxIHXE%6d7sD:EXI' \
+    -jar uob-todo-app-0.1.0.jar
+. ./launch
+
+
+mysql> show tables;
++--------------------+
+| Tables_in_app      |
++--------------------+
+| first              |
+| hibernate_sequence |
+| todo_item          |
++--------------------+
+3 rows in set (0.00 sec)
+
+mysql> describe todo_item;
++-----------+--------------+------+-----+---------+-------+
+| Field     | Type         | Null | Key | Default | Extra |
++-----------+--------------+------+-----+---------+-------+
+| id        | bigint(20)   | NO   | PRI | NULL    |       |
+| completed | bit(1)       | YES  |     | NULL    |       |
+| title     | varchar(255) | NO   |     | NULL    |       |
++-----------+--------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql> 
+[opc@web1 ~]$ sudo yum install -y curl
+Loaded plugins: langpacks, ulninfo
+Package curl-7.29.0-46.el7.x86_64 already installed and latest version
+Nothing to do
+[opc@web1 ~]$ curl http://localhost:8080
+<!doctype html>
+<html>
+<head>
+    <title>My page</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/main.css">
+</head>
+<body>
+<div id="app"></div>
+<script src="/js/app.js"></script>
+</body>
+</html>
+[opc@web1 ~]$ 
