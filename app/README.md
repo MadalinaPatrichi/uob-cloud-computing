@@ -78,7 +78,7 @@ By default this will use an in memory database that will be dropped immediately 
 
 ```
 $ docker run --rm -d \
-    -p 3306:43306 \
+    -p 3306:3306 \
     -e MYSQL_ROOT_PASSWORD=secret \
     -e MYSQL_DATABASE=uob \
     -v mysqldata:/var/lib/mysql \
