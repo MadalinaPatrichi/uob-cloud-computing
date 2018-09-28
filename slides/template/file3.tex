@@ -1,0 +1,30 @@
+\documentclass[draft]{book}
+
+\title{Team Work} 
+\author{Tom and Paul and Mary and Liz}
+\date{\today}
+
+\includeonly{Paul_file}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\frontmatter
+\chapter{Tom's chapter}
+\include{Tom_file}
+
+\mainmatter
+\part{Part I}
+\chapter{Paul's chapter}
+\include{Paul_file}
+
+\part{Part II}
+\chapter{Mary's chapter}
+\include{Mary_file}
+
+\backmatter
+\chapter{Liz's chapter}
+\include{Liz_file}
+
+\end{document}
