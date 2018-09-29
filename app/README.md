@@ -52,11 +52,22 @@ If you're on a network that requires a network proxy, do the following:
 $ mkdir -p ~/.gradle/
 $ cat << EOF > ~/.gradle/gradle.properties
 systemProp.http.proxyHost=hostname-or-ip
-systemProp.http.proxyPort=80
+systemProp.http.proxyPort=port
 systemProp.https.proxyHost=hostname-or-ip
-systemProp.https.proxyPort=80
+systemProp.https.proxyPort=port
 EOF
 ```
+
+and
+
+```bash
+$ cat << EOF > ~/.npmrc
+proxy=http://proxy-host:port
+https-proxy=http://proxy-host:port
+EOF
+```
+
+You also need to tell Docker about your proxy if you intend to use Docker
 
 ### Development Running
 
@@ -78,7 +89,7 @@ By default this will use an in memory database that will be dropped immediately 
 
 ```
 $ docker run --rm -d \
-    -p 3306:43306 \
+    -p 3306:3306 \
     -e MYSQL_ROOT_PASSWORD=secret \
     -e MYSQL_DATABASE=uob \
     -v mysqldata:/var/lib/mysql \
