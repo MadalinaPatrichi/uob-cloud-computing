@@ -1,15 +1,18 @@
 <template>
   <div>
-    <div>
-        <input v-model="newTitle"/><input value="create" type="button" @click="addTodo"/>
+    <div class="newTodo">
+        <div class="title">todos</div>
+        <input v-model="newTitle" v-on:keyup.enter="addTodo"/>
     </div>
-    You have {{todos.length}} things to do:
-    <ul>
-      <li v-for="todo in todos">
-        <input type="checkbox" :checked=todo.completed @click="toggle(todo)"/>
-        {{ todo.title }}
-      </li>
-    </ul>
+    <div class="todolist">
+        You have {{ incomplete }} {{ pluralized }} to do
+        <ul>
+          <li v-for="todo in todos">
+            <input type="checkbox" class="completed-check" :checked=todo.completed @click="toggle(todo)"/>
+            <span v-bind:class="{completed:todo.completed}">{{ todo.title }}</span>
+          </li>
+        </ul>
+     </div>
   </div>
 </template>
 
@@ -44,11 +47,62 @@ export default {
     this.loadTodos()
 
     setInterval(this.loadTodos, 1000)
-  }
+  },
+  computed:  { incomplete: function(){ return this.todos.filter(function(t){ return !t.completed}).length },
+               pluralized: function(){ return (this.incomplete == 1 ? "thing" : "things") }}
 }
 
 </script>
+
 <style>
+
+body {
+    background-color: #EEE;
+}
+
+.title {
+    font-size: 100px;
+    color: rgba(175, 47, 47, 0.15);
+}
+
+.newTodo {
+  margin: 50px;
+}
+
+.newTodo > input {
+  box-shadow: 0 0 30px #888;
+  border-radius: 5px;
+  display: block;
+  width: 100%;
+}
+
+.todolist {
+    margin: 50px;
+    box-shadow: 0 0 30px #888;
+}
+
+.todolist > ul {
+    list-style: none;
+    padding: 0;
+}
+
+.todolist > ul > li {
+    border-top: 1px solid #888;
+    padding: 4px;
+    background-color: #EEE;
+    border-radius: 5px;
+    font-size: 120%;
+}
+
+.completed-check {
+    margin: 0 10px;
+}
+
+.completed {
+    color: #AAA;
+    text-decoration: line-through;
+}
+
 </style>
 
 
