@@ -5,7 +5,7 @@
         <input v-model="newTitle" v-on:keyup.enter="addTodo"/>
     </div>
     <div class="todolist">
-        You have {{ incomplete }} {{ pluralized }} to do
+        <span>You have {{ incomplete }} {{ pluralized }} to do</span>
         <ul>
           <li v-for="todo in todos">
             <input type="checkbox" class="completed-check" :checked=todo.completed @click="toggle(todo)"/>
@@ -79,6 +79,13 @@ body {
 .todolist {
     margin: 50px;
     box-shadow: 0 0 30px #888;
+    background: #F8F8F8;
+    border-radius: 5px;
+}
+
+.todolist > span {
+    padding: 8px;
+    color: #444;
 }
 
 .todolist > ul {
@@ -89,8 +96,7 @@ body {
 .todolist > ul > li {
     border-top: 1px solid #888;
     padding: 4px;
-    background-color: #EEE;
-    border-radius: 5px;
+    background-color: #F8F8F8;
     font-size: 120%;
 }
 
