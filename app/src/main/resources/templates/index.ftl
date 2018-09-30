@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-    <title>My page</title>
+    <title>UOB Todo App</title>
     <link rel="stylesheet" href="/styles.css">
     <link rel="stylesheet" href="/main.css">
 </head>

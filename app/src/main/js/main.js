@@ -1,6 +1,6 @@
-import Vue from 'vue'
+import Vue from "vue"
 import BootstrapVue from "bootstrap-vue"
-import App from './App.vue'
+import TodoList from "./TodoList.vue"
 
 import "./styles.css"
 import "bootstrap/dist/css/bootstrap.min.css"
@@ -10,5 +10,5 @@ Vue.use(BootstrapVue)
 
 new Vue({
   el: '#app',
-  render: h => h(App)
+  render: h => h(TodoList)
 })

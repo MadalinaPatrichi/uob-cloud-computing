@@ -35,7 +35,7 @@ public class TodoController {
         return todoSource.save(item);
     }
 
-    @PostMapping("/{id}")
+    @PutMapping("/{id}")
     public TodoItem updateTodo(@PathVariable("id") Long id, @RequestBody TodoItem item) throws Exception {
         if (item.getTitle().equals("")) {
             throw new BadRequestException("empty 'title'");
