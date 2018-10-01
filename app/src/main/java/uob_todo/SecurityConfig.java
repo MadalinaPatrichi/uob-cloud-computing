@@ -32,7 +32,7 @@ import javax.servlet.Filter;
 import java.util.Arrays;
 
 @Configuration
-@Profile("secured")
+@Profile("!unsecured")
 @EnableOAuth2Client
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
@@ -79,7 +79,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         OAuth2RestTemplate customOAuthTemplate = new OAuth2RestTemplate(customOAuth(), oauth2ClientContext);
 
         HttpClientBuilder httpClientBuilder = HttpClients.custom();
-        if (this.proxyHost.equals("")) {
+        if (!this.proxyHost.equals("")) {
             httpClientBuilder.setProxy(new HttpHost(this.proxyHost, this.proxyPort));
         }
         HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();

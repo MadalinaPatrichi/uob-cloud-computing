@@ -125,11 +125,16 @@ $ docker exec -ti mysql mysql -hlocalhost -p3306 -uroot -psecret
 To secure the app and its API from nefarious use you should enable and configure the Oauth2 security:
 
 ```
+security.oauth2.client.clientId=[client id]
+security.oauth2.client.clientSecret=[client secret]
+```
+
+And override the following to use anything other than github:
+
+```
 security.oauth2.client.accessTokenUri=https://github.com/login/oauth/access_token
 security.oauth2.client.userAuthorizationUri=https://github.com/login/oauth/authorize
 security.oauth2.client.clientAuthenticationScheme=form
 security.oauth2.resource.user-info-uri=https://api.github.com/user
 security.oauth2.resource.prefer-token-info=true
-security.oauth2.client.clientId=[client id]
-security.oauth2.client.clientSecret=[client secret]
 ```
