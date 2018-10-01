@@ -1,9 +1,8 @@
 box: openjdk:8
-# Build definition
+
 build:
-  # The steps that will be executed on build
   steps:
     - script:
-        name: echo add build steps
-        code: |
-          echo "Add build steps"
+        name: app gradle build
+        cwd: app
+        code: ./gradlew --full-stacktrace -q build
