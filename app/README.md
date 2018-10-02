@@ -69,12 +69,14 @@ EOF
 
 You also need to tell Docker about your proxy if you intend to use Docker
 
-If using OAuth security you should also configure the following properties at runtime:
+If using OAuth security and the server is running behind a proxy, you should also configure the following properties at runtime:
 
 ```
 -Dsecurity.oauth2.httpProxy.host=proxy-host
 -Dsecurity.oauth2.httpProxy.port=port
 ```
+
+These allow the server to check the OAuth2 tokens.
 
 ### Development Running
 
