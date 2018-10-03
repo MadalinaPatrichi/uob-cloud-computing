@@ -5,4 +5,26 @@ build:
     - script:
         name: app gradle build
         cwd: app
-        code: ./gradlew --full-stacktrace -q build
+        code: ./gradlew test
+        code: ./gradlew build
+
+deploy-docker:
+  steps:
+    - script:
+        name: deploy docker
+        cwd: app
+        code: echo noop
+
+deploy-docs:
+  steps:
+    - script:
+        name: build and deploy docs
+        cwd: app
+        code: echo noop
+
+deploy-jar:
+  steps:
+    - script:
+        name: deploy jar
+        cwd: app
+        code: echo noop
