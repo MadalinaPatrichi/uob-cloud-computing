@@ -3,28 +3,37 @@ box: openjdk:8
 build:
   steps:
     - script:
-        name: app gradle build
-        cwd: app
-        code: ./gradlew test
-        code: ./gradlew build
+      name: gradle test
+      cwd: app
+      code: |
+        ./gradlew test
+    - script:
+      name: gradle build
+      cwd: app
+      code: |
+        ./gradlew build
+    - internal/docker-build:
+      dockerfile: app/Dockerfile.multi_stage
+      image-name: uobcloudcomputing/todoapp
 
 deploy-docker:
   steps:
-    - script:
-        name: deploy docker
-        cwd: app
-        code: echo noop
-
+    - internal/docker-push:
+      username: $DOCKER_USERNAME
+      password: $DOCKER_PASSWORD
+      tag: latest
+      repo: uobcloudcomputing/todoapp
+    
 deploy-docs:
   steps:
     - script:
-        name: build and deploy docs
-        cwd: app
-        code: echo noop
+      name: build and deploy docs
+      cwd: app
+      code: echo noop
 
 deploy-jar:
   steps:
     - script:
-        name: deploy jar
-        cwd: app
-        code: echo noop
+      name: deploy jar
+      cwd: app
+      code: echo noop
