@@ -9,11 +9,9 @@ RUN /bin/bash -c "source /root/.sdkman/bin/sdkman-init.sh && sdk install gradle 
 COPY ./ /app/
 RUN /bin/bash -c "/root/.sdkman/candidates/gradle/current/bin/gradle wrapper"
 RUN ./gradlew build
-
+RUN ls -l /app
 
 FROM openjdk:alpine 
 WORKDIR /app
 COPY --from=builder /app/build/libs/uob-todo-app-0.1.0.jar .
 ENTRYPOINT ["java", "-jar", "uob-todo-app-0.1.0.jar"]
-
-
