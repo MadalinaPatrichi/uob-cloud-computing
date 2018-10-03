@@ -13,6 +13,7 @@ build:
       code: |
         ./gradlew build
     - internal/docker-build:
+      cwd: app
       dockerfile: app/Dockerfile.multi_stage
       image-name: uobcloudcomputing/todoapp
 
