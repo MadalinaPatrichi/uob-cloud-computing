@@ -1,6 +1,5 @@
 FROM openjdk:8 as builder
 
-WORKDIR /app
 RUN apt-get update; apt-get install zip
 # installing sdk and gradle
 RUN curl -s "https://get.sdkman.io" | bash
@@ -8,7 +7,7 @@ RUN /bin/bash -c "source /root/.sdkman/bin/sdkman-init.sh && sdk install gradle 
 
 COPY ./ /app/
 RUN /bin/bash -c "/root/.sdkman/candidates/gradle/current/bin/gradle wrapper"
-RUN ./gradlew build
+RUN cd app && ./gradlew build
 RUN ls -l /app
 
 FROM openjdk:alpine 
