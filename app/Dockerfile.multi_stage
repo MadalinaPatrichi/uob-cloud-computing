@@ -7,6 +7,7 @@ RUN /bin/bash -c "source /root/.sdkman/bin/sdkman-init.sh && sdk install gradle 
 
 COPY ./ /app/
 RUN /bin/bash -c "/root/.sdkman/candidates/gradle/current/bin/gradle wrapper"
+RUN ls -l /app
 RUN cd app && ./gradlew build
 RUN ls -l /app
 
