@@ -14,7 +14,7 @@ build:
         ./gradlew build
     - internal/docker-build:
       cwd: app
-      dockerfile: app/Dockerfile.multi_stage
+      dockerfile: Dockerfile.multi_stage
       image-name: uobcloudcomputing/todoapp
 
 deploy-docker:
@@ -26,16 +26,16 @@ deploy-docker:
       registry: https://hub.docker.com
       repo: uobcloudcomputing/todoapp
     
-deploy-docs:
-  steps:
-    - script:
-      name: build and deploy docs
-      cwd: app
-      code: echo noop
-
 deploy-jar:
   steps:
     - script:
       name: deploy jar
+      cwd: app
+      code: echo noop
+      
+deploy-docs:
+  steps:
+    - script:
+      name: build and deploy docs
       cwd: app
       code: echo noop
