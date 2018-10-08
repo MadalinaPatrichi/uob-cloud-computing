@@ -1,7 +1,8 @@
 FROM openjdk:8 as builder
 
 COPY ./app/ /app/
-RUN cd app && ./gradlew build
+WORKDIR /app
+RUN cd /app && ./gradlew build --full-stacktrace
 
 FROM openjdk:alpine 
 WORKDIR /app
