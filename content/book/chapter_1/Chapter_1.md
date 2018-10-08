@@ -238,31 +238,28 @@ Your computer is probably not directly connected to the internet, but connects t
 
 ![home server architecture](./webapp3.png)
 
-Configure router to forward connections, then you can use external IP to access your application at `http://external-ip:8080/` but this isn't ideal for a number of reasons:
+By default this won't put your webserver on the internet, but the router is. You can configure a router to forward connections, and then use external IP to access your application at `http://external-ip:8080/` but this isn't ideal for a number of reasons:
 
   - the wifi connection in your house might fail
   - your computer might get turned off by a cat
-  - your ISP might decide to issue your router with a different IP address
+  - your ISP might decide to change your router's IP address.
   - your house might have a power cut
   - your ISP might not not let you have a very high upload speed
 
-etc
+Of course, most websites use a _domain name_ like `example.com` rather than an IP address. Actually when you use a domain name your computer is still using the IP address - it looks up the IP address using a system called DNS (`example.com` is at `93.184.216.34`). It's possible to get a domain name for your home router, but you don't control your IP address (your ISP does) so it would not be practical to do that without using a dynamic DNS service, which restricts the kinds of names you can use.
 
-TODO: Mention DNS here
-
-To mitigate this in 2008, you would have rented some space - about the size of a pizza box - in a datacenter. Then drive there with a small computer and leave it there.:
+To mitigate this, in 2008, you would have rented some space - about the size of a pizza box - in a datacenter. Then drive there with a small computer and leave it there.:
 
 ![basic DC arch](./webapp4.png)
 
-Todo: pictures and stats about DCs
+These days datacenters are big business. A [large datacenter](https://en.wikipedia.org/wiki/Data_center#Design_considerations) can use as much electricity as a whole town, and overall they account for 2% of electricity use in the USA. There might be tens of thousands of computers in a datacenter, mounted in racks, all networked together. There will be air-conditioning, multiple redundant power supplies, fire-suppression, physical secutiry and many full-time staff.
 
-Problems which you still have:
+However despite having solved many problems about getting your application onto the internet, there are still many more things to pay attention to:
 
-  - HW failure
-  - Scaling
-  - Updating your OS
-  - Updating your application
-  - Paying for it
+  - Hardware failure. There is only one computer running the software, what if it breaks?
+  - Scaling. What if the computer or other infrastructure can't keep up with the number of requests?
+  - Updating your OS. What if there is an urgent security patch which needs time and a reboot?
+  - Updating your application. How do you deliver new versions of your code?
 
 
 ## What next?
