@@ -160,7 +160,7 @@ Here is an example from [TodoList.vue](https://github.com/MadalinaPatrichi/uob-c
 ```javascript
     axios.post('/api/todos', {"title": this.newTitle})  // create a new todd item and POST it
          .then(response => {
-            this.newTitle = ""  // data binding menas that setting this to empty will
+            this.newTitle = ""  // data binding means that setting this to empty will
          })                     // clear the input box at the top of the page
 ```
 
@@ -203,7 +203,7 @@ The answer, at the moment is rather unsettling - the data is stored _in the memo
 
 ![screenshot 4](./screenshot4.png)
 
-For sure, we could have written code in the webserver which stored the todo items in files on the disk, or somewhere else. But generally the best thing to do with data you want to store is to use some software specifically designed for storing data. Permanent storage of data - also called "persistence" - is a huge and complex topic, and it is almost certainly to use some datastore for persistence. A popular category of datastore is the _database_, and our app can be configured to use a database.
+For sure, we could have written code in the webserver which stored the todo items in files on the disk, or somewhere else. But generally the best thing to do with data you want to store is to use some software specifically designed for storing data. Permanent storage of data - also called "persistence" - is a huge and complex topic, and it is almost certainly a good idea to use some datastore for persistence. A popular category of datastore is the _database_, and our app can be configured to use a database.
 
 ### Running with a database
 
