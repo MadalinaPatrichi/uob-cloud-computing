@@ -12,6 +12,10 @@ build:
       cwd: app
       code: |
         ./gradlew build
+    - script:
+      name: clean
+      code: |
+        rm -rf app/.gradle
     - internal/docker-build:
       cwd: app
       dockerfile: Dockerfile.multi_stage
