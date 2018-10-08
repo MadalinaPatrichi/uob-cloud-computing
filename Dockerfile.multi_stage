@@ -1,0 +1,10 @@
+FROM openjdk:8 as builder
+
+COPY ./app/ /app/
+WORKDIR /app
+RUN cd /app && ./gradlew build --full-stacktrace
+
+FROM openjdk:alpine 
+WORKDIR /app
+COPY --from=builder /app/build/libs/uob-todo-app-0.1.0.jar .
+ENTRYPOINT ["java", "-jar", "uob-todo-app-0.1.0.jar"]

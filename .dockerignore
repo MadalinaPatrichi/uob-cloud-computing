@@ -1,0 +1,4 @@
+app/.gradle/
+app/build/
+app/node_modules/
+app/.idea/
