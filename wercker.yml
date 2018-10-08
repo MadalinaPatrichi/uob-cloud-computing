@@ -28,7 +28,7 @@ deploy-docker:
       password: $DOCKER_PASSWORD
       tag: latest
       registry: https://hub.docker.com
-      repo: uobcloudcomputing/todoapp
+      repository: uobcloudcomputing/todoapp
     
 deploy-jar:
   steps:
