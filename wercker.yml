@@ -34,7 +34,7 @@ deploy-jar:
     - script:
       name: deploy jar
       cwd: app
-      code: echo noop
+      code: ./release.sh
       
 deploy-docs:
   steps:
