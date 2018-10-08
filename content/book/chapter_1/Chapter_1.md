@@ -6,6 +6,10 @@ This book is about making software that runs on the internet. Actually it's real
 
 Our example is a "Todo list" application. It's deliberately very simple, but still complex enough to show everything we need.  The source for the app, along with instructions for building it are on [the project source repo](https://github.com/MadalinaPatrichi/uob-cloud-computing/tree/master/app). We use Spring Boot, Vue.js and Gradle which are all popular choices and have good documentation.
 
+### Continuous integration
+
+The project repository is configured so that every time a code change is committed it runs the tests and if they are successful it builds the software. So you can always find a build of the latest version of the code at TODO-LINK. This is configured using a system called TODO and you can see here (TODO) for how that is configured.
+
 ## A "webserver"
 
 When you're online almost everything you do uses [HTTP](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol) to pass messages back and forth. HTTP was invented by Tim Berners-Lee in 1989 and is one of the reasons why he's considered to be the inventor of the World-Wide Web.
