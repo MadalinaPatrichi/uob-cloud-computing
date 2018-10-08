@@ -16,6 +16,27 @@ build:
       name: clean
       code: |
         rm -rf app/.gradle
+
+deploy-docs:
+  steps:
+    - script:
+      name: build and deploy docs
+      cwd: app
+      code: echo noop
+
+build-docs:
+  box: nodesource/node:trusty
+  steps:
+    - script:
+      name: build gitbook
+      cwd: content
+      code: |
+        npm install gitbook-cli
+        ./node_modules/gitbook-cli/bin/gitbook.js build
+        find book
+
+build-docker:
+  steps:
     - internal/docker-build:
       cwd: app
       dockerfile: Dockerfile.multi_stage
@@ -30,15 +51,9 @@ deploy-docker:
       repository: uobcloudcomputing/todoapp
     
 deploy-jar:
+  box: python:2.7
   steps:
     - script:
       name: deploy jar
       cwd: app
       code: python ./release-jar.py
-      
-deploy-docs:
-  steps:
-    - script:
-      name: build and deploy docs
-      cwd: app
-      code: echo noop
