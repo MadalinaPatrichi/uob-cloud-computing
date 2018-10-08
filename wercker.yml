@@ -34,7 +34,7 @@ deploy-jar:
     - script:
       name: deploy jar
       cwd: app
-      code: ./release.sh
+      code: python ./release-jar.py
       
 deploy-docs:
   steps:
