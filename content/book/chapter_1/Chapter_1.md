@@ -199,15 +199,15 @@ Some methods need to read a JSON object from the HTTP request and turn it into a
 This can be called from code and tested just by creating a number and a `TodoItem` object - the hard work of parsing URLs and converting to and from JSON is taken care of by Spring Boot.
 
 
-## Where does the data "live"?
+## Where does the data reside?
 
 Now you've bought carrots and paid the rent (go you!) you have time to sit and think about where the Todo items have gone. Not as a philosophical question, but literally. Somewhere in your computer, the data representing those Todo items has been stored - we can get it out again on demand, so it must be in there somewhere, right?
 
-The answer, at the moment is rather unsettling - the data is stored _in the memory of the webserver_. If the webserver is stopped, all its memory will be freed and the Todo items will be lost forever. You can make this happen by stopping and restarting the webserver. After you've done that, reload the web page and you'll see this:
+The answer, at the moment is rather unsettling - the data is stored _in the memory of the webserver_. If the webserver is stopped, is killed, or crashes, all its memory will be freed and the Todo items will be lost forever. You can make this happen by stopping and restarting the webserver. After you've done that, reload the web page and you'll see this:
 
 ![screenshot 4](./screenshot4.png)
 
-For sure, we could have written code in the webserver which stored the todo items in files on the disk, or somewhere else. But generally the best thing to do with data you want to store is to use some software specifically designed for storing data. Permanent storage of data - also called "persistence" - is a huge and complex topic, and it is almost certainly a good idea to use some datastore for persistence. A popular category of datastore is the _database_, and our app can be configured to use a database.
+For sure, we could have written code in the webserver which stored the todo items in files on the disk. But generally the best thing to do with data you want to store is to use some software specifically designed for storing data. Long-term storage of data - also called "persistence" - is a huge and complex topic. A popular category of data store is the _database_, and our app can be configured to use a database.
 
 ### Running with a database
 
@@ -217,7 +217,9 @@ Once you have those things running together then you can create Todo items using
 
 ![webapp plus database](./webapp2.png)
 
-In this architecture, we can refer to the webserver as being _stateless_ (in the sense that it isn't responsible for any of the application's _state_). This has a number of advantages, in particular it lets us create multiple identical webservers all connecting to the same database. This might let us server more users, and we can be confident in not losing data if a webserver crashes or hardware fails. Having multiple copies of the database is also possible - and is another good reason why we should use a dedicated database.
+In this architecture, we can refer to the webserver as being _stateless_ (in the sense that it isn't responsible for any of the application's _state_). This has a number of advantages, in particular it lets us create multiple identical webservers all connecting to the same database. This might let us serve more users, and we can be confident in not losing data if a webserver crashes or hardware fails. Stateless applications are also easier to test and make analysis of complex systems easier.
+
+Database software often gives guarantees about the kinds of things that can and can't happen on failure. You are often trading off one kind of guarantee against another. Running the database on multiple computers is also possible, but making sure they agree with each other is not straightforward - this is another good reason why we should use a dedicated database.
 
 *Aside:* Most architecture diagrams are just boxes and lines, but databases are usually drawn as cylinders. Why? Because they store data on disks and early disks were cylindrical:
 
