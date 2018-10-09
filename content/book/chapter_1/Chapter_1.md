@@ -173,8 +173,8 @@ The data binding for `newTitle` looks like this:
 ```html
 <input class="new-todo"
        v-model="newTitle"
-	   v-on:keyup.enter="addTodo"
-	   placeholder="What needs to be done?" />
+       v-on:keyup.enter="addTodo"
+       placeholder="What needs to be done?" />
 ```
 
 Similar to the `GetMapping` shown above there are `PutMapping` and `PostMapping` annotated methods in [TodoController.java](https://github.com/MadalinaPatrichi/uob-cloud-computing/blob/bb7e9b55c5a1d4548c7968a1192b766e5010e79e/app/src/main/java/uob_todo/api/TodoController.java) which define what happens when a Todo item is created or updated. There are a few things worth noting in that class:
