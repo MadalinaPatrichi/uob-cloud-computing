@@ -4,80 +4,11 @@ import argparse
 import subprocess
 import json
 import base64
+import os
 
-ACCOUNT = """\
----
-# the namespace for the account
+with open(os.path.join(os.path.dirname(__file__), 'account.yaml'), 'r') as f:
+    ACCOUNT = f.read()
 
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: {accountnamespace}
-
----
-# the service account to provision for the user
-
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: {account}
-  namespace: {accountnamespace}
-
----
-# the role binding for this service account
-
-kind: RoleBinding
-apiVersion: rbac.authorization.k8s.io/v1beta1
-metadata:
-  name: default-role-binding
-  namespace: {accountnamespace}
-subjects:
-- kind: ServiceAccount
-  name: {account}
-  namespace: {accountnamespace}
-roleRef:
-  kind: ClusterRole
-  name: edit
-  apiGroup: rbac.authorization.k8s.io
-
----
-# these are the default limits applied to containers that don't specify a limit
-
-apiVersion: v1
-kind: LimitRange
-metadata:
-  name: default-requests-and-limits
-  namespace: {accountnamespace}
-spec:
-  limits:
-  - default:
-      memory: 1.5Gi
-      cpu: 0.75
-    defaultRequest:
-      memory: 1Gi
-      cpu: 0.5
-    type: Container
-
----
-# this is the resource quota applied to the namespace
-
-apiVersion: v1
-kind: ResourceQuota
-metadata:
-  name: {account}-quota
-  namespace: {accountnamespace}
-spec:
-  hard:
-    requests.cpu: "4"
-    requests.memory: "12Gi"
-    limits.cpu: "5"
-    limits.memory: "14Gi"
-    services.loadbalancers: "0"
-    services.nodeports: "10"
-    persistentvolumeclaims: "2"
-    requests.storage: "100Gi"
-
-"""
 
 def get_secret_name_from_service_account(sa, ns):
     data = subprocess.check_output([
