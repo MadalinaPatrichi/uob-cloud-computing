@@ -9,7 +9,6 @@ import uob_todo.api.exceptions.NotFoundException;
 @RequestMapping(path = "/api/todos")
 public class TodoController {
 
-    @Autowired
     private final TodoRepository todoSource;
 
     @Autowired
