@@ -26,7 +26,7 @@ build-docs:
       code: |
         npm install gitbook-cli
         ./node_modules/gitbook-cli/bin/gitbook.js build ./book
-        find _book
+        find ./book/_book
 
 deploy-docs:
   box: alpine/git:latest
@@ -48,7 +48,8 @@ deploy-docs:
         git checkout gh-pages || git checkout --orphan gh-pages
         git rm -rf .
         cd ..
-        cp -a _book/* out/
+        ls -al
+        cp -a ./book/_book/* out/
         cd out
         git add -A
         git commit -m "Automated deployment to GitHub Pages ($WERCKER_GIT_COMMIT)" --allow-empty
