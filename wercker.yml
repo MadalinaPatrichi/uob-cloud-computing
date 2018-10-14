@@ -34,7 +34,7 @@ build-docs:
         git checkout gh-pages || git checkout --orphan gh-pages
         git rm -rf .
         cd ..
-        cp -a content/_book/* out/
+        cp -a _book/* out/
         cd out
         git add -A
         git commit -m "Automated deployment to GitHub Pages ($WERCKER_GIT_COMMIT)" --allow-empty
