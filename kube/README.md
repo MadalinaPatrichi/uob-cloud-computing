@@ -44,6 +44,12 @@ To help other users expose their services to the internet, we'll use a layer 7 r
     EOF
     ```
 
+3. Set up an OCI load balancer for the HTTP nodeport
+
+    Now in the OCI console, set up a load balancer to send traffic from port 80 to port 30080 on all the worker nodes. The backend set should include the public IPs of all the worker nodes. 
+
+    You should let the users of the cluster know the public IP of the Load Balancer. They should their own DNS A-records to point to the Load Balancer. This will let traffic for the DNS name flow to the Load Balancer, into the nginx ingress controller, and finally into the required pods.
+
 ## 3. Set the pod security policy
 
 The pod security policy [security.yaml](security.yaml) is intended to lock down the pods and prevent too much 
