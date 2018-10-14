@@ -29,7 +29,7 @@ build-docs:
         find ./book/_book
 
 deploy-docs:
-  box: alpine/git:latest
+  box: node:10
   steps:
     - add-ssh-key:
       keyname: GH_PAGES_KEY
