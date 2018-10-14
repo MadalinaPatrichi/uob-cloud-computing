@@ -1,6 +1,7 @@
 package uob_todo.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import uob_todo.api.exceptions.BadRequestException;
@@ -12,19 +13,17 @@ public class TodoController {
 
     private final TodoRepository todoSource;
 
+    @Value("${todoapp.penalty.factor}")
+    private int penaltyFactor;
+
     /*
     This function runs a cpu/memory penalty in order to generate some fake load. This is used to drive metrics
     examples and demonstrate auto-scaling of pods/containers.
      */
     private void runPenaltyIfRequired() {
-        SCryptPasswordEncoder encoder = new SCryptPasswordEncoder(
-                1 << 14,
-                8,
-                1,
-                32,
-                64
-        );
-        encoder.encode("");
+        if (penaltyFactor > 0) {
+            new SCryptPasswordEncoder(1 << penaltyFactor, 8, 1, 32, 64).encode("");
+        }
     }
 
     @Autowired
