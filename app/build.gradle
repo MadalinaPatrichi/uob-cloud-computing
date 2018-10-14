@@ -37,12 +37,14 @@ targetCompatibility = 1.8
 
 dependencies {
     compile("org.springframework.boot:spring-boot-starter-web")
-    compile 'org.springframework.boot:spring-boot-starter-freemarker'
+    compile("org.springframework.boot:spring-boot-starter-freemarker")
     compile("org.springframework.boot:spring-boot-starter-actuator")
     compile("org.springframework.boot:spring-boot-starter-data-jpa")
+    compile("org.springframework.boot:spring-boot-starter-security")
+    compile("org.springframework.boot:spring-boot-devtools")
+    compile("org.bouncycastle:bcprov-jdk15on:1.60")
     compile("org.hsqldb:hsqldb")
     compile("mysql:mysql-connector-java")
-    compile("org.springframework.boot:spring-boot-devtools")
     compile("javax.xml.bind:jaxb-api")
     compile("io.micrometer:micrometer-registry-prometheus")
     testCompile("junit:junit")
