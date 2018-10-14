@@ -1,0 +1,290 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Why do we need observability? · GitBook</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.3">
+        
+        
+        
+    
+    <link rel="stylesheet" href="../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    
+    <link rel="prev" href="01_introduction.html" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../">
+            
+                <a href="../">
+            
+                    
+                    Introduction
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="../chapter_1/Chapter_1.html">
+            
+                <a href="../chapter_1/Chapter_1.html">
+            
+                    
+                    Chapter 1 : Running an application on the internet
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="01_introduction.html">
+            
+                <a href="01_introduction.html">
+            
+                    
+                    Chapter 5 : Observability & Autoscaling
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter active" data-level="1.3.1" data-path="02_Why_do_we_need_observation.html">
+            
+                <a href="02_Why_do_we_need_observation.html">
+            
+                    
+                    Why do we need observability?
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href=".." >Why do we need observability?</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="why-do-we-need-observation">Why do we need observation?</h1>
+<p>At this point in the coursework, the &quot;ToDo&quot; application has been successfully developed and migrated from local hosting, to a VM in the cloud, to a containerized service, and finally to an orchestrated Kubernetes Pod. While these changes have given us large improvements in our development flow, deployment and rollback reproducability; we have introduced more and more layers between the app and its hardware host which have made the behaviour of the app more and more opaque to us.</p>
+<p>When the app was running locally on our machine, we had immediate access to all of the console output in real time. We also had immediate access to any stacktraces and panics produced if our app had exceptions. We could also see how the app used resources by bringing up the task manager or activity monitor. However if we wanted to work out how many requests our app received or how long it took to process them, we would need to perform some complex log message processing.</p>
+<p>Once we moved the application to a VM, we lost almost all access to its internal behaviour. If we wished to access the console output, we had to SSH into the VM and execute the correct commands to extract and view the messages that we cared about. The same went for performance and hardware impact: we needed to execute commands manually while logged in to the machine. If the app crashed, we wouldn&apos;t know unless we were looking for it while on the machine.</p>
+<p>Moving the app onto Docker and then into a Kubernetes engine removed even our immediate SSH access. <code>docker</code> and <code>kubectl</code> commands provide you with some commands for viewing logs, events, and resource use (and restrictions) but also add more abstractions between your app and the hardware it runs on.</p>
+<p><strong>It&apos;s important to remember that we did these migrations for good reason!</strong> By making our app&apos;s deployment and hosting more cloud native we made it cheaper to run, more scalable, and easier to replicate onto more machines. Now it&apos;s time to fix the issues regarding logs and measurements.</p>
+<h2 id="some-keywords">Some keywords</h2>
+<ul>
+<li><p><strong>&quot;Logs&quot;</strong> : A message with a timestamp coming from a source. The message can be &quot;structured&quot; which could add various other information such as process ID, request ID, log level, etc. </p>
+<ul>
+<li><code>2018-01-01T00:00:00 Happy New Year!</code></li>
+</ul>
+</li>
+<li><p><strong>&quot;Metric&quot;</strong> : A consistent and repeated measurement made against an application or as the result of some measurement process at a particular point in time.</p>
+<ul>
+<li>At <code>2018-01-01T00:00:00</code> the app was using 12 Megabytes of memory</li>
+<li>Between <code>2018-01-01T00:00:00</code> and <code>2018-01-01T00:00:05</code> the app received 42 http requests</li>
+<li>A request took <code>12ms</code> to process</li>
+<li>Over some period the app used <code>N%</code> of cpu cycles</li>
+</ul>
+</li>
+</ul>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="01_introduction.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page: Chapter 5 : Observability & Autoscaling">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"Why do we need observability?","level":"1.3.1","depth":2,"previous":{"title":"Chapter 5 : Observability & Autoscaling","level":"1.3","depth":1,"path":"chapter_5/01_introduction.md","ref":"chapter_5/01_introduction.md","articles":[{"title":"Why do we need observability?","level":"1.3.1","depth":2,"path":"chapter_5/02_Why_do_we_need_observation.md","ref":"chapter_5/02_Why_do_we_need_observation.md","articles":[]}]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":[],"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"chapter_5/02_Why_do_we_need_observation.md","mtime":"2018-10-14T16:21:38.612Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2018-10-14T16:22:14.695Z"},"basePath":"..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../gitbook/gitbook.js"></script>
+    <script src="../gitbook/theme.js"></script>
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+

@@ -1,0 +1,441 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Chapter 1 : Running an application on the internet · GitBook</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.3">
+        
+        
+        
+    
+    <link rel="stylesheet" href="../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="../chapter_5/01_introduction.html" />
+    
+    
+    <link rel="prev" href="../" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../">
+            
+                <a href="../">
+            
+                    
+                    Introduction
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.2" data-path="Chapter_1.html">
+            
+                <a href="Chapter_1.html">
+            
+                    
+                    Chapter 1 : Running an application on the internet
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="../chapter_5/01_introduction.html">
+            
+                <a href="../chapter_5/01_introduction.html">
+            
+                    
+                    Chapter 5 : Observability & Autoscaling
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.1" data-path="../chapter_5/02_Why_do_we_need_observation.html">
+            
+                <a href="../chapter_5/02_Why_do_we_need_observation.html">
+            
+                    
+                    Why do we need observability?
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href=".." >Chapter 1 : Running an application on the internet</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="running-software-on-the-internet">Running software on the internet</h1>
+<p>This book is about making software that runs on the internet. Actually it&apos;s really about <em>running</em> the software, but in order to show how to do that, we need to make some software first.</p>
+<h2 id="the-software-were-going-to-run-on-the-internet">The software we&apos;re going to run on the internet</h2>
+<p>Our example is a &quot;Todo list&quot; application. It&apos;s deliberately very simple, but still complex enough to show everything we need.  The source for the app, along with instructions for building it are on <a href="https://github.com/MadalinaPatrichi/uob-cloud-computing/tree/master/app" target="_blank">the project source repo</a>. We use Spring Boot, Vue.js and Gradle which are all popular choices and have good documentation.</p>
+<h3 id="continuous-integration">Continuous integration</h3>
+<p>The project repository is configured so that every time a code change is committed it runs the tests and if they are successful it builds the software. So you can always find a build of the latest version of the code at TODO-LINK. This is configured using a system called TODO and you can see here (TODO) for how that is configured.</p>
+<h2 id="a-webserver">A &quot;webserver&quot;</h2>
+<p>When you&apos;re online almost everything you do uses <a href="https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol" target="_blank">HTTP</a> to pass messages back and forth. HTTP was invented by Tim Berners-Lee in 1989 and is one of the reasons why he&apos;s considered to be the inventor of the World-Wide Web.</p>
+<p>HTTP is a simple protocol, consisting of requests (eg &quot;Can I have this webpage please?&quot;) and responses (eg &quot;Yes, here it is: ......&quot;).  Here is an example, fetching <code>http://www.example.com/path/index.html</code>:</p>
+<pre><code>GET /path/index.html HTTP/1.1
+Host: www.example.com
+[blank line here]
+</code></pre><p>And the webserver&apos;s response:</p>
+<pre><code>HTTP/1.1 200 OK
+Date: Mon, 01 Oct 2018 09:00:00 UTC
+Content-Type: text/html
+Content-Length: 1563
+
+&lt;html&gt;
+  &lt;title&gt;Here&apos;s a web page&lt;/title&gt;
+  .
+  .
+  .
+&lt;/html&gt;
+</code></pre><p>There is an in-depth article about HTTP with lots of examples <a href="https://www.ntu.edu.sg/home/ehchua/programming/webprogramming/HTTP_Basics.html" target="_blank">here</a>. You my also have heard of <code>HTTPS</code> which is an extension to HTTP for secure communications. The messages are the <a href="https://en.wikipedia.org/wiki/HTTPS#Difference_from_HTTP" target="_blank">same as regular HTTP</a> but the communication is encrypted.</p>
+<p>The next thing we need to know is where to send these messages to. Any computer which is operating as a <em>webserver</em> needs to be listening for requests like this coming in, which is usually done with a <a href="https://en.wikipedia.org/wiki/Network_socket" target="_blank">TCP socket</a> and it&apos;s completely possible to connect to that socket and type the HTTP request by hand using a tool like <a href="https://en.wikipedia.org/wiki/Netcat" target="_blank">nc</a>. This is generally not convenient so we will use tools to do that on our behalf. A simple command-line tool which we use in this chapter is <a href="https://curl.haxx.se/" target="_blank">curl</a>. Speaking HTTP to webservers is also one of the things your web browser does (along with displaying <a href="https://developer.mozilla.org/en-US/docs/Learn/HTML/Introduction_to_HTML" target="_blank">HTML</a> in web pages, running <a href="https://developer.mozilla.org/en-US/docs/Glossary/JavaScript" target="_blank">Javascript</a>, remembering login details and so on).</p>
+<p>We will not go into more detail on HTTP here, except to point out one of the lines in the response: <code>Content-Type: text/html</code>. This is important because if you&apos;re connecting from a web browser, this line instructs the browser to (try to) display the rest of the message as a web page. If the content is not a web page then this isn&apos;t the right content-type. It&apos;s extremely common to use HTTP to send small amounts of data for software to read, and a popular format for that is <a href="http://json.org/" target="_blank">JSON</a>. For this kind of response, the correct line for the webserver to include is <code>Content-Type: application/json</code>.</p>
+<h3 id="how-our-application-works">How our application works</h3>
+<p>Our application uses HTTP, HTML, JavaScript and JSON to create a dynamic web application.</p>
+<p>We have a <em>webserver</em> which returns a <code>text/html</code> response to requests that start <code>GET /</code> - and your browser will display that HTML, first of all, as an empty list. Also embedded in that HTML page is some javascript, which the browser runs. This causes <em>another</em> HTTP request to the webserver, starting with <code>GET /api/todos</code> - to which the server responds with a list of data as <code>application/json</code>. The javascript code then inserts that data into the webpage and we are now looking at an up-to-date Todo list!</p>
+<p>There is also javascript code which can send new Todo items to the server, or update existing ones to tick them off. This is also done using HTTP. Requests to change something stored by the server usually start with <code>POST</code> or <code>PUT</code>, not <code>GET</code> - but the request/response process is otherwise exactly the same.</p>
+<p>It is certainly possible for multiple clients to connect to the same web server, and we would like to make sure that one client&apos;s changes are visible to others. There are many ways to achieve this, the simplest being to just run the fetch-json-data-and-display process over and over (this is called <em>polling</em>). Our JavaScript code instructs the browser to poll the server every one or two seconds.</p>
+<p>So, to display the Todo list, many HTTP requests and responses are flying back and forth over the network.</p>
+<p>We can draw these components like this:</p>
+<p><img src="webapp1.png" alt="webapp simple architecture"></p>
+<h3 id="running-the-webserver-and-creating-our-first-requests">Running the webserver and creating our first requests</h3>
+<p>There are instructions on <a href="https://github.com/MadalinaPatrichi/uob-cloud-computing/tree/master/app/#app-server" target="_blank">the project source repo</a> which tell you how to run the webserver. Once it is running we can communicate with it using HTTP, but only if we know how to find out where it is listening for requests. It is listening on a TCP socket which is 2 things: an <em>address</em> and a <em>port</em>. The port for our webserver is <code>8080</code> and the address for <em>the computer we are currently using</em> is usually <code>localhost</code>.</p>
+<p>Now we know everything we need to make our requests. To begin with we&apos;ll ignore the HTML and Javascript - lets concentrate on the JSON because it&apos;s simpler. Using curl looks like this:</p>
+<pre><code>curl -v http://localhost:8080/api/todos
+
+&gt; GET /api/todos HTTP/1.1
+&gt; Host: localhost:8080
+&gt; User-Agent: curl/7.58.0
+&gt; Accept: */*
+&gt;
+
+&lt; HTTP/1.1 200
+&lt; Content-Type: application/json
+&lt; Transfer-Encoding: chunked
+&lt; Date: Sun, 30 Sep 2018 20:12:39 GMT
+&lt;
+
+[]
+</code></pre><p>Here I have used <code>curl -v</code> to show the whole HTTP request and response. The response body is <code>[]</code> - an empty list in JSON - because we have no items in our list. Lets add some:</p>
+<pre><code>curl -v -H &apos;content-type: application/json&apos; -XPOST -d&apos;{&quot;title&quot;: &quot;buy carrots&quot;}&apos; http://localhost:8080/api/todos
+
+&gt; POST /api/todos HTTP/1.1
+&gt; Host: localhost:8080
+&gt; User-Agent: curl/7.58.0
+&gt; content-type: application/json
+&gt; Content-Length: 20
+&gt;
+
+&lt; HTTP/1.1 200
+&lt; Content-Type: application/json;charset=UTF-8
+&lt; Transfer-Encoding: chunked
+&lt; Date: Sun, 30 Sep 2018 20:15:13 GMT
+&lt;
+
+{&quot;id&quot;:1,&quot;title&quot;:&quot;buy carrots&quot;,&quot;completed&quot;:false}
+</code></pre><p>(note that we have to include a <code>Content-Type</code> on what we have sent, too)</p>
+<p>We added an item to our list by sending <code>{&quot;title&quot;: &quot;buy carrots&quot;}</code> and the server has sent back what it has stored for us. The <code>id</code> and <code>completed</code> fields were added by the server for us. Now we can repeat our first request (I&apos;ll stop using <code>-v</code> with curl from now on, so we won&apos;t see any details of the request, and only the body of the response):</p>
+<pre><code>curl http://localhost:8080/api/todos
+[{&quot;id&quot;:1,&quot;title&quot;:&quot;my todo&quot;,&quot;completed&quot;:false}]
+</code></pre><p>A list with one item, as expected.  We can mark it as being completed using another HTTP request:</p>
+<pre><code>curl -H &apos;content-type: application/json&apos; -XPUT -d&apos;{&quot;title&quot;: &quot;buy carrots&quot;, &quot;completed&quot;:true}&apos; http://localhost:8080/api/todos/1
+{&quot;id&quot;:1,&quot;title&quot;:&quot;buy carrots&quot;,&quot;completed&quot;:true}
+</code></pre><p>Notice that we put the <code>id</code> of the Todo item at the end of the URL - so we could have changed the <code>title</code> at the same time if we&apos;d wanted to.</p>
+<h3 id="the-same-thing-as-a-web-page">The same thing, as a web page</h3>
+<p>As explained above, we can access the same data from the web browser:</p>
+<p><img src="screenshot1.png" alt="screenshot 1"></p>
+<p>It should not be a surprise that the Todo item we created using curl is visible. Typing in <code>pay the rent</code> to the space on the page and pressing enter will give us this:</p>
+<p><img src="screenshot2.png" alt="screenshot 2"></p>
+<p>And after we have paid the rent we can check the box:</p>
+<p><img src="screenshot3.png" alt="screenshot 3"></p>
+<p>your web browser has sent the exact same kinds of requests as we sent using curl.</p>
+<h3 id="the-code-that-makes-this-work">The code that makes this work</h3>
+<p>The webserver is coded in Java, using <a href="https://spring.io/projects/spring-boot" target="_blank">Spring Boot</a>. Spring Boot is designed to make it easy to create web applications, and uses Java annotations to configure how the code will behave when called using HTTP. For example here is the code in <a href="https://github.com/MadalinaPatrichi/uob-cloud-computing/blob/bb7e9b55c5a1d4548c7968a1192b766e5010e79e/app/src/main/java/uob_todo/IndexController.java" target="_blank">IndexController.java</a> which says to use the <code>index</code> template (from <a href="https://github.com/MadalinaPatrichi/uob-cloud-computing/tree/bb7e9b55c5a1d4548c7968a1192b766e5010e79e/app/src/main/resources/templates" target="_blank">the templates directory</a>) in response to <code>GET /</code>:</p>
+<pre><code class="lang-java"><span class="hljs-meta">@Controller</span>                         <span class="hljs-comment">// This annotation tells Spring Boot to use this class</span>
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">IndexController</span> </span>{
+
+    <span class="hljs-meta">@GetMapping</span>(<span class="hljs-string">&quot;/&quot;</span>)                <span class="hljs-comment">// This sets up the mapping for GET /</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">index</span><span class="hljs-params">()</span> </span>{
+        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;index&quot;</span>;             <span class="hljs-comment">// This says to use the `index` template</span>
+    }
+}
+</code></pre>
+<p>We are using <a href="https://vuejs.org/" target="_blank">Vue.js</a> as a framework for our Javascript code. Vue lets us easily attach functions to UI elements, so (for example) we can send the <code>POST /api/todos</code> request when someone presses the enter key after typing a new item. Vue also does <em>reactive data binding</em> which means that we can get and set values on the page from code by just changing the values of variables, rather than having to contstruct the HTML ourselves.</p>
+<p>Here is an example from <a href="https://github.com/MadalinaPatrichi/uob-cloud-computing/blob/bb7e9b55c5a1d4548c7968a1192b766e5010e79e/app/src/main/assets/TodoList.vue" target="_blank">TodoList.vue</a> which sends a new Todo item to the webserver:</p>
+<pre><code class="lang-javascript">    axios.post(<span class="hljs-string">&apos;/api/todos&apos;</span>, {<span class="hljs-string">&quot;title&quot;</span>: <span class="hljs-keyword">this</span>.newTitle})  <span class="hljs-comment">// create a new todd item and POST it</span>
+         .then(response =&gt; {
+            <span class="hljs-keyword">this</span>.newTitle = <span class="hljs-string">&quot;&quot;</span>  <span class="hljs-comment">// data binding means that setting this to empty will</span>
+         })                     <span class="hljs-comment">// clear the input box at the top of the page</span>
+</code></pre>
+<p>The data binding for <code>newTitle</code> looks like this:</p>
+<pre><code class="lang-html"><span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;new-todo&quot;</span>
+       <span class="hljs-attr">v-model</span>=<span class="hljs-string">&quot;newTitle&quot;</span>
+       <span class="hljs-attr">v-on:keyup.enter</span>=<span class="hljs-string">&quot;addTodo&quot;</span>
+       <span class="hljs-attr">placeholder</span>=<span class="hljs-string">&quot;What needs to be done?&quot;</span> /&gt;</span>
+</code></pre>
+<p>Similar to the <code>GetMapping</code> shown above there are <code>PutMapping</code> and <code>PostMapping</code> annotated methods in <a href="https://github.com/MadalinaPatrichi/uob-cloud-computing/blob/bb7e9b55c5a1d4548c7968a1192b766e5010e79e/app/src/main/java/uob_todo/api/TodoController.java" target="_blank">TodoController.java</a> which define what happens when a Todo item is created or updated. There are a few things worth noting in that class:</p>
+<p>The contstructor for the TodoController needs an argument of type <code>TodoRepository</code>. A repository is a type of class which has methods for storing and retrieving data. Spring will construct a repository and pass it to this constructor. This technique of requiring that objects your class will use be passed to it is called <a href="https://en.wikipedia.org/wiki/Dependency_injection" target="_blank">Dependency Injection</a>, which is a great technique for simplifying code and making it easier to test.</p>
+<pre><code class="lang-java">    <span class="hljs-meta">@Autowired</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">TodoController</span><span class="hljs-params">(TodoRepository todoSource)</span></span>{
+        <span class="hljs-keyword">this</span>.todoSource = todoSource;
+    }
+</code></pre>
+<p>Some methods need to read a JSON object from the HTTP request and turn it into a Java object. In fact Spring Boot does that for you automatically if you use a <code>RequestBody</code> annotation. It is also possible to extract values from the URL itself, eg the number 5 from <code>PUT /api/todos/5</code>, using a <code>PathVariable</code> annotation. so the method which is called to update a Todo item looks like this:</p>
+<pre><code class="lang-java">    <span class="hljs-meta">@PutMapping</span>(<span class="hljs-string">&quot;/{id}&quot;</span>)
+    <span class="hljs-function"><span class="hljs-keyword">public</span> TodoItem <span class="hljs-title">updateTodo</span><span class="hljs-params">(@PathVariable(<span class="hljs-string">&quot;id&quot;</span>)</span> Long id, @RequestBody TodoItem item) </span>{
+        ...
+</code></pre>
+<p>This can be called from code and tested just by creating a number and a <code>TodoItem</code> object - the hard work of parsing URLs and converting to and from JSON is taken care of by Spring Boot.</p>
+<h2 id="where-does-the-data-reside">Where does the data reside?</h2>
+<p>Now you&apos;ve bought carrots and paid the rent (go you!) you have time to sit and think about where the Todo items have gone. Not as a philosophical question, but literally. Somewhere in your computer, the data representing those Todo items has been stored - we can get it out again on demand, so it must be in there somewhere, right?</p>
+<p>The answer, at the moment is rather unsettling - the data is stored <em>in the memory of the webserver</em>. If the webserver is stopped, is killed, or crashes, all its memory will be freed and the Todo items will be lost forever. You can make this happen by stopping and restarting the webserver. After you&apos;ve done that, reload the web page and you&apos;ll see this:</p>
+<p><img src="screenshot4.png" alt="screenshot 4"></p>
+<p>For sure, we could have written code in the webserver which stored the todo items in files on the disk. But generally the best thing to do with data you want to store is to use some software specifically designed for storing data. Long-term storage of data - also called &quot;persistence&quot; - is a huge and complex topic. A popular category of data store is the <em>database</em>, and our app can be configured to use a database.</p>
+<h3 id="running-with-a-database">Running with a database</h3>
+<p>Again, see <a href="https://github.com/MadalinaPatrichi/uob-cloud-computing/tree/master/app" target="_blank">the project repo</a> for instructions on how to run the app with a database. You will need to install the database we use (called MySQL) onto your computer, then pass details of how to connect to the database to the webserver when you start it.</p>
+<p>Once you have those things running together then you can create Todo items using <code>curl</code> or your the web page, and you can restart the webserver without losing your data. You can also restart the database - those really do write the data into files on the disk, so we will find the same data still exists after a restart. We might draw the application architecture like this:</p>
+<p><img src="webapp2.png" alt="webapp plus database"></p>
+<p>In this architecture, we can refer to the webserver as being <em>stateless</em> (in the sense that it isn&apos;t responsible for any of the application&apos;s <em>state</em>). This has a number of advantages, in particular it lets us create multiple identical webservers all connecting to the same database. This might let us serve more users, and we can be confident in not losing data if a webserver crashes or hardware fails. Stateless applications are also easier to test and make analysis of complex systems easier.</p>
+<p>Database software often gives guarantees about the kinds of things that can and can&apos;t happen on failure. You are often trading off one kind of guarantee against another. Running the database on multiple computers is also possible, but making sure they agree with each other is not straightforward - this is another good reason why we should use a dedicated database.</p>
+<p><em>Aside:</em> Most architecture diagrams are just boxes and lines, but databases are usually drawn as cylinders. Why? Because they store data on disks and early disks were cylindrical:</p>
+<p><img src="disk.png" alt="disk"></p>
+<p>This is why Oracle (a database company originally) has buildings of that shape in its HQ:</p>
+<p><img src="orahq.png" alt="Oracle hq"></p>
+<p>(You might recognise the buildings the HQ of Cyberdyne systems in Terminator Genesis, too)</p>
+<h2 id="accessing-the-application">Accessing the application</h2>
+<h3 id="not-everyone-is-using-your-computer">Not everyone is using your computer</h3>
+<p>(so we can&apos;t use localhost forever)</p>
+<h3 id="accessing-from-the-internet">Accessing from the internet</h3>
+<p>Your computer is probably not directly connected to the internet, but connects through your router or similar at home:</p>
+<p><img src="webapp3.png" alt="home server architecture"></p>
+<p>By default this won&apos;t put your webserver on the internet, but the router is. You can configure a router to forward connections, and then use external IP to access your application at <code>http://external-ip:8080/</code> but this isn&apos;t ideal for a number of reasons:</p>
+<ul>
+<li>the wifi connection in your house might fail</li>
+<li>your computer might get turned off by a cat</li>
+<li>your ISP might decide to change your router&apos;s IP address.</li>
+<li>your house might have a power cut</li>
+<li>your ISP might not not let you have a very high upload speed</li>
+</ul>
+<p>Of course, most websites use a <em>domain name</em> like <code>example.com</code> rather than an IP address. Actually when you use a domain name your computer is still using the IP address - it looks up the IP address using a system called DNS (<code>example.com</code> is at <code>93.184.216.34</code>). It&apos;s possible to get a domain name for your home router, but you don&apos;t control your IP address (your ISP does) so it would not be practical to do that without using a dynamic DNS service, which restricts the kinds of names you can use.</p>
+<p>To mitigate this, in 2008, you would have rented some space - about the size of a pizza box - in a datacenter. Then drive there with a small computer and leave it there.:</p>
+<p><img src="webapp4.png" alt="basic DC arch"></p>
+<p>These days datacenters are big business. A <a href="https://en.wikipedia.org/wiki/Data_center#Design_considerations" target="_blank">large datacenter</a> can use as much electricity as a whole town, and overall they account for 2% of electricity use in the USA. There might be tens of thousands of computers in a datacenter, mounted in racks, all networked together. There will be air-conditioning, multiple redundant power supplies, fire-suppression, physical secutiry and many full-time staff.</p>
+<p>However despite having solved many problems about getting your application onto the internet, there are still many more things to pay attention to:</p>
+<ul>
+<li>Hardware failure. There is only one computer running the software, what if it breaks?</li>
+<li>Scaling. What if the computer or other infrastructure can&apos;t keep up with the number of requests?</li>
+<li>Updating your OS. What if there is an urgent security patch which needs time and a reboot?</li>
+<li>Updating your application. How do you deliver new versions of your code?</li>
+</ul>
+<h2 id="what-next">What next?</h2>
+<p>The rest of this course is about the improvements made in the last decade or so to this state of affairs. The biggest change has been the popularization of &quot;The Cloud&quot;. But always remember:</p>
+<p><img src="nocloud.png" alt="There is no cloud"></p>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="../" class="navigation navigation-prev " aria-label="Previous page: Introduction">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="../chapter_5/01_introduction.html" class="navigation navigation-next " aria-label="Next page: Chapter 5 : Observability & Autoscaling">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"Chapter 1 : Running an application on the internet","level":"1.2","depth":1,"next":{"title":"Chapter 5 : Observability & Autoscaling","level":"1.3","depth":1,"path":"chapter_5/01_introduction.md","ref":"chapter_5/01_introduction.md","articles":[{"title":"Why do we need observability?","level":"1.3.1","depth":2,"path":"chapter_5/02_Why_do_we_need_observation.md","ref":"chapter_5/02_Why_do_we_need_observation.md","articles":[]}]},"previous":{"title":"Introduction","level":"1.1","depth":1,"path":"README.md","ref":"README.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":[],"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"chapter_1/Chapter_1.md","mtime":"2018-10-14T16:21:38.610Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2018-10-14T16:22:14.695Z"},"basePath":"..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../gitbook/gitbook.js"></script>
+    <script src="../gitbook/theme.js"></script>
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+
