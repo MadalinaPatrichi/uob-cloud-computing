@@ -4,6 +4,8 @@
 
 This repository contains lecture material, an example app, and various tutorials related to the University of Bristol cloud native computing module.
 
+The written content backing the lectures can be found at https://madalinapatrichi.github.io/uob-cloud-computing/.
+
 See the wiki [here](https://github.com/MadalinaPatrichi/uob-cloud-computing/wiki) for more information.
 
 ## Project directories

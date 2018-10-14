@@ -17,13 +17,6 @@ build:
       code: |
         rm -rf app/.gradle
 
-deploy-docs:
-  steps:
-    - script:
-      name: build and deploy docs
-      cwd: app
-      code: echo noop
-
 build-docs:
   box: node:10
   steps:
@@ -32,8 +25,35 @@ build-docs:
       cwd: content
       code: |
         npm install gitbook-cli
-        ./node_modules/gitbook-cli/bin/gitbook.js build
-        find book
+        ./node_modules/gitbook-cli/bin/gitbook.js build ./book
+        find ./book/_book
+
+deploy-docs:
+  box: alpine/git:latest
+  steps:
+    - add-ssh-key:
+      keyname: GH_PAGES_KEY
+    - add-to-known_hosts:
+      hostname: github.com
+      fingerprint: 16:27:ac:a5:76:28:2d:36:63:1b:56:4d:eb:df:a6:48
+      type: rsa
+    - script:
+      name: deploy docs
+      cwd: content
+      code: |
+        git config --global user.name "$WERCKER_STARTED_BY"
+        git config --global user.email "root@$HOSTNAME.com"
+        git clone git@github.com:MadalinaPatrichi/uob-cloud-computing.git out
+        cd out
+        git checkout gh-pages || git checkout --orphan gh-pages
+        git rm -rf .
+        cd ..
+        ls -al
+        cp -a ./book/_book/* out/
+        cd out
+        git add -A
+        git commit -m "Automated deployment to GitHub Pages ($WERCKER_GIT_COMMIT)" --allow-empty
+        git push origin gh-pages
 
 build-docker:
   steps:
