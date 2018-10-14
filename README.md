@@ -10,3 +10,4 @@ See the wiki [here](https://github.com/MadalinaPatrichi/uob-cloud-computing/wiki
 
 - `app/` : A Spring Boot server serving an API and a static Vue.js app. [README](app/README.md)
 - `content/` : Gitbooks course content to support lectures and tutorials. [README](content/README.md)
+- `kube-cluster-setup/` : A basic guide to setting up a shared Kubernetes cluster for this course. [README](kube-cluster-setup/README.md)
