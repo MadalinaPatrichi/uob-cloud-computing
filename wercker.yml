@@ -32,7 +32,7 @@ build-docs:
         cd out
         git config --global user.name "$WERCKER_STARTED_BY"
         git checkout gh-pages || git checkout --orphan gh-pages
-        rm -rf .
+        git rm -rf .
         cd ..
         cp -a content/_book/* out/
         cd out
