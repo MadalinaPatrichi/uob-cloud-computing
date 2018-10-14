@@ -43,11 +43,11 @@ metadata:
 spec:
   limits:
   - default:
-      memory: 1.5Gi
-      cpu: 0.75
+      memory: {default_memory}
+      cpu: {default_cpu}
     defaultRequest:
-      memory: 1Gi
-      cpu: 0.5
+      memory: {default_memory}
+      cpu: {default_cpu}
     type: Container
 
 ---
@@ -60,10 +60,10 @@ metadata:
   namespace: {accountnamespace}
 spec:
   hard:
-    requests.cpu: "4"
-    requests.memory: "12Gi"
-    limits.cpu: "5"
-    limits.memory: "14Gi"
+    requests.cpu: "{cpu_for_account}"
+    requests.memory: "{memory_for_account}"
+    limits.cpu: "{cpu_for_account}"
+    limits.memory: "{memory_for_account}"
     services.loadbalancers: "0"
     services.nodeports: "10"
     persistentvolumeclaims: "2"

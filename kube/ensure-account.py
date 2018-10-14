@@ -6,6 +6,17 @@ import json
 import base64
 import os
 
+TOTAL_CPU = 9 * 16
+TOTAL_MEMORY = 9 * 123400336  # Ki
+TOTAL_USERS = 80
+CPU_PER_USER = round(TOTAL_CPU / float(TOTAL_USERS), 2)
+MEMORY_PER_USER = int(TOTAL_MEMORY / float(TOTAL_USERS))
+
+EXPECTED_CONTAINERS_PER_USER = 6
+DEFAULT_CPU_PER_CONTAINER = round(CPU_PER_USER / float(EXPECTED_CONTAINERS_PER_USER), 2)
+DEFAULT_MEMORY_PER_CONTAINER = int(MEMORY_PER_USER / float(EXPECTED_CONTAINERS_PER_USER))
+
+
 with open(os.path.join(os.path.dirname(__file__), 'account.yaml'), 'r') as f:
     ACCOUNT = f.read()
 
@@ -85,6 +96,10 @@ def main():
     p.communicate(ACCOUNT.format(
         account=args.accountname,
         accountnamespace=ns,
+        cpu_for_account=CPU_PER_USER,
+        memory_for_account=(str(MEMORY_PER_USER) + "Ki"),
+        default_cpu=DEFAULT_CPU_PER_CONTAINER,
+        default_memory=(str(DEFAULT_MEMORY_PER_CONTAINER) + "Ki"),
     ))
     if p.returncode != 0:
         raise Exception("Bad return code")

@@ -1,12 +1,50 @@
-This directory contains scripts related to administering a shared Kubernetes cluster split between multiple student users.
+This directory contains scripts related to setting up and administering a shared OKE (Oracle Kubernetes Engine) cluster split between multiple student users in order to demonstrate various cloud native concepts.
 
-This is intended to create separate namespaces and service accounts for a number of users.
+Unless otherwise stated, scripts should be executed as the admin Kubernetes user or as a user with the `cluster-admin` Kubernetes role.
 
-It should be executed as the admin user.
+## 1. Set up an OKE cluster
 
-**Warning**: there may still be issues or bugs in this setup!
+- See [this page](https://www.oracle.com/webfolder/technetwork/tutorials/obe/oci/oke-full/index.html) for detailed instructions.
 
-## Set the pod security policy
+## 2. Deploy Nginx ingress
+
+To help other users expose their services to the internet, we'll use a layer 7 routing solution known as the Nginx Ingress Controller. There are a few different ingress controllers, but the Nginx one is the easiest for this use case.
+
+1. Install the mandatory nginx ingress components
+
+    ```
+    kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/mandatory.yaml
+    ```
+
+2. Install a nodeport service to expose it
+
+    We're only going to support plain HTTP here, but if you did the properly you'd most likely want to have a proper HTTPS configuration with certificates.
+
+    ```
+    kubectl apply -f - << EOF
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: ingress-nginx
+      namespace: ingress-nginx
+      labels:
+        app.kubernetes.io/name: ingress-nginx
+        app.kubernetes.io/part-of: ingress-nginx
+    spec:
+      type: NodePort
+      ports:
+      - name: http
+        port: 80
+        targetPort: 80
+        nodePort: 30080
+        protocol: TCP
+      selector:
+        app.kubernetes.io/name: ingress-nginx
+        app.kubernetes.io/part-of: ingress-nginx
+    EOF
+    ```
+
+## 3. Set the pod security policy
 
 The pod security policy [security.yaml](security.yaml) is intended to lock down the pods and prevent too much 
 privilege escalation between users.
@@ -15,10 +53,16 @@ privilege escalation between users.
 kubectl apply -f security.yaml
 ```
 
-## Set up accounts for each user
+## 4. Set up accounts for each user
 
-This command creates a namespace and service account for each user.
+This command creates a namespace and service account for each user. Edit the headers at the top of the file to specify the total amount of resources available in the cluster and the expected number of users.
 
 ```
 ./ensure-account.py my-user my-user.kubeconfig
+```
+
+## 5. Optionally, remove an account
+
+```
+./remove-account.py my-user
 ```
