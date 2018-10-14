@@ -17,13 +17,6 @@ build:
       code: |
         rm -rf app/.gradle
 
-deploy-docs:
-  steps:
-    - script:
-      name: build and deploy docs
-      cwd: app
-      code: echo noop
-
 build-docs:
   box: node:10
   steps:
@@ -31,9 +24,19 @@ build-docs:
       name: build gitbook
       cwd: content
       code: |
+        env
         npm install gitbook-cli
         ./node_modules/gitbook-cli/bin/gitbook.js build
         find book
+
+deploy-docs:
+  box: alpine/git:latest
+  steps:
+    - script:
+      name: deploy docs
+      cwd: app
+      code: |
+        env
 
 build-docker:
   steps:
