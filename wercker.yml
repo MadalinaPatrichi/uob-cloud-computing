@@ -20,6 +20,8 @@ build:
 build-docs:
   box: node:10
   steps:
+    - add-ssh-key:
+        keyname: GH_PAGES_KEY_PRIVATE
     - script:
       name: build gitbook
       cwd: content
@@ -28,10 +30,6 @@ build-docs:
         npm install gitbook-cli
         ./node_modules/gitbook-cli/bin/gitbook.js build
         find book
-        mkdir ~/.ssh
-        echo "$GH_PAGES_KEY_PRIVATE" > ~/.ssh/id_rsa
-        chown 0700 ~/.ssh
-        chown 0600 ~/.ssh/id_rsa
         git config --global user.name "$WERCKER_STARTED_BY"
         git config --global user.email "root@$HOSTNAME.com"
         git clone git@github.com:MadalinaPatrichi/uob-cloud-computing.git out
