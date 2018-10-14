@@ -31,6 +31,7 @@ build-docs:
         git clone https://$WERCKER_GIT_DOMAIN/$WERCKER_GIT_OWNER/$WERCKER_GIT_REPOSITORY.git out
         cd out
         git config --global user.name "$WERCKER_STARTED_BY"
+        git config --global user.email "root@$HOSTNAME.com"
         git checkout gh-pages || git checkout --orphan gh-pages
         git rm -rf .
         cd ..
