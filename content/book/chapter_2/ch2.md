@@ -217,11 +217,46 @@ There are other commands that’ll give you this information, but this is a comm
 
 ### Aside: the runtime configuration of the VM
 
-A VM is booted from a copy of an _operating system image_. That image has fixed contents (filesystem layout, boot-time daemons, etc.) However, each VM instance is differentiated from the next with a small number of run-time parameters that are typically injected during the boot process. In particular, each VM has its own IP address; this must be configured into the operating system somehow. Additionally, the 
+A VM is booted from a copy of an _operating system image_. That image has fixed contents (filesystem layout, boot-time daemons, etc.) However, each VM instance is differentiated from the next with a small number of run-time parameters that are typically injected during the boot process. In particular, each VM has its own IP address; this must be configured into the operating system somehow. Additionally, the public half of the ssh keypair that was supplied during instance creation needs to be installed in the filesystem in order to be effective.
 
 #### DHCP
+
+There is a two-stage process that takes care of this. The first part of the process takes care of network configuration. (This is the same mechanism used by a laptop to connect to your favourite cafe's fre wifi.) The protocol used is called _DHCP_.
+
+Initially, the host does not know its IP address. It sends a broadcast packet asking for configuration information. That packet is received by the DHCP server. This is a _layer-2 broadcast_, which typically means that the DHCP server must be homed on the same subnet to receive the packet.
+
+![](dhcp-01.png "")
+
+In response, the DHCP server can look up (or dynamically allocate) an IP address for the host. The response is sent directly to the host (that is, it doesn't use the typical IP mechanism for locating the host on a local subnet). This response packet contains other _DHCP options_ that tell the host how to configure itself: information about the subnet, the subnet's _maximum transmission unit_ (that is, the size of the largest packet that the subnet will accept), information about DNS (that is, the location of a local name-server), and so on.
+
+This information comes with a _lease time_. The client host must renew its lease within that period if it wishes to retain the same IP address.
+
+![](dhcp-02.png "")
+
+On receipt, the host configures its low-level network information.
+
+![](dhcp-03.png "")
+
+At this stage, the second part of the boot-time configuration can proceed.
+
 #### Other host metadata
+
+Here OS images for instances in the cloud differ from the contents of your laptop. Each image is designed to be booted in a cloud environment - possibly by an automated process - and must therefore be able to continue the configuration process automatically.
+
+There are a small number of equivalent approaches to doing this that are typified by _cloud-init_. Here, the cloud provider and the OS image follow a conventional contract: if the VM makes an HTTP request to a given address, the cloud provider will serve up metadata in response that details the VM's specific configuration.
+
+![](cloud-init-01.png "")
+
+![](cloud-init-02.png "")
+
+That metadata is interpreted by the boot-time process; it can cause additional configuration files to be written into the VM's filesystem, additional packages to be installed, additional user accounts to be created, and so on. One typical piece of configuration information is an _ssh key_ that is associated with the _default user_ baked into the OS image.
+
+You'll be able to see your own ssh public key in your instance, in the `~/.ssh/authorized_keys` file, after you log into it.
+
 ## Review of the deployment plan
+
+
+
 ### Log in
 ### Deploy and configure the database
 #### Aside: what's a _package_?
