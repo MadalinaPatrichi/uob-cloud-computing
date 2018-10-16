@@ -92,11 +92,11 @@ Hitting `Create Instance` will pop up a fairly extensive dialog. We'll pick the 
 - use the latest image version
 - for these first machines, use the default boot volume size.
 
-![create instance part one](02-00-create-instance-web-with-network.png "Launch compartment, part one")
+![create instance part one](02-00-create-instance-web-with-network.png "Launch instance, part one")
 
 The second part of the dialog involves selecting the credentials that will be embedded into the running instance. Select `Choose SSH key files` and locate your `~/.ssh/id_rsa.pub` file.
 
-![create instance part two](02-01-create-instance-web-with-network.png "Launch compartment, ssh information")
+![create instance part two](02-01-create-instance-web-with-network.png "Launch instance, ssh information")
 
 Finally, we want to create a new set of network resources to use with this VM.
 
@@ -105,26 +105,207 @@ Finally, we want to create a new set of network resources to use with this VM.
 - ensure that public IP addresses are assigned for hosts on that VCN
 - then create the instance
 
-![create instance part three](02-02-create-instance-web-with-network.png "Launch compartment, networking")
+![create instance part three](02-02-create-instance-web-with-network.png "Launch instance, networking")
 
 You should see a detail panel once the instance is booted. It'll look like this:
 
-![create instance result](02-03-create-instance-web-result.png "Launch compartment, result")
+![create instance result](02-03-create-instance-web-result.png "Launch instance, result")
 
 Notice that there are two IP addresses listed for the host - a private IP address and a public IP address. It's the latter that we'll use to connect to this VM over the internet.
-
-## Booting the second VM
-
-This process is very similar
-
-![create second_instance](03-00-create-instance-db.png "Launch compartment, result")
-![create second_instance](03-00-create-instance-db.png "Launch compartment, result")
-
-03-00-create-instance-db.png
-03-01-creat-instance-db.png
-03-02-create-instance-db.png
-03-03-create-instance-db-result.png
 
 ### A note on tags
 
 Resources can be _tagged_ with arbitrary labels. For a small deployment, this may seem unnecessary; however, for larger deployments, it can be useful to identify the various categories that a VM (or network) belongs to. Example divisions might be: _environment_ (staging, production, ...); _cost centre_; or perhaps the particular application that a resource is associated with.
+
+## Booting the second VM
+
+This process is very similar; we'll create the second instance (using `Oracle Linux 7.5` as the image operating system) on another small VM in the same compartment. Call it `db1`:
+
+![create second_instance](03-00-create-instance-db.png "Launch instance, result")
+
+Locate the ssh public key file as before:
+
+![create second_instance](03-01-create-instance-db.png "Launch instance, ssh key")
+
+This time, we'll use the pre-existing network resources that were created in our compartment:
+
+![create second_instance](03-02-create-instance-db.png "Launch instance, networking")
+
+The detail page looks much like before. Take a note of the public IP address - we'll be using this to `ssh` into the instance.
+
+![create second_instance](03-03-create-instance-db-result.png "Launch instance, result")
+
+## A diagram of the result
+
+![](03-04-resulting-layout.png "")
+
+### Aside: the anatomy of a TCP connection
+
+### Aside: the runtime configuration of the VM
+#### DHCP
+#### Other host metadata
+## Review of the deployment plan
+### Log in
+### Deploy and configure the database
+#### Aside: what's a _package_?
+### Database installation
+### Database configuration: change the _root_ password
+### Examine the existing schemas
+### Create application credentials
+### Create a blank database schema for the application
+### Summary
+- We’ve installed a database server
+- We’ve added credentials for a new user to it (and the password isn’t just “secret” :-) )
+- We’ve created a database
+- We’ve confirmed that it works
+### Communication between hosts
+- ping fails
+- ... but DNS lookup works
+### Network security
+### Security rules: a firewall external to the VMs
+
+![](04-00-network-view.png "")
+
+![](04-01-security-list-ingress.png "")
+
+![](04-02-security-list-egress.png "")
+
+![](04-03-edit-security-rules.png "")
+
+![](04-04-allow-interhost-pings.png "")
+
+![](04-05-allow-interhost-3306.png "")
+
+### Ping working
+### Use of _netcat_ to test low-level communication
+### Network security part two: host-based firewalls
+### VM _db1_: enabling access to the _mysql_ server
+### Testing from the VM _web1_ with the _mysql_ command-line client
+### Summary
+- We’ve permitted connectivity from the VM web1 to the VM db1.
+- We’ve demonstrated that we can talk to the database service from the host where we’ll be running our application.  (So, our application should be able to talk to it also.)
+
+### Deployment: install the Java application
+### Getting the `.jar` file
+### install a _JRE_ on _web1_
+### Running the Java application directly from the command-line
+### Testing locally with _curl_
+### Another look at the database
+### Configuring the Java application to run as a daemon
+### Permit inbound traffic to port 8080
+#### The host-based firewall configuration
+#### An additional security rule
+
+![](port-8080-ingress-rule.png "")
+
+### Troubleshooting checklist
+
+## Locating the application on the web
+
+### A typical DNS request - local names
+### A typical DNS request - global names
+### Configuring your own domain
+#### Purchase the domain
+#### Set up one or more A records
+### Examining DNS using _dig_
+### Summary
+- We’ve installed the application using two VMs
+- We can connect to it from the outside world
+- We know how to plumb it into DNS if required.
+
+## Extenstions: Scalability
+### Adding a load-balancer
+![](loadbalancer-schematic.png "")
+
+### Adding a load-balancer through the console
+
+![](07-00-load-balancers.png "")
+
+![](07-01-load-balancer-create-a.png "")
+
+![](07-02-load-balancer-create-b.png "")
+
+![](07-03-load-balancer-created.png "")
+
+![](07-04-backend-sets.png "")
+
+![](07-05-backend-set-create-a.png "")
+
+![](07-06-backend-create-b-health-check.png "")
+
+![](07-07-backend-set-result.png "")
+
+![](07-08-backends.png "")
+
+![](07-09-grab-instance-ocid.png "")
+
+![](07-10-instance-ocid-is-long.png "")
+
+![](07-11-edit-backends.png "")
+
+![](07-12-security-rules-for-backend-a.png "")
+
+![](07-12-security-rules-for-backend-b.png "")
+
+![](07-13-backends-result.png "")
+
+![](07-14-listeners.png "")
+
+![](07-15-create-tcp-listener.png "")
+
+![](07-16-lb-public-ip.png "")
+
+![](07-17-lb-ingress-rules.png "")
+
+![](07-18-edit-8080-offsite-to-80.png "")
+
+### Checking: via IP address
+### Optional: checking via DNS name
+
+## Extensions: scaling the persistence layer
+
+## Extensions: service continuity
+- Backups! What happens if one of our VMs is destroyed?
+- There are various mysql tools that can dump the state of the database to a file.
+- We might upload that file to object storage
+- A backup plan is not complete without a recovery plan
+- A recovery plan doesn’t work unless you’ve tested it
+but…
+
+Focus on the question of service availability
+- What does my data represent?
+- How important is it that it’s fresh (consistent, versus available)?
+- How long an outage can I tolerate?
+- Of what fraction of data?
+- How secure are copies?
+- Do I need a transactional history?
+
+## Extensions: regional scalability
+Regional Scalability! Does all traffic need to cross the Atlantic?
+Approaches like GeoDNS give different results to client depending on where in the world they are
+Different A records means that I might be directed to a data centre in London rather than the US.
+What are the implications on my application/data architecture?
+Can I rely on asynchronous updates?
+
+## Extensions: monitoring
+### From within a cluster
+### Offsite monitoring
+## Extensions: security
+### "Let's Encrypt"
+
+# Automation
+
+# Updates
+Updates: probably the most important aspect.
+- “What about this critical OS update?”
+  - Are you going to patch, or blow away and redeploy?
+- “How do I change my application?”
+- What about database schemas?
+  - Hibernate offers support for database migrations
+- Do I need to take everything down to bring up a new version?
+- What about the REST API? Is it versioned? Will old clients continue to work? Does that matter?
+- How can I manage multi-region updates?
+
+Thinking about this needs to be done early in a design.
+
+## Continuous Deployment in our architecture
