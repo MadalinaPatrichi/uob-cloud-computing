@@ -137,11 +137,88 @@ The detail page looks much like before. Take a note of the public IP address - w
 
 ## A diagram of the result
 
+Before we look at configuring the individual VMs that we 've brought up, let's have a look at an overall picture.
+
+Using the console, each of the resources created during the above process can be examined; but it can be helpful to have a visual interpretation of the result of these steps, to see how the pieces fit together.
+
 ![](03-04-resulting-layout.png "")
+
+In this instance, we've booted two VMs. Those have individual network connections (called _VNICs_) onto the same _subnet_. Each VNIC has its own unique private IP address.
+
+Each subnet has a set of _security rules_ associated with it. These can be thought of as a firewall that sits in front of each VNIC. The _security rules_ are comprised of _ingress_ and _egress_ rules. Ingress rules apply to all traffic that flows from the subnet onto the host; egress rules apply to all traffic flowing from a host's VNIC onto the subnet. (That is, the terms _ingress_ and _egress_ are relative to the host.)
+
+Attached to the subnet is a _router_; this directs traffic (IP packets) between subnets. The router also has an IP address on that subnet; this is often referred to as a _gateway address_, since hosts on that subnet will direct traffic destined for elsewhere to that address as a 'first hop'.
+
+The router forwards traffic by consulting a _route table_. The route table contains a list of next-hop _routes_ (there are implicit routes inserted into this table for each subnet that the router is attached to).
+
+The default entry in the route table targets an _internet gateway_. It is this component which conceptually permits traffic to flow between the (privately addressed) subnets and the internet at large.
+
+Each VM is configured with its internal, _private IP address_; however, those addresses are not routable over the internet. The _public IP address_ associated with a VNIC is not configured into the host's operating system. In order to understand how traffic gets to and from the internet, we need to understand how a TCP connection operates.
 
 ### Aside: the anatomy of a TCP connection
 
+Each host involved in a TCP connection has (at least) one IP address. (Hosts that are connected to more than one subnet are said to be _multi-homed_; a router is simply a multi-homed device that can forward packets from one subnet to another.)
+
+![](tcp-01.png "")
+
+A _server_ may have several _services_ running on it. Each _listens_ on a unique _port_. Typically, well-known services have port numbers assigned to them. A port number lies in the range 1-65,535. Well-known ports are typically at the low end of that range.
+
+Here, we see the server listening on port 22, for the ssh service, and on port 80 (the unencrypted HTTP port).
+
+![](tcp-02.png "")
+
+A client might want to make several outgoing calls to the same service at the same time. To distinguish them, the client also allocates an _ephemeral port_ (typically from higher in the available range).
+
+![](tcp-03.png "")
+
+A connection is identified by a 4-tuple: (_local address, local port, remote address, remote port_).  The local and remote ends of a TCP connection appear in a table maintained by the operating system of each host.
+
+All TCP packets carry these addresses: both source, and destination.
+
+![](tcp-04.png "")
+
+Traffic from the client carries the source and destination information one way around...
+
+![](tcp-05.png "")
+
+... and the return traffic carries it the other way around.
+
+![](tcp-06.png "")
+
+#### The Interget Gateway: Network Address Translation, or _NAT_.
+
+When packets traverse the internet gateway, it rewrites the corresponding destination address (or source address, for outbound packets), replacing the public IP address with its corresponding private one.
+
+![](tcp-07.png "")
+
+![](tcp-08.png "")
+
+Outbound traffic gets the dual treatment.
+
+![](tcp-09.png "")
+
+![](tcp-10.png "")
+
+#### Inspecting the state of a VM's connection table
+
+Armed with the above information, we can inspect these connection tables using the command `netstat`.
+
+In the following except, we can see two server processes waiting for incoming client connections, together with an established outgoing connection to the ssh port on a remote server.
+
+    % netstat -an46
+    Active Internet connections (servers and established)
+    Proto Recv-Q Send-Q Local Address           Foreign Address         State      
+    tcp        0      0 127.0.0.1:3306          0.0.0.0:*               LISTEN     
+    tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN     
+    tcp        0      0 192.168.99.4:44112      192.168.99.2:22         ESTABLISHED
+
+
+There are other commands that’ll give you this information, but this is a common one, although its command-line parameters vary depending on the operating system. On a Mac: use  `netstat -anf inet`.
+
 ### Aside: the runtime configuration of the VM
+
+A VM is booted from a copy of an _operating system image_. That image has fixed contents (filesystem layout, boot-time daemons, etc.) However, each VM instance is differentiated from the next with a small number of run-time parameters that are typically injected during the boot process. In particular, each VM has its own IP address; this must be configured into the operating system somehow. Additionally, the 
+
 #### DHCP
 #### Other host metadata
 ## Review of the deployment plan
