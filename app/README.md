@@ -127,6 +127,7 @@ $ docker exec -ti mysql mysql -hlocalhost -p3306 -uroot -psecret
 To secure the app and its API from nefarious use you should enable and configure the Oauth2 security:
 
 ```
+spring.profiles.active=secured
 security.oauth2.client.clientId=[client id]
 security.oauth2.client.clientSecret=[client secret]
 ```

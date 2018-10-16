@@ -32,7 +32,7 @@ import javax.servlet.Filter;
 import java.util.Arrays;
 
 @Configuration
-@Profile("!unsecured")
+@Profile("secured")
 @EnableOAuth2Client
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
