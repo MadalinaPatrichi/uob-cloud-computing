@@ -1119,7 +1119,7 @@ Now we can try pointing the browser at `http://cumulonimbus.org.uk:8080`; the ne
 
 ## Extenstions: Scalability
 
-We've deployed the application on a single _front-end_, talking to a single database server for persistence. This isn't completely satisfactory: we're gaining no benefit from a deployment across multiple _availability domains_ for robustness; nor are we able to scale up to deal with additional load.
+We've deployed the application on a single VM, talking to a single database server for persistence. This isn't completely satisfactory: we're gaining no benefit from a deployment across multiple _availability domains_ for robustness; nor are we able to scale up to deal with additional load.
 
 Adding additional web servers is a straightforward task, which we'll look at next.
  
@@ -1129,99 +1129,274 @@ For these stateless web servers, however, we can simply stand up and configure m
 
 ### Adding a load-balancer
 
-
+The following diagram illustrates the configuration items that need to be set up. For the moment, we'll just focus on putting our single VM behind a load-balancer; adding additional _backends_ is a mechanical process. The main advantage we'll glean from this is that the loadbalancer will forward requests aimed at the standard HTTP port, port 80, to our back ends: so, correctly configured, the URL that we're using can drop that port specification.
 
 ![](loadbalancer-schematic.png "")
 
+Our VM on web1 listens on a given port, port 8080. Inside the load-balancer configuration, we have a _backend set_ that coceptually collects the VM endpoints that are responsible for delivering a particular service.
+
+To the _backend set_ we add a _backend_, which has a one-to-one association with our VM (and which targets the Java application listening on port 8080). The backend also has a notion of _health_; we can specify a check that the load-balancer will use to determine if a particular VM is currently capable of serving traffic.
+
+We couple this with a _listener_ specification, which is configured to accept incoming requests over port 80 and distribute them over healthy backends.
+
+Finally, we'll want to update the security list configuration for our VCN. The web console can automate some of this; we want to permit the loadbalancer traffic to reach the backend VMs - and we want requests arriving from the Internet to reach our load-balancer listener.
+
 ### Adding a load-balancer through the console
+
+Navigate to `Menu / Networking > Load Balancers`.
 
 ![](07-00-load-balancers.png "")
 
+Create a new load balancer. We'll give it another predictable name, `lb1`. We only need 100Mbps service here, although the load balancers themselves are capable of running at wire speed up to 10Gpbs.
+
 ![](07-01-load-balancer-create-a.png "")
+
+We'll need to associate the loadbalancer with our VCN. For redundancy, public-facing load balancers require two subnets to attach to; we'll use our existing subnets in AD1 and AD2.
 
 ![](07-02-load-balancer-create-b.png "")
 
+Once created, an (empty) loadbalancer detail is presented.
+
 ![](07-03-load-balancer-created.png "")
+
+We'll need to add a backend set to it.
 
 ![](07-04-backend-sets.png "")
 
+Again, we have some options to fill in. Because our backend set is distributing HTTP traffic, we'll call it `http` - although this isn't a requirement. We'll leave the other options unselected.
+
 ![](07-05-backend-set-create-a.png "")
+
+Our backend set defines a health-checking policy. We'll ask it to try to make an HTTP request to each backend, every five seconds, and expect an HTTP 200 status code in response. The URL requested should ideally not require a large amount of computation from our VM - but it _should_ be indicative that the service is working.
 
 ![](07-06-backend-create-b-health-check.png "")
 
+This gives us an empty backend set.
+
 ![](07-07-backend-set-result.png "")
+
+It has no backends. 
 
 ![](07-08-backends.png "")
 
+It's somewhat clunky, but we associate backends with their corresponding VM by using the VM's _OCID_ (its unique identifier). Locate `web1` via `Menu / Compute > Instances` and copy its OCID to the clipboard.
+
 ![](07-09-grab-instance-ocid.png "")
+
+(The whole OCID is a long, random string.)
 
 ![](07-10-instance-ocid-is-long.png "")
 
+Find our backend definitions again via `Menu / networking > Load Balancers`. Add a backend and identify `web1` by pasting its OCID into that field. The service will be listening on port 8080.
+
 ![](07-11-edit-backends.png "")
+
+As the request is submitted, we're asked if we want to add security rules automatically to support this load balancer traffic. 
 
 ![](07-12-security-rules-for-backend-a.png "")
 
+We absolutely want this! Hit `Create Rules`.
+
 ![](07-12-security-rules-for-backend-b.png "")
+
+Now our backend set should have a single backend, associated with our running VM.
 
 ![](07-13-backends-result.png "")
 
+We'll want a listener to front this.
+
 ![](07-14-listeners.png "")
+
+Again, the name is pretty arbitrary. We'll ask for TCP load balancing; this makes the load balancer distribute traffic without inspecting its contents. We'll pick the backend set that we've just created to target.
 
 ![](07-15-create-tcp-listener.png "")
 
+The resulting detail page of our configured load balancer. Note, it has its own public IP address. Make a note of this!
+
 ![](07-16-lb-public-ip.png "")
 
+We can examine the new ingress and egress rules that have been added to our security list. There's one more step required to enable Internet traffic to reach our load balancer.
+
 ![](07-17-lb-ingress-rules.png "")
+
+We need to edit ingress rule 5 - which is the one that permitted traffic directly to the Java application on `web1` - and instead change the destination port to port 80. That's the port the listener is responding on.
 
 ![](07-18-edit-8080-offsite-to-80.png "")
 
 ### Checking: via IP address
+
+To confirm that traffic is flowing, we'll try targetting the public IP address of our load balancer. From your laptop:
+
+    % curl http://129.213.13.157 
+    <!doctype html>
+    <html>
+    <head>
+        <title>My page</title>
+        <link rel="stylesheet" href="/styles.css">
+        <link rel="stylesheet" href="/main.css">
+    </head>
+    <body>
+    <div id="app"></div>
+    <script src="/js/app.js"></script>
+    </body>
+    </html>
+
 ### Optional: checking via DNS name
 
-## Extensions: scaling the persistence layer
+If you've registered a domain name, you can edit its _A Record_ to have the same value. With that done, you should be able to point your browser at your new, neater URL: `http://cumulonimbus.org.uk` in our case.
 
-## Extensions: service continuity
-- Backups! What happens if one of our VMs is destroyed?
-- There are various mysql tools that can dump the state of the database to a file.
-- We might upload that file to object storage
-- A backup plan is not complete without a recovery plan
-- A recovery plan doesn’t work unless you’ve tested it
-but…
+![](domain-name-via-loadbalancer.png)
 
-Focus on the question of service availability
+## Extensions: scaling and robustness in the persistence layer
+
+We'll not cover this here. In the modern world, there are many strategies to spread the load over a series of persistence backends: for example, MySQL can be configured in a _multi-master_ arrangement to offer an HA deployment across three ADs. Beyond that, you might want to examine what structured storage options are available via the PaaS offerings of your cloud provider. (It all depends on whether you're enjoying the _undifferentiated heavy lifting!_)
+
+## Food for thought: service continuity
+
+We've not really touched yet on the question of service continuity and availability. Decisions here should be largely driven by the economics of one's business model - and any compliance requirements imposed upon you as a service provider.
+
+At the very least, you may want to consider taking backups of your persisted content. There are various mysql tools that can dump the state of the database to a file; this could be uploaded to a bucket in the _Object Storage Service_ as a bare minimum.
+
+It's an old truism, but when looking at this you should bare in mind the following two-part adage:
+
+- a backup plan is not complete without a recovery plan
+- a recovery plan doesn’t work unless you’ve tested it
+
+Beyond the question of backups, however, we should really focus on the question of _service availability_. A great deal has been written about this. It may well be the case that decisions here will have an impact upon your application architecture. The kinds of questions that you should be asking yourself are:
+
 - What does my data represent?
 - How important is it that it’s fresh (consistent, versus available)?
 - How long an outage can I tolerate?
-- Of what fraction of data?
+- …of what fraction of data?
 - How secure are copies?
 - Do I need a transactional history?
 
 ## Extensions: regional scalability
-Regional Scalability! Does all traffic need to cross the Atlantic?
-Approaches like GeoDNS give different results to client depending on where in the world they are
-Different A records means that I might be directed to a data centre in London rather than the US.
-What are the implications on my application/data architecture?
-Can I rely on asynchronous updates?
+
+Not all Internet traffic needs to cross the Atlantic. For reasons of geographical robustness, legal compliance, and lowering client latency (and potentially, our own traffic costs), we should consider GeoDNS.
+
+GeoDNS has a simple model in principle. As requests arrive to DNS servers, they carry a _source address_ - the address of the requesting nameserver. The assumption is that that nameserver is going to be geographically closely located to the client. There exist databases that map regions of public IP address space to geographical location; from these, we can make a guess at where the client responsible for a particular request is located.
+
+If we then send a DNS response that carries the A record of a deployment in a local data-centre, the client's requests will be directed to, and can be served by, a geographically close instantiation of our infrastructure.
+
+This sounds great, but there are a couple of downsides, aside from a higher level of configuration complexity.
+
+The first issue concerns what happens if an entire region becomes unavailable. In those circumstances, the GeoDNS servers will need to be reconfigured to direct client traffic from the affected regions to a backup location. There's a tension here between the desire for liveness and the caching properties of DNS. If I want a user's traffic to be impacted for no more than 60s, that puts an upper limit on the TTL of my DNS responses. That in turn will mean a higher DNS load. It's an interesting observation that the ready availability of cloud infrastructure itself is exerting pressures on well-established technologies.
+
+The second issue raises a question of our data architecture: again, we're looking at a tradeoff between consistency (the liveness of the data we present) and latency. In particular, we should ask what happens if a user's session with one datacentre is interrupted. It's common to have an asynchronous process for replicating state between sites; we need to understand the semantics of that in terms of what the user experience is.
+
+(As an example, it's no big deal if the "add this series to my list" feature looks five minutes out-of-date in the case that my streaming TV provider experiences a partial outage; indeed, most users probably wouldn't notice.)
 
 ## Extensions: monitoring
+
+If we're running a service, then it behooves us to be able to answer the question, "is it up?" There are more nuanced variations on this question, however, which rely on us establishing our _Service Level Objectives_.
+
+It's not necessarily simply the case that user requests can be serviced; we often want to guarantee that we are servicing those requests rapidly enough.
+
+We may also want to look at individual components of our deployment, rather than relying on _black box_ monitoring. Is our database struggling? What kinds of query rates is it experiencing? How does that compare to a historical view?
+
 ### From within a cluster
+
+We can instrument the parts of our application to deliver metrics to a collection point. Various tools (such as _Prometheus_) are available to collect and collate this data.
+
 ### Offsite monitoring
+
+We may also want to extend our black-box monitoring to alert us to problems across the wider internet; our internal monitoring process may be fine within a datacentre, but that doesn't account for problems the Internet may be experiencing in routing traffic to that datacentre.
+
+It's not an uncommon tactic, with a multi-region deployment, to have each instantiation of our architecture set up to monitor its peers.
+
 ## Extensions: security
+
+At the moment, we're delivering unencrypted HTTP traffic from port 80.
+
+In the modern world, there's an onus upon us to protect the traffic (as well as the data at rest) of our users. At the very least, we should consider enabling _TLS_ service from our web application.
+
+TLS configuration is beyond the scope of this chapter, but we'll offer a basic outline of a few broad approaches. the first is to _terminate secure connections at the boundary_ - that is, to configure our load balancers with TLS certificates, and to have them handle the negotiation of that secure protocol.
+
+The second option is to tunnel a client's encrypted traffic all the way to our VMs.
+
+Finally, we might use a hybrid approach: terminating external TLS at the load balancer, but delivering internally-encrypted traffic to our VMs.
+
 ### "Let's Encrypt"
+
+A simple service that enables more-or-less hands-off encryption is called "Let's Encrypt". There are various tutorials that walk through the use of a Let's Encrypt certificate with a java server.
 
 # Automation
 
+By now, it should be clear that setting up our infrastructure using a combination of a web console and `ssh` is a painful, fiddly, and error-prone process. It's a process that we might try once, but surely there's a better way?
+
+In fact, there are a plethora of "better ways" that fit within the IaaS model. To begin with, the OCI console (like most other cloud providers' consoles) simply fronts a REST API that will accept programatic requests. So at a bare minimum, we could effetively _script up_ our infrastructure creation using tools that talk to that API (and scripted `ssh` invocations - almost everything that was done within an `ssh` session in this chapter was designed to require a limited level of interaction). Where we have configuration that needs to be shared between VMs (for instance, our MySQL password was needed on `db1` _and_ `web1` - in the former case to configure the application's credentials, and in the latter to actually make client connections to the database) we can write scripts that ensure the appropriate secrets are distributed effetively and reliably.
+
+But we can go beyond this; tools that help us move towards a more declarative approach of _describing what we want_ and then _determining the changes required_, and _applying that plan_ are available. Largely, they will fall into two categories:
+ 
+- tools that help us establish our infrastructure. These are the moral equivalent of "clicking in the web console"; and
+- tools that help us configure individual VMs. These are the moral equivalent of `ssh` sessions.
+
+There are also tools that attempt - with more or less success - to combine both of these. Of interest may be:
+
+- Terraform. This falls into the first category (although it can also run scripts over ssh sessions). It lets us define an infrastructural layout in a declarative fashion, then makes changes to a deployed architecture to make those changes live.
+
+  Terraform does tend to be an all-or-nothing option, however: it is fiddly to try to get it to automate _some_ pieces of a deployment whilst integrating with other, preconfigured parts. If you find yourself wanting to do this then you're probably fighting against the tool.
+  
+- Chef, Ansible, Salt, Puppet, Fabric and other tools come from the universe host configuration management. These tend to be better at configuring VMs - and they _may_ have plugins that attempt to perform infrastructure configuraiton, although often there's a bit of an impedance mismatch.
+
 # Updates
-Updates: probably the most important aspect.
+
+We've left the most important question until last: but it's one you should ask yourself early during your application design. "How do I update this?"
+
+The question really falls into multiple parts:
+
 - “What about this critical OS update?”
-  - Are you going to patch, or blow away and redeploy?
+  
+  A full VM comes with an OS stack that has a large number of moving parts. All of those packages need keeping up-to-date. Security vulnerabilities, however, are very common. How will you respond when a critical vulnerability comes to light?
+  - Are you going to patch, or blow away VMs and redeploy with a newer image?
+
 - “How do I change my application?”
+
+  We can break this question down by looking at the deployment architecture of our application. It may well be possible to update different parts of the application at different cadences (in fact, it's this promise which motivates much of the interest in microservice architectures). But even then, some changes may be superficial, and other changes may affect our data architecture. These can be harder to work with.
+
 - What about database schemas?
-  - Hibernate offers support for database migrations
+  - Hibernate offers support for database migrations; but again, these will need testing in a staging environment before being delpoyed into production.
+  
 - Do I need to take everything down to bring up a new version?
+
+  To answer this question you need to consider what your users will tolerate. Some SaaS offerings might build a _maintenance window_ into their contractual obligations, but for many clients this might be unacceptable. If your service needs to be running continuously, you'll need a way to update parts of your architecture "invisibly".
+
 - What about the REST API? Is it versioned? Will old clients continue to work? Does that matter?
+
+  We're controlling the JavaScript client that's delivered to browsers, so it may be feasible to update this in lockstep with a server-side APi update. However, consider how older clients will behave. Do we want older clients to be able to continue working? Can we make our APIs forward- and backwards- compatible?
+
 - How can I manage multi-region updates?
 
-Thinking about this needs to be done early in a design.
+  A multi-region deployment exacerbates all of these issues. No deployment is instantaneous; but having to deal with multiple regions smears the update window out significantly. Can you handle multiple, parallel deployments? Can multiple teams of developers be in the proces of releasing new versions at the same time?
+  
+Answers to these questions can have a large impact across your design - touching the architecture of your infrastructure, your application deployment, its API and its data definitions.
 
 ## Continuous Deployment in our architecture
+
+We can elide answers to these difficult questions for the moment, however, and simply focus on an easier problem: _how do we update our running application?_
+
+In our case, the application behaviour is contained within a single `.jar` file. Our update process, therefore, could conceptually be very simple:
+
+- fetch a new version of our `.jar` file from GitHub;
+- make it live by restarting the application.
+
+    [opc@web1 ~]$ wget https://github.com/MadalinaPatrichi/uob-cloud-computing/releases/download/v0.1.0/uob-todo-app-0.1.0.jar -O uob-todo-app-0.1.0.jar.new
+
+We'll keep a copy of the older application in case we need to rollback:
+
+    [opc@web1 ~]$ cp uob-todo-app-0.1.0.jar uob-todo-app-0.1.0.jar.orig-$(date +%Y%m%d)
+
+Then we'll rename the downloaded version over the original `.jar` file:
+
+    [opc@web1 ~]$ mv uob-todo-app-0.1.0.jar.new uob-todo-app-0.1.0.jar
+
+Finally, we'll restart the application. This might take several seconds before it begins to respond to requests; it's in situations like this where we'd benefit from a load-balanced deployment, perhaps.
+
+    [opc@web1 ~]$ sudo systemctl restart app
+
+# The good news
+
+Well done if you've reached this far!
+
+All of this is very fiddly. The good news is that there are simpler, more uniform, and higher-level approaches to dealing with most of the problems we've encountered during this deployment.
