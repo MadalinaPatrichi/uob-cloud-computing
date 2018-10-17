@@ -115,7 +115,7 @@ Notice that there are two IP addresses listed for the host - a private IP addres
 
 ### A note on tags
 
-Resources can be _tagged_ with arbitrary labels. For a small deployment, this may seem unnecessary; however, for larger deployments, it can be useful to identify the various categories that a VM (or network) belongs to. Example divisions might be: _environment_ (staging, production, ...); _cost centre_; or perhaps the particular application that a resource is associated with.
+Resources can be _tagged_ with arbitrary labels. For a small deployment, this may seem unnecessary; however, for larger deployments, it can be useful to identify the various categories that a VM (or network) belongs to. Example divisions might be: _environment_ (staging, production, …); _cost centre_; or perhaps the particular application that a resource is associated with.
 
 ## Booting the second VM
 
@@ -177,11 +177,11 @@ All TCP packets carry these addresses: both source, and destination.
 
 ![](tcp-04.png "")
 
-Traffic from the client carries the source and destination information one way around...
+Traffic from the client carries the source and destination information one way around…
 
 ![](tcp-05.png "")
 
-... and the return traffic carries it the other way around.
+… and the return traffic carries it the other way around.
 
 ![](tcp-06.png "")
 
@@ -678,7 +678,7 @@ We'll install the `mysql` cpommand-line client on `web1`. This is unnecessary to
 
 Paste the password that we configured in here.
     
-    ...
+    …
     
     MySQL [app]> describe first;
     +-------+---------+------+-----+---------+-------+
@@ -724,7 +724,7 @@ This uses the `scp` tool, which communicates over the ssh protocol. (Clearly I u
 This is done with another `yum` invocation:
 
     [opc@web1 ~]$ sudo yum install -y java-1.8.0-openjdk-headless
-    ...
+    …
     Complete!
 
 As always, we can check progress incrementally. Confirm that the JRE is now available:
@@ -755,7 +755,7 @@ You should see some output from the application as it starts up:
       '  |____| .__|_| |_|_| |_\__, | / / / /
      =========|_|==============|___/=/_/_/_/
      :: Spring Boot ::        (v2.0.3.RELEASE)
-    ... a lot of output elided here ...
+    … a lot of output elided here …
     2018-09-28 16:36:38.271  INFO 4980 --- [           main] uob_todo.Application                     : Started Application in 12.263 seconds (JVM running for 13.23)
 
 ### Testing locally with _curl_
@@ -763,7 +763,7 @@ You should see some output from the application as it starts up:
 We can use a command-line HTTP client like `curl` to test that our application is working. Thus far, we've done nothing to permit ingress traffic to the port that our application listens to - so, our test will have to connect locally, from `web1`. Open a second ssh session (whilst the first is still running the application), install `curl` and try it:
 
     [opc@web1 ~]$ sudo yum install -y curl
-    ...
+    …
     [opc@web1 ~]$ curl http://localhost:8080
     <!doctype html>
     <html>
@@ -1023,11 +1023,11 @@ Again, the `com.` nameservers don't necessarily know the answer - but they _do_ 
 
 ![](dns-global-05.png "")
 
-When the local resolver asks those nameservers the same query...
+When the local resolver asks those nameservers the same query…
 
 ![](dns-global-06.png "")
 
-... they get a usable A record in response. Here, the TTL is about six hours. DNS tends to trade off the consistency of up-to-date responses for low latency; caching is built into its design.
+… they get a usable A record in response. Here, the TTL is about six hours. DNS tends to trade off the consistency of up-to-date responses for low latency; caching is built into its design.
 
 ![](dns-global-07.png "")
 
@@ -1055,7 +1055,7 @@ For this example we just want the based registration and simple DNS hosting.
 
 ![](domain-03.png "")
 
-The following should suffice...
+The following should suffice…
 
 ![](domain-04.png "")
 
@@ -1082,7 +1082,7 @@ I'll add an `A Record` and then remove the `CNAME` one. The `Host` field is unus
 These days, the above process produces results almost immediately. We can use the `dig` tool to query for our new domain results:
 
     [opc@db1 ~]$ sudo yum install -y bind-utils
-    ...
+    …
     Complete!
     [opc@db1 ~]$ dig cumulonimbus.org.uk. a
     
@@ -1267,7 +1267,7 @@ Beyond the question of backups, however, we should really focus on the question 
 - What does my data represent?
 - How important is it that it's fresh (consistent, versus available)?
 - How long an outage can I tolerate?
-- ...of what fraction of data?
+- …of what fraction of data?
 - How secure are copies?
 - Do I need a transactional history?
 
