@@ -50,6 +50,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .logout()
                     .logoutUrl("/logout")
                     .and()
+                .csrf()
+                    .and()
                 .addFilterBefore(customOAuthOAuthFilter(), BasicAuthenticationFilter.class)
         ;
     }

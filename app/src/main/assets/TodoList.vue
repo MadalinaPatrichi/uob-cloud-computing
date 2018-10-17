@@ -1,15 +1,15 @@
 <template>
     <section class="todoapp">
-        <div v-if="authenticated === false">
+        <div v-if="authenticated === false" style="padding: 10px 15px">
             <a href="/login">Login</a>
         </div>
         <div v-else>
             <header>
                 <h1>todos</h1>
             </header>
-            <section class="user-bar">
+            <section class="user-bar" style="padding: 10px 15px">
                 <span>
-                    Logged in as {{ user.userAuthentication.details.login }}. Click <a :href="'https://github.com/settings/connections/applications/' + user.oauth2Request.clientId">here</a> to revoke access.
+                    Logged in as {{ user.name }}.
                 </span>
             </section>
             <section class="input-bar">
@@ -86,7 +86,7 @@
                     this.user = response.data;
                     this.authenticated = true;
                     axios.defaults.headers.common["X-CSRF-TOKEN"] = document.querySelector("#token").getAttribute("content");
-                    axios.defaults.headers.common["Authorization"] = "Bearer " + this.user.details.tokenValue;
+                    axios.defaults.headers.common["Authorization"] = "Bearer " + this.user.bearerToken;
                     this.loadTodos();
                     setInterval(this.loadTodos, 1000)
                 })
