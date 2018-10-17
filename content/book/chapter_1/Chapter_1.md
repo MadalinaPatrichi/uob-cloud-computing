@@ -6,10 +6,6 @@ This book is about making software that runs on the internet. Actually it's real
 
 Our example is a "Todo list" application. It's deliberately very simple, but still complex enough to show everything we need.  The source for the app, along with instructions for building it are on [the project source repo](https://github.com/MadalinaPatrichi/uob-cloud-computing/tree/master/app). We use Spring Boot, Vue.js and Gradle which are all popular choices and have good documentation.
 
-### Continuous integration
-
-The project repository is configured so that every time a code change is committed it runs the tests and if they are successful it builds the software. So you can always find a build of the latest version of the code at TODO-LINK. This is configured using a system called TODO and you can see here (TODO) for how that is configured.
-
 ## A "webserver"
 
 When you're online almost everything you do uses [HTTP](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol) to pass messages back and forth. HTTP was invented by Tim Berners-Lee in 1989 and is one of the reasons why he's considered to be the inventor of the World-Wide Web.
@@ -198,8 +194,11 @@ Some methods need to read a JSON object from the HTTP request and turn it into a
 
 This can be called from code and tested just by creating a number and a `TodoItem` object - the hard work of parsing URLs and converting to and from JSON is taken care of by Spring Boot.
 
+### Continuous integration
 
-## Where does the data reside?
+The project repository is configured so that every time a code change is committed it runs the tests and if they are successful it builds the software. So you can always find a build of the latest version of the code on the [GitHub release](https://github.com/MadalinaPatrichi/uob-cloud-computing/releases). This is configured using a system called [Werker](https://devcenter.wercker.com/) and you can see [the Wercker config file](https://github.com/MadalinaPatrichi/uob-cloud-computing/blob/9b5377e6cdc9ac3697a71d151a63e1f3ccd6977f/wercker.yml) for how that is configured.
+
+## Where does the Todo List reside?
 
 Now you've bought carrots and paid the rent (go you!) you have time to sit and think about where the Todo items have gone. Not as a philosophical question, but literally. Somewhere in your computer, the data representing those Todo items has been stored - we can get it out again on demand, so it must be in there somewhere, right?
 
