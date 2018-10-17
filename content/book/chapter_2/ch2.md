@@ -985,7 +985,14 @@ If “it doesn’t work!” then we'll want a step-by-step process of diagnosis,
 
 ## Locating the application on the web
 
+We've successfully published the application on the internet; but there are still some deficiencies. Most notably, IP addresses are neither memorable nor convenient. (The situation only becomes worse with IPv6 addresses, which are four times the size.)
+
+DNS has been mentioned previously as a way of hosts looking up IP addresses that correspond to names. We've seen that the cloud provider arranges for 'local' hostnames to be resolvable to their private IP addresses by VMs located on our subnets (`db1` mapping to `10.0.0.6`, for instance). The global _Domain Name System_ lets us perform the same operation over a global, distributed database of names.
+
 ### A typical DNS request - local names
+
+
+
 ### A typical DNS request - global names
 ### Configuring your own domain
 #### Purchase the domain
