@@ -213,7 +213,7 @@ In the following except, we can see two server processes waiting for incoming cl
     tcp        0      0 192.168.99.4:44112      192.168.99.2:22         ESTABLISHED
 
 
-There are other commands that'll give you this information, but this is a common one, although its command-line parameters vary depending on the operating system. On a Mac: use  `netstat -anf inet`.
+There are other commands that'll give you this information, but this is a common one, although its command-line parameters vary depending on the operating system. On a Mac: use `netstat -anf inet`.
 
 ### Aside: the runtime configuration of the VM
 
@@ -654,7 +654,7 @@ Having done that, we can check the status of the running firewall as follows:
 
 If we're satisfied with that configuration, we can make it permanent; that means that it'll survive a reboot. Making these configuration changes 'live' and only persisting them once we're satisfied that they're working is a suitable approach here: if we made an error (for instance, turning off ssh access) then we could reboot the VM through the web console to revert the firewall to a known-good state.
         
-    [opc@db1 ~]$ sudo firewall-cmd —-runtime-to-permanent
+    [opc@db1 ~]$ sudo firewall-cmd --runtime-to-permanent
 
 let's try that netcat check from host `web1` again:
 
@@ -678,7 +678,7 @@ We'll install the `mysql` cpommand-line client on `web1`. This is unnecessary to
 
 Paste the password that we configured in here.
     
-    …
+    ...
     
     MySQL [app]> describe first;
     +-------+---------+------+-----+---------+-------+
@@ -695,7 +695,7 @@ Paste the password that we configured in here.
 At this point:
  
 - we have permitted enough network communication between VMs that processes on the `web1` VM can successfully get traffic through to the MySQL service running on `db1`;
-- we've _demonstrated_ that we can talk to the database service from the host where we'll be running our application.  
+- we've _demonstrated_ that we can talk to the database service from the host where we'll be running our application.
 
 The implication here is that our application, appropriately configured, should also be able to communicate with the database. Let's do that next.
 
@@ -724,7 +724,7 @@ This uses the `scp` tool, which communicates over the ssh protocol. (Clearly I u
 This is done with another `yum` invocation:
 
     [opc@web1 ~]$ sudo yum install -y java-1.8.0-openjdk-headless
-    …
+    ...
     Complete!
 
 As always, we can check progress incrementally. Confirm that the JRE is now available:
@@ -736,7 +736,7 @@ As always, we can check progress incrementally. Confirm that the JRE is now avai
 
 ### Running the Java application directly from the command-line
 
-We can launch the application directly - although it'll only run until we press Control-C or close the ssh session.  You should be able to cut and paste a line like the following to do this. (The `\ ` at the end of a line tells the shell you've not finished typing yet.)
+We can launch the application directly - although it'll only run until we press Control-C or close the ssh session. You should be able to cut and paste a line like the following to do this. (The `\ ` at the end of a line tells the shell you've not finished typing yet.)
 
     java \
          -Dspring.datasource.url=jdbc:mysql://db1:3306/app \
@@ -755,7 +755,7 @@ You should see some output from the application as it starts up:
       '  |____| .__|_| |_|_| |_\__, | / / / /
      =========|_|==============|___/=/_/_/_/
      :: Spring Boot ::        (v2.0.3.RELEASE)
-    … a lot of output elided here …
+    ... a lot of output elided here ...
     2018-09-28 16:36:38.271  INFO 4980 --- [           main] uob_todo.Application                     : Started Application in 12.263 seconds (JVM running for 13.23)
 
 ### Testing locally with _curl_
@@ -763,7 +763,7 @@ You should see some output from the application as it starts up:
 We can use a command-line HTTP client like `curl` to test that our application is working. Thus far, we've done nothing to permit ingress traffic to the port that our application listens to - so, our test will have to connect locally, from `web1`. Open a second ssh session (whilst the first is still running the application), install `curl` and try it:
 
     [opc@web1 ~]$ sudo yum install -y curl
-    …
+    ...
     [opc@web1 ~]$ curl http://localhost:8080
     <!doctype html>
     <html>
@@ -1082,7 +1082,7 @@ I'll add an `A Record` and then remove the `CNAME` one. The `Host` field is unus
 These days, the above process produces results almost immediately. We can use the `dig` tool to query for our new domain results:
 
     [opc@db1 ~]$ sudo yum install -y bind-utils
-    …
+    ...
     Complete!
     [opc@db1 ~]$ dig cumulonimbus.org.uk. a
     
@@ -1267,7 +1267,7 @@ Beyond the question of backups, however, we should really focus on the question 
 - What does my data represent?
 - How important is it that it's fresh (consistent, versus available)?
 - How long an outage can I tolerate?
-- …of what fraction of data?
+- ...of what fraction of data?
 - How secure are copies?
 - Do I need a transactional history?
 
