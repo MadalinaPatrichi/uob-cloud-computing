@@ -1,0 +1,244 @@
+[opc@db1 ~]$ yum install -y mariadb
+sudo yum-config-manager --enable ol7_MySQL80
+[opc@db1 ~]$ sudo yum install mysql-server
+[opc@db1 ~]$ systemctl status mysqld.service 
+[opc@db1 ~]$ sudo systemctl enable mysqld.service
+[opc@db1 ~]$ sudo systemctl start mysqld.service 
+sudo grep password /var/log/mysqld.log 
+2018-09-14T13:59:04.685216Z 5 [Note] [MY-010454] [Server] A temporary password is generated for root@localhost: w<(tyXXhH0xp
+2018-09-14T14:11:29.382824Z 1 [Note] A temporary password is generated for root@localhost: b;vRuNWWq8yK
+
+
+[opc@db1 ~]$ mysql -u root  --connect-expired-password  -p
+Enter password: 
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 4
+Server version: 5.7.23
+
+Copyright (c) 2000, 2018, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> ALTER USER 'root'@'localhost' PASSWORD EXPIRE;
+ERROR 1820 (HY000): You must reset your password using ALTER USER statement before executing this statement.
+mysql> alter user 'root'@'localhost' identified by 'kb1bTBf5X44pvFmw';
+ERROR 1819 (HY000): Your password does not satisfy the current policy requirements
+mysql> alter user 'root'@'localhost' identified by 'P8%aIjUxIh8:P4Wv';
+
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> ^DBye
+[opc@db1 ~]$ 
+
+
+[opc@db1 ~]$ mysql -u root   -p
+Enter password: 
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 5
+Server version: 5.7.23 MySQL Community Server (GPL)
+
+Copyright (c) 2000, 2018, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> show batabases;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'batabases' at line 1
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+4 rows in set (0.00 sec)
+
+mysql> 
+
+
+[opc@db1 ~]$ mysql -u app -p app
+Enter password: 
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 6
+Server version: 5.7.23 MySQL Community Server (GPL)
+
+Copyright (c) 2000, 2018, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| app                |
++--------------------+
+2 rows in set (0.00 sec)
+
+mysql> show tables;
+Empty set (0.00 sec)
+
+mysql> 
+
+
+[opc@db1 ~]$ mysql -u root   -p
+Enter password: 
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 5
+Server version: 5.7.23 MySQL Community Server (GPL)
+
+Copyright (c) 2000, 2018, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> show batabases;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'batabases' at line 1
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+4 rows in set (0.00 sec)
+
+mysql> help create user
+Name: 'CREATE USER'
+Description:
+Syntax:
+CREATE USER [IF NOT EXISTS]
+    user [auth_option] [, user [auth_option]] ...
+    [REQUIRE {NONE | tls_option [[AND] tls_option] ...}]
+    [WITH resource_option [resource_option] ...]
+    [password_option | lock_option] ...
+
+user:
+    (see )
+
+auth_option: {
+    IDENTIFIED BY 'auth_string'
+  | IDENTIFIED WITH auth_plugin
+  | IDENTIFIED WITH auth_plugin BY 'auth_string'
+  | IDENTIFIED WITH auth_plugin AS 'hash_string'
+  | IDENTIFIED BY PASSWORD 'hash_string'
+}
+
+tls_option: {
+   SSL
+ | X509
+ | CIPHER 'cipher'
+ | ISSUER 'issuer'
+ | SUBJECT 'subject'
+}
+
+resource_option: {
+    MAX_QUERIES_PER_HOUR count
+  | MAX_UPDATES_PER_HOUR count
+  | MAX_CONNECTIONS_PER_HOUR count
+  | MAX_USER_CONNECTIONS count
+}
+
+password_option: {
+    PASSWORD EXPIRE
+  | PASSWORD EXPIRE DEFAULT
+  | PASSWORD EXPIRE NEVER
+  | PASSWORD EXPIRE INTERVAL N DAY
+}
+
+lock_option: {
+    ACCOUNT LOCK
+  | ACCOUNT UNLOCK
+}
+
+The CREATE USER statement creates new MySQL accounts. It enables
+authentication, SSL/TLS, resource-limit, and password-management
+properties to be established for new accounts, and controls whether
+accounts are initially locked or unlocked.
+
+To use CREATE USER, you must have the global CREATE USER privilege, or
+the INSERT privilege for the mysql database. When the read_only system
+variable is enabled, CREATE USER additionally requires the SUPER
+privilege.
+
+An error occurs if you try to create an account that already exists. If
+the IF NOT EXISTS clause is given, the statement produces a warning for
+each named account that already exists, rather than an error.
+
+URL: http://dev.mysql.com/doc/refman/5.7/en/create-user.html
+
+
+mysql> create user if not exists 'app'@'%' identified by 'DxIHXE%6d7sD:EXI';
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> create database app;
+Query OK, 1 row affected (0.00 sec)
+
+mysql> grant all privileges on app.* to 'app'@'%';
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> flush privileges;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql> ^DBye
+
+
+[opc@db1 ~]$ mysql -u app app -p
+Enter password: 
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 14
+Server version: 5.7.23 MySQL Community Server (GPL)
+
+Copyright (c) 2000, 2018, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> show tables;
+Empty set (0.00 sec)
+
+mysql> 
+
+mysql> create table first (a integer);
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> show tables;
++---------------+
+| Tables_in_app |
++---------------+
+| first         |
++---------------+
+1 row in set (0.00 sec)
+
+mysql> describe table first;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'table first' at line 1
+mysql> describe first;
++-------+---------+------+-----+---------+-------+
+| Field | Type    | Null | Key | Default | Extra |
++-------+---------+------+-----+---------+-------+
+| a     | int(11) | YES  |     | NULL    |       |
++-------+---------+------+-----+---------+-------+
+1 row in set (0.01 sec)
+
+mysql> 

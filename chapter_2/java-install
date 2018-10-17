@@ -1,0 +1,231 @@
+% ./gradlew build   
+% scp build/libs/uob-todo-app-0.1.0.jar opc@129.213.119.230:
+Enter passphrase for key '/Users/jan/.ssh/id_rsa': 
+uob-todo-app-0.1.0.jar                                              100%   33MB 588.2KB/s   00:58  
+
+
+
+[opc@web1 ~]$ sudo yum install -y java-1.8.0-openjdk-headless
+Loaded plugins: langpacks, ulninfo
+Resolving Dependencies
+--> Running transaction check
+---> Package java-1.8.0-openjdk-headless.x86_64 1:1.8.0.181-3.b13.el7_5 will be installed
+--> Processing Dependency: tzdata-java >= 2015d for package: 1:java-1.8.0-openjdk-headless-1.8.0.181-3.b13.el7_5.x86_64
+--> Processing Dependency: copy-jdk-configs >= 2.2 for package: 1:java-1.8.0-openjdk-headless-1.8.0.181-3.b13.el7_5.x86_64
+--> Processing Dependency: lksctp-tools(x86-64) for package: 1:java-1.8.0-openjdk-headless-1.8.0.181-3.b13.el7_5.x86_64
+--> Processing Dependency: jpackage-utils for package: 1:java-1.8.0-openjdk-headless-1.8.0.181-3.b13.el7_5.x86_64
+--> Running transaction check
+---> Package copy-jdk-configs.noarch 0:3.3-10.el7_5 will be installed
+---> Package javapackages-tools.noarch 0:3.4.1-11.el7 will be installed
+--> Processing Dependency: python-javapackages = 3.4.1-11.el7 for package: javapackages-tools-3.4.1-11.el7.noarch
+--> Processing Dependency: libxslt for package: javapackages-tools-3.4.1-11.el7.noarch
+---> Package lksctp-tools.x86_64 0:1.0.17-2.el7 will be installed
+---> Package tzdata-java.noarch 0:2018e-3.el7 will be installed
+--> Running transaction check
+---> Package libxslt.x86_64 0:1.1.28-5.0.1.el7 will be installed
+---> Package python-javapackages.noarch 0:3.4.1-11.el7 will be installed
+--> Processing Dependency: python-lxml for package: python-javapackages-3.4.1-11.el7.noarch
+--> Running transaction check
+---> Package python-lxml.x86_64 0:3.2.1-4.el7 will be installed
+--> Finished Dependency Resolution
+
+Dependencies Resolved
+
+================================================================================
+ Package                     Arch   Version                    Repository  Size
+================================================================================
+Installing:
+ java-1.8.0-openjdk-headless x86_64 1:1.8.0.181-3.b13.el7_5    ol7_latest  32 M
+Installing for dependencies:
+ copy-jdk-configs            noarch 3.3-10.el7_5               ol7_latest  21 k
+ javapackages-tools          noarch 3.4.1-11.el7               ol7_latest  72 k
+ libxslt                     x86_64 1.1.28-5.0.1.el7           ol7_latest 241 k
+ lksctp-tools                x86_64 1.0.17-2.el7               ol7_latest  87 k
+ python-javapackages         noarch 3.4.1-11.el7               ol7_latest  31 k
+ python-lxml                 x86_64 3.2.1-4.el7                ol7_latest 758 k
+ tzdata-java                 noarch 2018e-3.el7                ol7_latest 184 k
+
+Transaction Summary
+================================================================================
+Install  1 Package (+7 Dependent packages)
+
+Total download size: 33 M
+Installed size: 107 M
+Downloading packages:
+(1/8): copy-jdk-configs-3.3-10.el7_5.noarch.rpm            |  21 kB   00:00     
+(2/8): javapackages-tools-3.4.1-11.el7.noarch.rpm          |  72 kB   00:00     
+(3/8): libxslt-1.1.28-5.0.1.el7.x86_64.rpm                 | 241 kB   00:00     
+(4/8): lksctp-tools-1.0.17-2.el7.x86_64.rpm                |  87 kB   00:00     
+(5/8): python-javapackages-3.4.1-11.el7.noarch.rpm         |  31 kB   00:00     
+(6/8): python-lxml-3.2.1-4.el7.x86_64.rpm                  | 758 kB   00:00     
+(7/8): tzdata-java-2018e-3.el7.noarch.rpm                  | 184 kB   00:00     
+(8/8): java-1.8.0-openjdk-headless-1.8.0.181-3.b13.el7_5.x |  32 MB   00:00     
+--------------------------------------------------------------------------------
+Total                                               91 MB/s |  33 MB  00:00     
+Running transaction check
+Running transaction test
+Transaction test succeeded
+Running transaction
+  Installing : libxslt-1.1.28-5.0.1.el7.x86_64                              1/8 
+  Installing : python-lxml-3.2.1-4.el7.x86_64                               2/8 
+  Installing : python-javapackages-3.4.1-11.el7.noarch                      3/8 
+  Installing : javapackages-tools-3.4.1-11.el7.noarch                       4/8 
+  Installing : lksctp-tools-1.0.17-2.el7.x86_64                             5/8 
+  Installing : tzdata-java-2018e-3.el7.noarch                               6/8 
+  Installing : copy-jdk-configs-3.3-10.el7_5.noarch                         7/8 
+  Installing : 1:java-1.8.0-openjdk-headless-1.8.0.181-3.b13.el7_5.x86_64   8/8 
+  Verifying  : 1:java-1.8.0-openjdk-headless-1.8.0.181-3.b13.el7_5.x86_64   1/8 
+  Verifying  : python-lxml-3.2.1-4.el7.x86_64                               2/8 
+  Verifying  : copy-jdk-configs-3.3-10.el7_5.noarch                         3/8 
+  Verifying  : python-javapackages-3.4.1-11.el7.noarch                      4/8 
+  Verifying  : libxslt-1.1.28-5.0.1.el7.x86_64                              5/8 
+  Verifying  : tzdata-java-2018e-3.el7.noarch                               6/8 
+  Verifying  : javapackages-tools-3.4.1-11.el7.noarch                       7/8 
+  Verifying  : lksctp-tools-1.0.17-2.el7.x86_64                             8/8 
+
+Installed:
+  java-1.8.0-openjdk-headless.x86_64 1:1.8.0.181-3.b13.el7_5                    
+
+Dependency Installed:
+  copy-jdk-configs.noarch 0:3.3-10.el7_5                                        
+  javapackages-tools.noarch 0:3.4.1-11.el7                                      
+  libxslt.x86_64 0:1.1.28-5.0.1.el7                                             
+  lksctp-tools.x86_64 0:1.0.17-2.el7                                            
+  python-javapackages.noarch 0:3.4.1-11.el7                                     
+  python-lxml.x86_64 0:3.2.1-4.el7                                              
+  tzdata-java.noarch 0:2018e-3.el7                                              
+
+Complete!
+[opc@web1 ~]$ java -version
+openjdk version "1.8.0_181"
+OpenJDK Runtime Environment (build 1.8.0_181-b13)
+OpenJDK 64-Bit Server VM (build 25.181-b13, mixed mode)
+[opc@web1 ~]$ java ^C
+[opc@web1 ~]$ vi launch
+[opc@web1 ~]$ cat launch
+java \
+    -Dspring.datasource.url=jdbc:mysql://db1:3306/app \
+    -Dspring.datasource.username=app \
+    -Dspring.datasource.password='DxIHXE%6d7sD:EXI' \
+    -jar uob-todo-app-0.1.0.jar
+. ./launch
+
+
+mysql> show tables;
++--------------------+
+| Tables_in_app      |
++--------------------+
+| first              |
+| hibernate_sequence |
+| todo_item          |
++--------------------+
+3 rows in set (0.00 sec)
+
+mysql> describe todo_item;
++-----------+--------------+------+-----+---------+-------+
+| Field     | Type         | Null | Key | Default | Extra |
++-----------+--------------+------+-----+---------+-------+
+| id        | bigint(20)   | NO   | PRI | NULL    |       |
+| completed | bit(1)       | YES  |     | NULL    |       |
+| title     | varchar(255) | NO   |     | NULL    |       |
++-----------+--------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql> 
+[opc@web1 ~]$ sudo yum install -y curl
+Loaded plugins: langpacks, ulninfo
+Package curl-7.29.0-46.el7.x86_64 already installed and latest version
+Nothing to do
+[opc@web1 ~]$ curl http://localhost:8080
+<!doctype html>
+<html>
+<head>
+    <title>My page</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link rel="stylesheet" href="/main.css">
+</head>
+<body>
+<div id="app"></div>
+<script src="/js/app.js"></script>
+</body>
+</html>
+[opc@web1 ~]$ 
+[opc@web1 ~]$ java \
+>     -Dspring.datasource.url=jdbc:mysql://db1:3306/app \
+>     -Dspring.datasource.username=app \
+>     -Dspring.datasource.password='DxIHXE%6d7sD:EXI' \
+>     -jar uob-todo-app-0.1.0.jar
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::        (v2.0.3.RELEASE)
+
+2018-09-28 16:36:26.874  INFO 4980 --- [           main] uob_todo.Application                     : Starting Application on web1.sub09141050190.vcn0914105019.oraclevcn.com with PID 4980 (/home/opc/uob-todo-app-0.1.0.jar started by opc in /home/opc)
+2018-09-28 16:36:26.895  INFO 4980 --- [           main] uob_todo.Application                     : No active profile set, falling back to default profiles: default
+2018-09-28 16:36:27.077  INFO 4980 --- [           main] ConfigServletWebServerApplicationContext : Refreshing org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext@3c679bde: startup date [Fri Sep 28 16:36:27 GMT 2018]; root of context hierarchy
+2018-09-28 16:36:30.213  INFO 4980 --- [           main] trationDelegate$BeanPostProcessorChecker : Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$12aee4a0] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2018-09-28 16:36:30.885  INFO 4980 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2018-09-28 16:36:30.948  INFO 4980 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2018-09-28 16:36:30.949  INFO 4980 --- [           main] org.apache.catalina.core.StandardEngine  : Starting Servlet Engine: Apache Tomcat/8.5.31
+2018-09-28 16:36:30.968  INFO 4980 --- [ost-startStop-1] o.a.catalina.core.AprLifecycleListener   : The APR based Apache Tomcat Native library which allows optimal performance in production environments was not found on the java.library.path: [/usr/java/packages/lib/amd64:/usr/lib64:/lib64:/lib:/usr/lib]
+2018-09-28 16:36:31.274  INFO 4980 --- [ost-startStop-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2018-09-28 16:36:31.274  INFO 4980 --- [ost-startStop-1] o.s.web.context.ContextLoader            : Root WebApplicationContext: initialization completed in 4209 ms
+2018-09-28 16:36:32.343  INFO 4980 --- [ost-startStop-1] o.s.b.w.servlet.ServletRegistrationBean  : Servlet dispatcherServlet mapped to [/]
+2018-09-28 16:36:32.352  INFO 4980 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'characterEncodingFilter' to: [/*]
+2018-09-28 16:36:32.353  INFO 4980 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'hiddenHttpMethodFilter' to: [/*]
+2018-09-28 16:36:32.353  INFO 4980 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'httpPutFormContentFilter' to: [/*]
+2018-09-28 16:36:32.354  INFO 4980 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'requestContextFilter' to: [/*]
+2018-09-28 16:36:32.354  INFO 4980 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'httpTraceFilter' to: [/*]
+2018-09-28 16:36:32.354  INFO 4980 --- [ost-startStop-1] o.s.b.w.servlet.FilterRegistrationBean   : Mapping filter: 'webMvcMetricsFilter' to: [/*]
+2018-09-28 16:36:32.556  INFO 4980 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+Fri Sep 28 16:36:32 GMT 2018 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+2018-09-28 16:36:33.500  INFO 4980 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2018-09-28 16:36:33.576  INFO 4980 --- [           main] j.LocalContainerEntityManagerFactoryBean : Building JPA container EntityManagerFactory for persistence unit 'default'
+2018-09-28 16:36:33.605  INFO 4980 --- [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [
+	name: default
+	...]
+Fri Sep 28 16:36:33 GMT 2018 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+2018-09-28 16:36:33.808  INFO 4980 --- [           main] org.hibernate.Version                    : HHH000412: Hibernate Core {5.2.17.Final}
+Fri Sep 28 16:36:33 GMT 2018 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+2018-09-28 16:36:33.821  INFO 4980 --- [           main] org.hibernate.cfg.Environment            : HHH000206: hibernate.properties not found
+Fri Sep 28 16:36:33 GMT 2018 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+2018-09-28 16:36:33.932  INFO 4980 --- [           main] o.hibernate.annotations.common.Version   : HCANN000001: Hibernate Commons Annotations {5.0.1.Final}
+Fri Sep 28 16:36:33 GMT 2018 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+Fri Sep 28 16:36:34 GMT 2018 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+Fri Sep 28 16:36:34 GMT 2018 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+Fri Sep 28 16:36:34 GMT 2018 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+Fri Sep 28 16:36:34 GMT 2018 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+Fri Sep 28 16:36:34 GMT 2018 WARN: Establishing SSL connection without server's identity verification is not recommended. According to MySQL 5.5.45+, 5.6.26+ and 5.7.6+ requirements SSL connection must be established by default if explicit option isn't set. For compliance with existing applications not using SSL the verifyServerCertificate property is set to 'false'. You need either to explicitly disable SSL by setting useSSL=false, or set useSSL=true and provide truststore for server certificate verification.
+2018-09-28 16:36:34.394  INFO 4980 --- [           main] org.hibernate.dialect.Dialect            : HHH000400: Using dialect: org.hibernate.dialect.MySQL5Dialect
+2018-09-28 16:36:35.307  INFO 4980 --- [           main] o.h.t.schema.internal.SchemaCreatorImpl  : HHH000476: Executing import script 'org.hibernate.tool.schema.internal.exec.ScriptSourceInputNonExistentImpl@13d9cbf5'
+2018-09-28 16:36:35.311  INFO 4980 --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2018-09-28 16:36:35.935  INFO 4980 --- [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/**/favicon.ico] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2018-09-28 16:36:36.423  INFO 4980 --- [           main] s.w.s.m.m.a.RequestMappingHandlerAdapter : Looking for @ControllerAdvice: org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext@3c679bde: startup date [Fri Sep 28 16:36:27 GMT 2018]; root of context hierarchy
+2018-09-28 16:36:36.503  WARN 4980 --- [           main] aWebConfiguration$JpaWebMvcConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2018-09-28 16:36:36.583  INFO 4980 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/api/todos],methods=[GET]}" onto public java.lang.Iterable<uob_todo.api.TodoItem> uob_todo.api.TodoController.listTodos()
+2018-09-28 16:36:36.589  INFO 4980 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/api/todos],methods=[POST]}" onto public uob_todo.api.TodoItem uob_todo.api.TodoController.createTodo(uob_todo.api.TodoItem) throws java.lang.Exception
+2018-09-28 16:36:36.591  INFO 4980 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/api/todos/{id}],methods=[POST]}" onto public uob_todo.api.TodoItem uob_todo.api.TodoController.updateTodo(java.lang.Long,uob_todo.api.TodoItem) throws java.lang.Exception
+2018-09-28 16:36:36.592  INFO 4980 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/api/todos/{id}],methods=[GET]}" onto public uob_todo.api.TodoItem uob_todo.api.TodoController.getTodo(java.lang.Long) throws java.lang.Exception
+2018-09-28 16:36:36.593  INFO 4980 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/],methods=[GET]}" onto public java.lang.String uob_todo.IndexController.index()
+2018-09-28 16:36:36.598  INFO 4980 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/error],produces=[text/html]}" onto public org.springframework.web.servlet.ModelAndView org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController.errorHtml(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)
+2018-09-28 16:36:36.600  INFO 4980 --- [           main] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped "{[/error]}" onto public org.springframework.http.ResponseEntity<java.util.Map<java.lang.String, java.lang.Object>> org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController.error(javax.servlet.http.HttpServletRequest)
+2018-09-28 16:36:36.662  INFO 4980 --- [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/webjars/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2018-09-28 16:36:36.663  INFO 4980 --- [           main] o.s.w.s.handler.SimpleUrlHandlerMapping  : Mapped URL path [/**] onto handler of type [class org.springframework.web.servlet.resource.ResourceHttpRequestHandler]
+2018-09-28 16:36:36.716  INFO 4980 --- [           main] .m.m.a.ExceptionHandlerExceptionResolver : Detected @ExceptionHandler methods in exceptionAdvice
+2018-09-28 16:36:36.864  INFO 4980 --- [           main] o.s.b.a.w.s.WelcomePageHandlerMapping    : Adding welcome page template: index
+2018-09-28 16:36:37.898  INFO 4980 --- [           main] o.s.ui.freemarker.SpringTemplateLoader   : SpringTemplateLoader for FreeMarker: using resource loader [org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext@3c679bde: startup date [Fri Sep 28 16:36:27 GMT 2018]; root of context hierarchy] and template loader path [classpath:/templates/]
+2018-09-28 16:36:37.900  INFO 4980 --- [           main] o.s.w.s.v.f.FreeMarkerConfigurer         : ClassTemplateLoader for Spring macros added to FreeMarker configuration
+2018-09-28 16:36:38.074  INFO 4980 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 2 endpoint(s) beneath base path '/actuator'
+2018-09-28 16:36:38.094  INFO 4980 --- [           main] s.b.a.e.w.s.WebMvcEndpointHandlerMapping : Mapped "{[/actuator/health],methods=[GET],produces=[application/vnd.spring-boot.actuator.v2+json || application/json]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.web.servlet.AbstractWebMvcEndpointHandlerMapping$OperationHandler.handle(javax.servlet.http.HttpServletRequest,java.util.Map<java.lang.String, java.lang.String>)
+2018-09-28 16:36:38.096  INFO 4980 --- [           main] s.b.a.e.w.s.WebMvcEndpointHandlerMapping : Mapped "{[/actuator/prometheus],methods=[GET],produces=[text/plain;version=0.0.4;charset=utf-8]}" onto public java.lang.Object org.springframework.boot.actuate.endpoint.web.servlet.AbstractWebMvcEndpointHandlerMapping$OperationHandler.handle(javax.servlet.http.HttpServletRequest,java.util.Map<java.lang.String, java.lang.String>)
+2018-09-28 16:36:38.098  INFO 4980 --- [           main] s.b.a.e.w.s.WebMvcEndpointHandlerMapping : Mapped "{[/actuator],methods=[GET],produces=[application/vnd.spring-boot.actuator.v2+json || application/json]}" onto protected java.util.Map<java.lang.String, java.util.Map<java.lang.String, org.springframework.boot.actuate.endpoint.web.Link>> org.springframework.boot.actuate.endpoint.web.servlet.WebMvcEndpointHandlerMapping.links(javax.servlet.http.HttpServletRequest,javax.servlet.http.HttpServletResponse)
+2018-09-28 16:36:38.190  INFO 4980 --- [           main] o.s.j.e.a.AnnotationMBeanExporter        : Registering beans for JMX exposure on startup
+2018-09-28 16:36:38.194  INFO 4980 --- [           main] o.s.j.e.a.AnnotationMBeanExporter        : Bean with name 'dataSource' has been autodetected for JMX exposure
+2018-09-28 16:36:38.204  INFO 4980 --- [           main] o.s.j.e.a.AnnotationMBeanExporter        : Located MBean 'dataSource': registering with JMX server as MBean [com.zaxxer.hikari:name=dataSource,type=HikariDataSource]
+2018-09-28 16:36:38.267  INFO 4980 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2018-09-28 16:36:38.271  INFO 4980 --- [           main] uob_todo.Application                     : Started Application in 12.263 seconds (JVM running for 13.23)
+

@@ -1,0 +1,6 @@
+[opc@web1 ~]$ ping db1
+PING db1.sub09141050190.vcn0914105019.oraclevcn.com (10.0.0.6) 56(84) bytes of data.
+^C
+--- db1.sub09141050190.vcn0914105019.oraclevcn.com ping statistics ---
+6 packets transmitted, 0 received, 100% packet loss, time 4999ms
+

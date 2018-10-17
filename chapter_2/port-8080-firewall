@@ -1,0 +1,64 @@
+[opc@web1 ~]$ sudo firewall-cmd --list-all
+public
+  target: default
+  icmp-block-inversion: no
+  interfaces: 
+  sources: 
+  services: ssh dhcpv6-client
+  ports: 
+  protocols: 
+  masquerade: no
+  forward-ports: 
+  source-ports: 
+  icmp-blocks: 
+  rich rules: 
+	
+[opc@web1 ~]$ sudo firewall-cmd --list-all --permanent
+public
+  target: default
+  icmp-block-inversion: no
+  interfaces: 
+  sources: 
+  services: ssh dhcpv6-client
+  ports: 
+  protocols: 
+  masquerade: no
+  forward-ports: 
+  source-ports: 
+  icmp-blocks: 
+  rich rules: 
+	
+[opc@web1 ~]$ sudo firewall-cmd --add-port 8080/tcp
+success
+[opc@web1 ~]$ sudo firewall-cmd --list-all
+public
+  target: default
+  icmp-block-inversion: no
+  interfaces: 
+  sources: 
+  services: ssh dhcpv6-client
+  ports: 8080/tcp
+  protocols: 
+  masquerade: no
+  forward-ports: 
+  source-ports: 
+  icmp-blocks: 
+  rich rules: 
+	
+[opc@web1 ~]$ sudo firewall-cmd --runtime-to-permanent
+success
+[opc@web1 ~]$ sudo firewall-cmd --list-all --permanent
+public
+  target: default
+  icmp-block-inversion: no
+  interfaces: 
+  sources: 
+  services: ssh dhcpv6-client
+  ports: 8080/tcp
+  protocols: 
+  masquerade: no
+  forward-ports: 
+  source-ports: 
+  icmp-blocks: 
+  rich rules: 
+	

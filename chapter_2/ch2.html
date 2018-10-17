@@ -1,0 +1,1258 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Chapter 2 : Application deployment the hard way: IaaS · GitBook</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.3">
+        
+        
+        
+    
+    <link rel="stylesheet" href="../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-highlight/website.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="../chapter_5/01_introduction.html" />
+    
+    
+    <link rel="prev" href="../chapter_1/Chapter_1.html" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../">
+            
+                <a href="../">
+            
+                    
+                    Introduction
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="../chapter_1/Chapter_1.html">
+            
+                <a href="../chapter_1/Chapter_1.html">
+            
+                    
+                    Chapter 1 : Running an application on the internet
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.3" data-path="ch2.html">
+            
+                <a href="ch2.html">
+            
+                    
+                    Chapter 2 : Application deployment the hard way: IaaS
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4" data-path="../chapter_5/01_introduction.html">
+            
+                <a href="../chapter_5/01_introduction.html">
+            
+                    
+                    Chapter 5 : Observability & Autoscaling
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.1" data-path="../chapter_5/02_Why_do_we_need_observation.html">
+            
+                <a href="../chapter_5/02_Why_do_we_need_observation.html">
+            
+                    
+                    Why do we need observability?
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href=".." >Chapter 2 : Application deployment the hard way: IaaS</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="deploying-our-application-the-hard-way">Deploying our application (the hard way)</h1>
+<p>We&apos;ll look at how we might deploy our application using the basic facilities available as <em>Infrastructure as a Service</em> or <em>IaaS</em> - to wit, full virtual machines and virtulalised networks.</p>
+<p>The purpose of this section is threefold. Firstly, it&apos;ll talk you through setting up your application in an IaaS environment. Although we use OCI here, the principles should readily map to other providers.</p>
+<p>Secondly, whilst we&apos;ll use the console for manual deployment - a very laborious process - the point is to familiarise you with the kinds of resources typically available. In particular, all of the following chapters use technologies which are built atop these facilities. Having a good mental model of how these higher-level services might be put together can be very helpful; nothing here is <em>magic</em> (in fact, quite the opposite!)</p>
+<p>Finally, the rather laborious process should encourage you to think about how you might improve upon this situation - how you might make such a deployment repeatable, how it might be automated - and motivate the use of tools that enable IaaS operations and VM management to be scripted.</p>
+<h2 id="the-goal">The Goal</h2>
+<p>At a high level, we&apos;d like our users to be able to talk to our application over the Internet.</p>
+<p>To put some more flesh on the bones of this goal, we&apos;ll split our application deployment into two pieces: the web tier, which serves up the JavaScript application and responds to requests from it; and the database tier, which persists client data.</p>
+<p>Each of these pieces will be hosted on a separate virtual machine; thus, we&apos;ll need to ensure that our components can communicate successfully. We&apos;ll look at some common tools that can be used to troubleshoot that communication.</p>
+<h3 id="hosting-on-a-vm">Hosting on a VM</h3>
+<p>Each virtual machine is a close analogue to a physical host. In particular, it comes with a whole operating stack: a kernel, support libraries and packages, all of which potentially provide an attack surface to a hostile third party. Thus, a full VM comes with a management problem.</p>
+<p>One of the successes of IaaS is that it enables us to rapidly provision hundreds - or thousands - of hosts just by running a script (you&apos;ll hear this called <em>infrastructure as software</em>). However, this multiplicity increases the maintenance problem: each of those virtual hosts may require patching!</p>
+<p>As you progress through this chapter, you should ask yourself how you might act were a vulnerability in a critical library to be announced: what could you do to mitigate the risk? What could you do to update any deployed systems?</p>
+<h3 id="remote-management">Remote management</h3>
+<p>For the purposes of this chapter, we&apos;ll be managing our hosts remotely through a command-line session, using <em>ssh</em> to interact with them directly.</p>
+<p><em>ssh</em> can use a variety of different authentication mechanisms. The one we&apos;ll use here is a common one - a public/private key pair for authentication. As we boot a host, we specify the <em>public</em> half of a keypair - which is injected into the host early in the boot process (we&apos;ll see how later). Providing that you possess the <em>private</em> key that goes with that, you can authenticate yourself to the host.</p>
+<h4 id="ssh-key-generation">ssh key generation</h4>
+<p>(This assumes you&apos;re working from a Linux or Mac desktop. If you&apos;re using a Windows host, you should look for the <em>putty</em> tool or an equivalent and follow the instructions for key generation that are associated with it.)</p>
+<pre><code>% mkdir ~/.ssh
+% ssh-keygen -t rsa -b 2048
+Generating public/private rsa key pair.
+Enter file in which to save the key (/Users/jan/.ssh/id_rsa): 
+Enter passphrase (empty for no passphrase): 
+Enter same passphrase again: 
+Your identification has been saved in /Users/jan/.ssh/id_rsa.
+Your public key has been saved in /Users/jan/.ssh/id_rsa.pub.
+The key fingerprint is:
+SHA256:FcVhmf24Lahrpcf56YT65djtKodK4kxTWOFFOo1uyIc jan@jan-Mac
+The key&apos;s randomart image is:
++---[RSA 2048]----+
+|          o+*=   |
+|         . O+ .  |
+|          B .  o |
+|       . B .  . .|
+|        E =  . o |
+|         +  o.o .|
+|        + .=.oo. |
+|       + ++.**.o |
+|        o.+=o=Boo|
++----[SHA256]-----+
+% cat ~/.ssh/id_rsa.pub
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDM+UIk50jMoHOEPReFcO+hTEPe3mfq8ow1ObCF4CM29OjixwWH5UJr08+CbkSZgs11LgYPu5QiK17sETSaWW4ZXQC88j5KzsxrgApRb84a+q9gPgGE0nmLAb2ZjGP13dX5Pu41b6vsapglci5/lALFq/by5G6fzqQtrh0m3d0mr3hRu1aE1vY1K6igy3Mj8/tyZxcN4OJkFbV4wzavmdpPPgh0LXT41bWfQDzQRlSs/nLPGIuUOlNpSInfSSvNvSz8ZtsWPQZtt1zuVMIhCwUdzF01urWw4ATkghk9GKNtze9ocGIrIcbNhSSQQiqkYnS8UdHUdfzr+MejiuefsMI1 jan@jan-Mac
+</code></pre><p>The public part of your ssh keypair does not need to be kept secret.</p>
+<h2 id="booting-the-first-vm">Booting the first VM</h2>
+<p>We begin by booting the initial virtual machine, creating a network for it to connect to as we go.</p>
+<p>Locate the <code>Menu / Compute &gt; Instances</code> screen in the web console. Ensure that you&apos;ve selected your own <em>compartment</em>. (You can create a new compartment using the <code>Menu / Identity &gt; Compartments</code> link, if required.)</p>
+<h3 id="a-note-on-compartments">A note on compartments</h3>
+<p>A major challenge in dealing with large deployments is that of <em>namespace management</em>. As a simple example: for our purposes, we might want to deploy a version of our application, separately from our live (production) system.</p>
+<p>Ideally, the smaller the differences between the test and production deployments, the greater the fidelity of our testing environment. In this case, we&apos;d like our VMs to have the same <em>hostnames</em>, for instance, and not have to worry too much that a test web service might accidentally alter production data.</p>
+<p>The <em>compartment</em> is an IaaS approach to part of this problem: it acts as a bag in which a number of related resources can be collected. It&apos;s possible to apply security policies to particular compartments that restrict which users are capable of modifying which resources; in that way, you can put a barrier in the way of a developer accidentally updating a production application.</p>
+<h3 id="the-first-vm">The first VM</h3>
+<p>We&apos;ll boot a VM called <code>web1</code>. As we do this, we&apos;ll use the instance creation dialog to provision a new set of network resources to home the VM.</p>
+<p><img src="01-02-oci-console.png" alt="create instance" title="Empty instances view"></p>
+<p>Hitting <code>Create Instance</code> will pop up a fairly extensive dialog. We&apos;ll pick the <code>launch in compartment</code> option. Let&apos;s look at the fields for the top part of the dialog:</p>
+<ul>
+<li>we pick our own compartment to host the instance</li>
+<li>we give it the name <code>web1</code></li>
+<li>we&apos;ll use the first <em>availability domain</em> (selected by default)</li>
+<li>we&apos;ll boot from an OCI-supplied image</li>
+<li>the image we&apos;ll use is <code>Oracle Linux 7.5</code>. (There are a couple of technical reasons for that; in particular, the instructions for package and firewall management that follow are specific to rpm-based distributions like this one.)</li>
+<li>we&apos;ll use a fairly small shape: <code>VM.Standard2.1</code></li>
+<li>use the latest image version</li>
+<li>for these first machines, use the default boot volume size.</li>
+</ul>
+<p><img src="02-00-create-instance-web-with-network.png" alt="create instance part one" title="Launch instance, part one"></p>
+<p>The second part of the dialog involves selecting the credentials that will be embedded into the running instance. Select <code>Choose SSH key files</code> and locate your <code>~/.ssh/id_rsa.pub</code> file.</p>
+<p><img src="02-01-create-instance-web-with-network.png" alt="create instance part two" title="Launch instance, ssh information"></p>
+<p>Finally, we want to create a new set of network resources to use with this VM.</p>
+<ul>
+<li>select the same compartment to host the <em>virtual cloud network</em>, or <em>VCN</em>.</li>
+<li>call it <code>net1</code></li>
+<li>ensure that public IP addresses are assigned for hosts on that VCN</li>
+<li>then create the instance</li>
+</ul>
+<p><img src="02-02-create-instance-web-with-network.png" alt="create instance part three" title="Launch instance, networking"></p>
+<p>You should see a detail panel once the instance is booted. It&apos;ll look like this:</p>
+<p><img src="02-03-create-instance-web-result.png" alt="create instance result" title="Launch instance, result"></p>
+<p>Notice that there are two IP addresses listed for the host - a private IP address and a public IP address. It&apos;s the latter that we&apos;ll use to connect to this VM over the internet.</p>
+<h3 id="a-note-on-tags">A note on tags</h3>
+<p>Resources can be <em>tagged</em> with arbitrary labels. For a small deployment, this may seem unnecessary; however, for larger deployments, it can be useful to identify the various categories that a VM (or network) belongs to. Example divisions might be: <em>environment</em> (staging, production, ...); <em>cost centre</em>; or perhaps the particular application that a resource is associated with.</p>
+<h2 id="booting-the-second-vm">Booting the second VM</h2>
+<p>This process is very similar; we&apos;ll create the second instance (using <code>Oracle Linux 7.5</code> as the image operating system) on another small VM in the same compartment. Call it <code>db1</code>:</p>
+<p><img src="03-00-create-instance-db.png" alt="create second_instance" title="Launch instance, result"></p>
+<p>Locate the ssh public key file as before:</p>
+<p><img src="03-01-create-instance-db.png" alt="create second_instance" title="Launch instance, ssh key"></p>
+<p>This time, we&apos;ll use the pre-existing network resources that were created in our compartment:</p>
+<p><img src="03-02-create-instance-db.png" alt="create second_instance" title="Launch instance, networking"></p>
+<p>The detail page looks much like before. Take a note of the public IP address - we&apos;ll be using this to <code>ssh</code> into the instance.</p>
+<p><img src="03-03-create-instance-db-result.png" alt="create second_instance" title="Launch instance, result"></p>
+<h2 id="a-diagram-of-the-result">A diagram of the result</h2>
+<p>Before we look at configuring the individual VMs that we &apos;ve brought up, let&apos;s have a look at an overall picture.</p>
+<p>Using the console, each of the resources created during the above process can be examined; but it can be helpful to have a visual interpretation of the result of these steps, to see how the pieces fit together.</p>
+<p><img src="03-04-resulting-layout.png" alt=""></p>
+<p>In this instance, we&apos;ve booted two VMs. Those have individual network connections (called <em>VNICs</em>) onto the same <em>subnet</em>. Each VNIC has its own unique private IP address.</p>
+<p>Each subnet has a set of <em>security rules</em> associated with it. These can be thought of as a firewall that sits in front of each VNIC. The <em>security rules</em> are comprised of <em>ingress</em> and <em>egress</em> rules. Ingress rules apply to all traffic that flows from the subnet onto the host; egress rules apply to all traffic flowing from a host&apos;s VNIC onto the subnet. (That is, the terms <em>ingress</em> and <em>egress</em> are relative to the host.)</p>
+<p>Attached to the subnet is a <em>router</em>; this directs traffic (IP packets) between subnets. The router also has an IP address on that subnet; this is often referred to as a <em>gateway address</em>, since hosts on that subnet will direct traffic destined for elsewhere to that address as a &apos;first hop&apos;.</p>
+<p>The router forwards traffic by consulting a <em>route table</em>. The route table contains a list of next-hop <em>routes</em> (there are implicit routes inserted into this table for each subnet that the router is attached to).</p>
+<p>The default entry in the route table targets an <em>internet gateway</em>. It is this component which conceptually permits traffic to flow between the (privately addressed) subnets and the internet at large.</p>
+<p>Each VM is configured with its internal, <em>private IP address</em>; however, those addresses are not routable over the internet. The <em>public IP address</em> associated with a VNIC is not configured into the host&apos;s operating system. In order to understand how traffic gets to and from the internet, we need to understand how a TCP connection operates.</p>
+<h3 id="aside-the-anatomy-of-a-tcp-connection">Aside: the anatomy of a TCP connection</h3>
+<p>Each host involved in a TCP connection has (at least) one IP address. (Hosts that are connected to more than one subnet are said to be <em>multi-homed</em>; a router is simply a multi-homed device that can forward packets from one subnet to another.)</p>
+<p><img src="tcp-01.png" alt=""></p>
+<p>A <em>server</em> may have several <em>services</em> running on it. Each <em>listens</em> on a unique <em>port</em>. Typically, well-known services have port numbers assigned to them. A port number lies in the range 1-65,535. Well-known ports are typically at the low end of that range.</p>
+<p>Here, we see the server listening on port 22, for the ssh service, and on port 80 (the unencrypted HTTP port).</p>
+<p><img src="tcp-02.png" alt=""></p>
+<p>A client might want to make several outgoing calls to the same service at the same time. To distinguish them, the client also allocates an <em>ephemeral port</em> (typically from higher in the available range).</p>
+<p><img src="tcp-03.png" alt=""></p>
+<p>A connection is identified by a 4-tuple: (<em>local address, local port, remote address, remote port</em>). &#x2028;The local and remote ends of a TCP connection appear in a table maintained by the operating system of each host.</p>
+<p>All TCP packets carry these addresses: both source, and destination.</p>
+<p><img src="tcp-04.png" alt=""></p>
+<p>Traffic from the client carries the source and destination information one way around...</p>
+<p><img src="tcp-05.png" alt=""></p>
+<p>... and the return traffic carries it the other way around.</p>
+<p><img src="tcp-06.png" alt=""></p>
+<h4 id="the-interget-gateway-network-address-translation-or-nat">The Interget Gateway: Network Address Translation, or <em>NAT</em>.</h4>
+<p>When packets traverse the internet gateway, it rewrites the corresponding destination address (or source address, for outbound packets), replacing the public IP address with its corresponding private one.</p>
+<p><img src="tcp-07.png" alt=""></p>
+<p><img src="tcp-08.png" alt=""></p>
+<p>Outbound traffic gets the dual treatment.</p>
+<p><img src="tcp-09.png" alt=""></p>
+<p><img src="tcp-10.png" alt=""></p>
+<h4 id="inspecting-the-state-of-a-vms-connection-table">Inspecting the state of a VM&apos;s connection table</h4>
+<p>Armed with the above information, we can inspect these connection tables using the command <code>netstat</code>.</p>
+<p>In the following except, we can see two server processes waiting for incoming client connections, together with an established outgoing connection to the ssh port on a remote server.</p>
+<pre><code>% netstat -an46
+Active Internet connections (servers and established)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State      
+tcp        0      0 127.0.0.1:3306          0.0.0.0:*               LISTEN     
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN     
+tcp        0      0 192.168.99.4:44112      192.168.99.2:22         ESTABLISHED
+</code></pre><p>There are other commands that&#x2019;ll give you this information, but this is a common one, although its command-line parameters vary depending on the operating system. On a Mac: use &#x2028;<code>netstat -anf inet</code>.</p>
+<h3 id="aside-the-runtime-configuration-of-the-vm">Aside: the runtime configuration of the VM</h3>
+<p>A VM is booted from a copy of an <em>operating system image</em>. That image has fixed contents (filesystem layout, boot-time daemons, etc.) However, each VM instance is differentiated from the next with a small number of run-time parameters that are typically injected during the boot process. In particular, each VM has its own IP address; this must be configured into the operating system somehow. Additionally, the public half of the ssh keypair that was supplied during instance creation needs to be installed in the filesystem in order to be effective.</p>
+<h4 id="dhcp">DHCP</h4>
+<p>There is a two-stage process that takes care of this. The first part of the process takes care of network configuration. (This is the same mechanism used by a laptop to connect to your favourite cafe&apos;s fre wifi.) The protocol used is called <em>DHCP</em>.</p>
+<p>Initially, the host does not know its IP address. It sends a broadcast packet asking for configuration information. That packet is received by the DHCP server. This is a <em>layer-2 broadcast</em>, which typically means that the DHCP server must be homed on the same subnet to receive the packet.</p>
+<p><img src="dhcp-01.png" alt=""></p>
+<p>In response, the DHCP server can look up (or dynamically allocate) an IP address for the host. The response is sent directly to the host (that is, it doesn&apos;t use the typical IP mechanism for locating the host on a local subnet). This response packet contains other <em>DHCP options</em> that tell the host how to configure itself: information about the subnet, the subnet&apos;s <em>maximum transmission unit</em> (that is, the size of the largest packet that the subnet will accept), information about DNS (that is, the location of a local name-server), and so on.</p>
+<p>This information comes with a <em>lease time</em>. The client host must renew its lease within that period if it wishes to retain the same IP address.</p>
+<p><img src="dhcp-02.png" alt=""></p>
+<p>On receipt, the host configures its low-level network information.</p>
+<p><img src="dhcp-03.png" alt=""></p>
+<p>At this stage, the second part of the boot-time configuration can proceed.</p>
+<h4 id="other-host-metadata">Other host metadata</h4>
+<p>Here OS images for instances in the cloud differ from the contents of your laptop. Each image is designed to be booted in a cloud environment - possibly by an automated process - and must therefore be able to continue the configuration process automatically.</p>
+<p>There are a small number of equivalent approaches to doing this that are typified by <em>cloud-init</em>. Here, the cloud provider and the OS image follow a conventional contract: if the VM makes an HTTP request to a given address, the cloud provider will serve up metadata in response that details the VM&apos;s specific configuration.</p>
+<p><img src="cloud-init-01.png" alt=""></p>
+<p><img src="cloud-init-02.png" alt=""></p>
+<p>That metadata is interpreted by the boot-time process; it can cause additional configuration files to be written into the VM&apos;s filesystem, additional packages to be installed, additional user accounts to be created, and so on. One typical piece of configuration information is an <em>ssh key</em> that is associated with the <em>default user</em> baked into the OS image.</p>
+<p>You&apos;ll be able to see your own ssh public key in your instance, in the <code>~/.ssh/authorized_keys</code> file, after you log into it.</p>
+<h2 id="review-of-the-deployment-plan">Review of the deployment plan</h2>
+<p>It&apos;s time to review the deployment plan. Having created our initial infrastructure, we need to configure these VMs.</p>
+<ul>
+<li>we are going to put a database service on <code>db1</code> to host the persistent state for our web application;</li>
+<li>the Java part of the application (including the JavaScript content that&apos;s delivered to the user&apos;s browser) will be installed on <code>web1</code>.</li>
+</ul>
+<h3 id="log-in">Log in</h3>
+<p>As you work between the two VMs, it can be convenient to have a shell window open with a connection to each. In two separate terminal, launch a connection to each VM.</p>
+<p>If you&#x2019;ve picked Oracle Linux, the username to log in with is opc. (For Ubuntu, it&#x2019;s &#x201C;ubuntu&#x201D;; but the firewall and package management commands will be different, so the following write-up assumes the former.)</p>
+<p>The VMs should have been configured to accept your ssh key, as we&apos;ve seen.</p>
+<p>You can log into each host by supplying the public IP address, as shown in the web console. <code>ssh</code> attempts to protect against man-in-the-middle attacks by prompting you to accept a <em>host fingerprint</em>. Once you&apos;ve accepted this fingerprint, <code>ssh</code> will silently compare it on each log-in and refuse to connect if that fingerprint differs. (A cautious sysadmin may pre-distribute a set of <em>known host</em> fingerprints through some other channel.)</p>
+<p>You should have a pair of prompts as below: one to <code>web1</code> and another to <code>db1</code>.</p>
+<pre><code>% ssh opc@129.213.119.230
+The authenticity of host &apos;129.213.119.230 (129.213.119.230)&apos; can&apos;t be established.
+ECDSA key fingerprint is SHA256:j01Kp0TAJTJgcKdlhecIH7b3KfghdMDoIA5viaMuNWY.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added &apos;129.213.119.230&apos; (ECDSA) to the list of known hosts.
+[opc@web1 ~]$ 
+</code></pre><p>(Troubleshooting: add the -v flag to the ssh command for debugging output.)</p>
+<h3 id="deploy-and-configure-the-database">Deploy and configure the database</h3>
+<p>We&apos;ll use the following process to deploy and configure the database:</p>
+<ul>
+<li>we&apos;ll install the database server software using an OS package;</li>
+<li>then we must make sure that the database service is turned on;</li>
+<li>the database has its own notion of user credentials. We&apos;ll need to change the <em>root</em> password before proceeding;</li>
+<li>finally, we&apos;ll add credentials and an empty database <em>schema</em> for the application to use. We expect the application itself to create the tables it needs (this is part of Hibernate&apos;s operation).</li>
+</ul>
+<h4 id="aside-whats-a-package">Aside: what&apos;s a <em>package</em>?</h4>
+<p>An <em>operating system package</em> is simply a bundle of software, together with a default configuration for that software. There are a few dominant package formats in the Linux distribution world. The one we&apos;ll be using is based around the <em>rpm</em> format, and is common to Redhat, Fedora, CentOS and Oracle Linux (amongst others). Debian and its derivated (such as Ubuntu) use a format called <em>deb</em>. Other formats exist; these are the commonest.</p>
+<p>In principle, a <em>package</em> comprises the following parts:</p>
+<ul>
+<li>clearly, there are file contents, which are unpacked into the host filesystem</li>
+<li>the package will also contain <em>metadata</em>, such as:<ul>
+<li>the package <em>name</em> and <em>version</em></li>
+<li>a human-readable <em>description</em></li>
+<li>a set of <em>dependencies</em> which can be automatically processed by a tool like <code>yum</code> to ensure that any requirements for a package are also installed;</li>
+<li>a set of &quot;provides&quot;, the dual concept to a dependency. A package may declare a mixture of both concrete and abstract provisions.</li>
+<li>pre- and post-installation scripts that are run as the package is installed. These are typically used to integrate the package with the system configuration;</li>
+<li>pre- and post-removal scripts, whose task is to undo any configuration changes as the package is removed.</li>
+</ul>
+</li>
+</ul>
+<p>A <em>package repository</em>, then, is typically a set of static files that collect the metadata and package contents for a set of packages, together with a set of cryptographic signatures that permit the installation tool to verify the package&apos;s authenticity.</p>
+<h3 id="database-installation">Database installation</h3>
+<p>On the <code>db1</code> host, issue the following commands. (They are presented without showing the <code>[opc@db1 ~]$</code> prompt for ease of cut-and-paste.</p>
+<pre><code># Host: db1
+sudo yum-config-manager --enable ol7_MySQL57
+sudo yum install mysql-server
+systemctl status mysqld.service 
+</code></pre><p>We should see that the <code>mysqld</code> service is installed, but not yet activated.</p>
+<pre><code>sudo systemctl enable mysqld.service
+sudo systemctl start mysqld.service 
+systemctl status mysqld.service 
+</code></pre><p>The <code>mysqld</code> service should now be running.</p>
+<p>We can check to ensure that the process is running like this:</p>
+<pre><code>ps -ef
+</code></pre><p>(look for a line containing <em>mysqld</em> in the output).</p>
+<p>We can confirm that the server is listening for connections from database clients:</p>
+<pre><code>netstat -an46
+</code></pre><p>You should see a line that indicates port 3306 is listening for connetions. (You might see this listed as <code>:::3306</code> which indicates that it will accept both IPv4 and IPv6 connections.)</p>
+<h3 id="database-configuration-change-the-root-password">Database configuration: change the <em>root</em> password</h3>
+<p><code>mysqld</code> will pick a random root password when it first starts, but it&apos;ll insist that we change it.</p>
+<p>We can locate the initial password in the mysqld <em>log file</em>.</p>
+<pre><code>sudo grep password /var/log/mysqld.log 
+</code></pre><p>You&apos;ll see a line like this:</p>
+<pre><code>2018-09-14T14:11:29.382824Z 1 [Note] A temporary password is generated for root@localhost: b;vRuNWWq8yK
+</code></pre><p>Copy that gibberish to the clipboard, then use it to log in to the database service:</p>
+<pre><code>mysql -u root -p
+</code></pre><p>You&apos;ll be prompted to</p>
+<pre><code>Enter password:
+</code></pre><p>you can paste in <code>b;vRuNWWq8yK</code> (or whatever the random password was). Hit <em>return</em> to proceed.</p>
+<pre><code>Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 4
+Server version: 5.7.23
+
+Copyright (c) 2000, 2018, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type &apos;help;&apos; or &apos;\h&apos; for help. Type &apos;\c&apos; to clear the current input statement.
+
+mysql&gt; 
+</code></pre><p>The first command that you must enter resets the root password. Use a different random password of your choice; at the <code>mysql&gt;</code> prompt, type:</p>
+<pre><code>alter user &apos;root&apos;@&apos;localhost&apos; identified by &apos;P8%aIjUxIh8:P4Wv&apos;;
+</code></pre><p>You should see:</p>
+<pre><code>Query OK, 0 rows affected (0.00 sec)
+
+mysql&gt; 
+</code></pre><p>You can enter a <em>control-D</em> key combination to drop out of the mysql client.</p>
+<h4 id="check-it-worked">Check it worked!</h4>
+<p>All troubleshooting is simpler if you validate each small step as you proceed. In this case, we&apos;ll immediately try logging back in using the new password.</p>
+<pre><code>mysql -u root -p
+</code></pre><p>At the <code>Enter password:</code> prompt, paste your new random password - above, this was <code>P8%aIjUxIh8:P4Wv</code>.</p>
+<pre><code>Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 5
+Server version: 5.7.23 MySQL Community Server (GPL)
+
+Copyright (c) 2000, 2018, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type &apos;help;&apos; or &apos;\h&apos; for help. Type &apos;\c&apos; to clear the current input statement.
+mysql&gt;
+</code></pre><h3 id="examine-the-existing-schemas">Examine the existing schemas</h3>
+<p><code>mysql</code> comes with a few built-in schemas:</p>
+<pre><code>mysql&gt; show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+4 rows in set (0.00 sec)
+
+mysql&gt; 
+</code></pre><h3 id="create-application-credentials">Create application credentials</h3>
+<p>We don&apos;t want to give the application total control over the database (although in this case we&apos;ll want it to be able to modify its own schema). So we&apos;ll add some credentials for the application to authenticate itself to the MySQL service:</p>
+<pre><code>mysql&gt; create user if not exists &apos;app&apos;@&apos;%&apos; identified by &apos;DxIHXE%6d7sD:EXI&apos;;
+Query OK, 0 rows affected (0.00 sec)
+</code></pre><h3 id="create-a-blank-database-schema-for-the-application">Create a blank database schema for the application</h3>
+<p>We&apos;ll also precreate a blank schema and grant this new user rights to modify it:</p>
+<pre><code>mysql&gt; create database app;
+Query OK, 1 row affected (0.00 sec)
+
+mysql&gt; grant all privileges on app.* to &apos;app&apos;@&apos;%&apos;;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql&gt; flush privileges;
+Query OK, 0 rows affected (0.00 sec)
+
+mysql&gt; ^DBye
+</code></pre><h3 id="confirm-that-the-new-credential-work">Confirm that the new credential work</h3>
+<p>From the same host, <code>db1</code>, we&apos;ll attempt to connect to this new database schema, using the credentials we&apos;ve just created.</p>
+<pre><code>[opc@db1 ~]$ mysql -u app app -p
+Enter password: DxIHXE%6d7sD:EXI
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 14
+Server version: 5.7.23 MySQL Community Server (GPL)
+
+Copyright (c) 2000, 2018, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type &apos;help;&apos; or &apos;\h&apos; for help. Type &apos;\c&apos; to clear the current input statement.
+
+mysql&gt; show tables;
+Empty set (0.00 sec)
+</code></pre><p>We can even create a new table:</p>
+<pre><code>mysql&gt; create table first (a integer);
+Query OK, 0 rows affected (0.02 sec)
+
+mysql&gt; describe first;
++-------+---------+------+-----+---------+-------+
+| Field | Type    | Null | Key | Default | Extra |
++-------+---------+------+-----+---------+-------+
+| a     | int(11) | YES  |     | NULL    |       |
++-------+---------+------+-----+---------+-------+
+1 row in set (0.01 sec)
+
+mysql&gt; 
+</code></pre><h3 id="summary">Summary</h3>
+<p>Thus far:</p>
+<ul>
+<li>we&#x2019;ve installed a database server;</li>
+<li>we&#x2019;ve added credentials for a new user to it&#x2028; (and the password isn&#x2019;t just &#x201C;secret&#x201D; :-) );</li>
+<li>we&#x2019;ve created a database schema for the application to use;</li>
+<li>we&#x2019;ve confirmed that it works <em>from the db1 host</em>.</li>
+</ul>
+<p>However, we want the Java service that will be running on <code>web1</code> to be able to communicate to this database service, too. At the moment, there are two impediments to that: the default ingress rules on this subnet prevent the connection from succeeding, <em>and</em> a host-based firewall on <code>db1</code> will additionally prevent that communication.</p>
+<p>In order to rectify that, we&apos;ll need to address both issues together.</p>
+<h3 id="communication-between-hosts">Communication between hosts</h3>
+<p>A simple tool for testing inter-host communication is <code>ping</code>. It attempts to send a single IP packet to its target, and listens for a response.</p>
+<p>Using the <code>ssh</code> session that&apos;s logged into the <code>web1</code> host, let&apos;s try pinging the host <code>db1</code>, as follows:</p>
+<pre><code>[opc@web1 ~]$ ping db1
+PING db1.sub09141050190.vcn0914105019.oraclevcn.com (10.0.0.6) 56(84) bytes of data.
+^C
+--- db1.sub09141050190.vcn0914105019.oraclevcn.com ping statistics ---
+6 packets transmitted, 0 received, 100% packet loss, time 4999ms
+</code></pre><p>There are two things to take away from this command. The first, positive thing to note is that <em>name resolution</em> is working: our host is successfully able to turn the name <code>db1</code> into an IP address (above, that&apos;s <code>10.0.0.6</code>).</p>
+<p>The cloud environment provides a DNS service that can resolve local host names.</p>
+<p>However, the ping traffic itself is blocked: packets are transmitted, but are neither received by the target host, nor are any responses sent or received.</p>
+<h3 id="network-security">Network security</h3>
+<p>By default, the security rules effectively look like this:</p>
+<h4 id="ingress-rules">Ingress rules</h4>
+<ul>
+<li><code>ssh</code> traffic is permitted into a host from anywhere on the internet (this enables us to log into the host in the first place!)</li>
+<li>ICMP control traffic is permitted; this traffic is required for <em>PMTU discovery</em> to work.</li>
+</ul>
+<h4 id="egress-rules">Egress rules</h4>
+<ul>
+<li>traffic <em>from</em> a VM to anywhere on the internet is permitted; additionally, since this rule is <em>stateful</em>, the response packets to any TCP connection will automatically be permitted to pass back to the VM.</li>
+</ul>
+<p>However, for inter-VM communication, we require <em>both</em> the egress rules (which currently suffice, since they target &apos;any host&apos;) <em>and</em> the ingress rules to permit that traffic.</p>
+<h3 id="security-rules-a-firewall-external-to-the-vms">Security rules: a firewall external to the VMs</h3>
+<p>We can examine the security rules currently in place. Locate the <code>Menu / Networking &gt; Virtual Cloud Networks</code> page.</p>
+<p><img src="04-00-network-view.png" alt=""></p>
+<p>We can drill down into this to find the <em>security list</em> attached to our subnets; this is the <code>Default Security List for net</code>. Examine the ingress rules:</p>
+<p><img src="04-01-security-list-ingress.png" alt=""></p>
+<p>and the rather simpler egress rules:</p>
+<p><img src="04-02-security-list-egress.png" alt=""></p>
+<p>We can ask to edit <em>all</em> rules at once. A dialog will pop open that lists both ingress and egress rules.</p>
+<p><img src="04-03-edit-security-rules.png" alt=""></p>
+<p>We&apos;ll make two changes. Firstly, permit <em>all</em> ICMP traffic from hosts on our VCN (which is identified by <code>10.0.0.0/16</code>).</p>
+<p><img src="04-04-allow-interhost-pings.png" alt=""></p>
+<p>We&apos;ll also permit <code>mysql</code> traffic whilst we&apos;re here.</p>
+<p>Wse <code>+ Add Rule</code> and add the following ingress rule:</p>
+<ul>
+<li>the <code>stateless</code> box should remain unselected</li>
+<li>the source type is <code>CIDR</code></li>
+<li>the source CIDR (netowrk range) is <code>10.0.0.0/16</code></li>
+<li>the IP protocol is <code>TCP</code></li>
+<li>the <em>source</em> port range remains unset (it defaults to <code>All</code>)</li>
+<li>the <em>destination</em> port range (that is, the target port on the VM where a service is listening) should be set to <code>3306</code>. Remember, we saw that the MySQL daemon was listening on this port.</li>
+</ul>
+<p><img src="04-05-allow-interhost-3306.png" alt=""></p>
+<p>Save the new security rules to make them active.</p>
+<h3 id="ping-working">Ping working</h3>
+<p>That&apos;s all that is required to make <code>ping</code> work: the VMs&apos; host-based firewalls permit ping traffic. Confirm this from the <code>web1</code> host:</p>
+<pre><code>[opc@web1 ~]$ ping db1
+PING db1.sub09141050190.vcn0914105019.oraclevcn.com (10.0.0.6) 56(84) bytes of data.
+64 bytes from db1.sub09141050190.vcn0914105019.oraclevcn.com (10.0.0.6): icmp_seq=1 ttl=64 time=0.252 ms
+64 bytes from db1.sub09141050190.vcn0914105019.oraclevcn.com (10.0.0.6): icmp_seq=2 ttl=64 time=0.217 ms
+64 bytes from db1.sub09141050190.vcn0914105019.oraclevcn.com (10.0.0.6): icmp_seq=3 ttl=64 time=0.238 ms
+^C
+--- db1.sub09141050190.vcn0914105019.oraclevcn.com ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2001ms
+rtt min/avg/max/mdev = 0.217/0.235/0.252/0.022 ms
+[opc@web1 ~]$ 
+</code></pre><h3 id="use-of-netcat-to-test-low-level-communication">Use of <em>netcat</em> to test low-level communication</h3>
+<p>We can check that TCP traffic is getting through (to any TCP service) using a low-level tool called <code>netcat</code> or <code>nc</code>. This simply makes a TCP connection and sends traffic through it.</p>
+<p>We can, potentially, use netcat to talk to an HTTP server. The MySQL protocol is <em>not</em> human-readable - it looks like gibberish. However, the simplest test is whether <em>any</em> traffic can get across the network.</p>
+<p>(With this kind of testing we show a simple troubleshooting process: we begin by narrowing down the scope of the communication we&apos;re testing until we find the point where it stops working.)</p>
+<p>We can begin by using netcat locally on the <code>db1</code> host. We know that the <code>mysql</code> command-line client was able to connect to the MySQL server on this host - so we&apos;d expect netcat to be able to do so, also. Let&apos;s try this! On the <code>db1</code> host:</p>
+<pre><code>[opc@db1 ~]$ sudo yum install -y nc
+[opc@db1 ~]$ nc localhost 3306 &lt; /dev/null
+J
+5.7.2vWHk#U4???26       *MM&quot;mysql_native_password[opc@db1 ~]$ 
+
+
+[opc@db1 ~]$ nc db1 3306 &lt; /dev/null
+J
+5.7.23  XG}a\#x???BG\L:9;Gysql_native_password[opc@db1 ~]$ 
+</code></pre><p>This looks hopeful! Indeed, we&apos;re seeing gibberish - but it <em>does</em> indicate that traffic is flowing over our (local) connection.</p>
+<p>Now, let&apos;s try the same experiment from <code>web1</code>.</p>
+<p>If you try this <em>before</em> adding the rule to the security list, you&apos;ll see netcat hang completely:</p>
+<pre><code>[opc@web1 ~]$ sudo yum install -y nc
+[opc@web1 ~]$ nc db1 3306
+(hangs)
+</code></pre><p>With the security rule enabled, we see some new behaviour:</p>
+<pre><code>[opc@web1 ~]$ nc db1 3306
+Ncat: No route to host.
+</code></pre><p>This indicates that the initial TCP packet has reached the host <code>db1</code> - however, in this case, the <em>host-based firewall</em> on <code>db1</code> has rejected the communication.</p>
+<h3 id="network-security-part-two-host-based-firewalls">Network security part two: host-based firewalls</h3>
+<p>These host-based firewalls represent a second line of defence. A common principle in securing systems is called <code>defence in depth</code>: if the first line is circumvented, then the next may prevent unwarranted intrusion.</p>
+<p>In this case, however, the traffic from <code>web1</code> <em>is</em> wanted, so we need to tell the host-based firewall to permit that traffic.</p>
+<h3 id="vm-db1-enabling-access-to-the-mysql-server">VM <em>db1</em>: enabling access to the <em>mysql</em> server</h3>
+<p>This configuration change must be done on the <code>db1</code> VM. Firstly, we query the firewall to ask what services it knows about.</p>
+<pre><code>[opc@db1 ~]$ sudo firewall-cmd --get-services
+RH-Satellite-6 amanda-client amanda-k5-client bacula bacula-client bitcoin bitcoin-rpc bitcoin-testnet bitcoin-testnet-rpc ceph ceph-mon cfengine condor-collector ctdb dhcp dhcpv6 dhcpv6-client dns docker-registry dropbox-lansync elasticsearch freeipa-ldap freeipa-ldaps freeipa-replication freeipa-trust ftp ganglia-client ganglia-master high-availability http https imap imaps ipp ipp-client ipsec iscsi-target kadmin kerberos kibana klogin kpasswd kshell ldap ldaps libvirt libvirt-tls managesieve mdns mosh mountd ms-wbt mssql mysql nfs nfs3 nrpe ntp openvpn ovirt-imageio ovirt-storageconsole ovirt-vmconsole pmcd pmproxy pmwebapi pmwebapis pop3 pop3s postgresql privoxy proxy-dhcp ptp pulseaudio puppetmaster quassel radius rpc-bind rsh rsyncd samba samba-client sane sip sips smtp smtp-submission smtps snmp snmptrap spideroak-lansync squid ssh synergy syslog syslog-tls telnet tftp tftp-client tinc tor-socks transmission-client vdsm vnc-server wbem-https xmpp-bosh xmpp-client xmpp-local xmpp-server
+[opc@db1 ~]$ 
+</code></pre><p>Hidden in that list is the <code>mysql</code> service (associated with port 3306). This firewall configuration item was one of the things that MySQL&apos;s package contained.</p>
+<p>Let&apos;s permit external traffic to the <code>mysql</code> service:</p>
+<pre><code>[opc@db1 ~]$ sudo firewall-cmd --add-service mysql
+success
+</code></pre><p>Having done that, we can check the status of the running firewall as follows:</p>
+<pre><code>[opc@db1 ~]$ sudo firewall-cmd --list-all
+public
+  target: default
+  icmp-block-inversion: no
+  interfaces: 
+  sources: 
+  services: ssh dhcpv6-client mysql
+  ports: 
+  protocols: 
+  masquerade: no
+  forward-ports: 
+  source-ports: 
+  icmp-blocks: 
+  rich rules: 
+</code></pre><p>If we&apos;re satisfied with that configuration, we can make it permanent; that means that it&apos;ll survive a reboot. Making these configuration changes &apos;live&apos; and only persisting them once we&apos;re satisfied that they&apos;re working is a suitable approach here: if we made an error (for instance, turning off ssh access) then we could reboot the VM through the web console to revert the firewall to a known-good state.</p>
+<pre><code>[opc@db1 ~]$ sudo firewall-cmd &#x2014;-runtime-to-permanent
+</code></pre><p>let&apos;s try that netcat check from host <code>web1</code> again:</p>
+<pre><code>[opc@web1 ~]$ nc db1 3306 &lt; /dev/null
+J
+5.7.23
+OCiQu&amp;???
+         NE1yd}pmysql_native_password[opc@web1 ~]$ 
+</code></pre><p>That looks promising. Now we know that traffic is passing between our <code>web1</code> host and the MySQL service running on <code>db1</code>. The next step is to ensure that the credentials that we&apos;ve set up work from the <code>web1</code> VM.</p>
+<p><img src="interhost-mysql.png" alt=""></p>
+<h3 id="testing-from-the-vm-web1-with-the-mysql-command-line-client">Testing from the VM <em>web1</em> with the <em>mysql</em> command-line client</h3>
+<p>We&apos;ll install the <code>mysql</code> cpommand-line client on <code>web1</code>. This is unnecessary to make our application work, but it&apos;s useful for testing purposes:</p>
+<pre><code>[opc@web1 ~]$ sudo yum install -y mysql
+[opc@web1 ~]$ mysql -u app -h db1 app -p
+Enter password: 
+</code></pre><p>Paste the password that we configured in here.</p>
+<pre><code>&#x2026;
+
+MySQL [app]&gt; describe first;
++-------+---------+------+-----+---------+-------+
+| Field | Type    | Null | Key | Default | Extra |
++-------+---------+------+-----+---------+-------+
+| a     | int(11) | YES  |     | NULL    |       |
++-------+---------+------+-----+---------+-------+
+1 row in set (0.00 sec)
+
+MySQL [app]&gt; 
+</code></pre><h3 id="summary">Summary</h3>
+<p>At this point:</p>
+<ul>
+<li>we have permitted enough network communication between VMs that processes on the <code>web1</code> VM can successfully get traffic through to the MySQL service running on <code>db1</code>;</li>
+<li>we&#x2019;ve <em>demonstrated</em> that we can talk to the database service from the host where we&#x2019;ll be running our application.&#x2028;&#x2028;</li>
+</ul>
+<p>The implication here is that our application, appropriately configured, should also be able to communicate with the database. Let&apos;s do that next.</p>
+<h3 id="deployment-install-the-java-application">Deployment: install the Java application</h3>
+<p>We have two options for deploying the <code>.jar</code> file. We can either build it on a laptop and upload it to the <code>web1</code> VM; <em>or</em>, we can download the prebuilt <code>.jar</code> file from GitHub and use that.</p>
+<p>In order to run the Java application, we&apos;ll need a <em>JRE</em> (Java Runtime Environment). This we&apos;ll install from an OS package.</p>
+<p>With those prerequisites in place, we&#x2019;ll begin by launching the application directly from the command-line, then finally look at how we can get it to automatically restart (like the MySQL service does).</p>
+<h3 id="getting-the-jar-file">Getting the <code>.jar</code> file</h3>
+<p>As a pre-requisite to this stage, you should have built (and run) the application locally.</p>
+<p>Copy the jar file up to <code>web1</code> from your laptop:</p>
+<pre><code>% ./gradlew build    
+% scp build/libs/uob-todo-app-0.1.0.jar opc@129.213.119.230:
+uob-todo-app-0.1.0.jar                                              100%   33MB 588.2KB/s   00:58
+</code></pre><p>This uses the <code>scp</code> tool, which communicates over the ssh protocol. (Clearly I used a slow network connection!)</p>
+<h3 id="install-a-jre-on-web1">install a <em>JRE</em> on <em>web1</em></h3>
+<p>This is done with another <code>yum</code> invocation:</p>
+<pre><code>[opc@web1 ~]$ sudo yum install -y java-1.8.0-openjdk-headless
+&#x2026;
+Complete!
+</code></pre><p>As always, we can check progress incrementally. Confirm that the JRE is now available:</p>
+<pre><code>[opc@web1 ~]$ java -version
+openjdk version &quot;1.8.0_181&quot;
+OpenJDK Runtime Environment (build 1.8.0_181-b13)
+OpenJDK 64-Bit Server VM (build 25.181-b13, mixed mode)
+</code></pre><h3 id="running-the-java-application-directly-from-the-command-line">Running the Java application directly from the command-line</h3>
+<p>We can launch the application directly - although it&#x2019;ll only run until we press Control-C or close the ssh session.&#x2028; You should be able to cut and paste a line like the following to do this. (The <code>\</code> at the end of a line tells the shell you&#x2019;ve not finished typing yet.)</p>
+<pre><code>java \
+     -Dspring.datasource.url=jdbc:mysql://db1:3306/app \
+     -Dspring.datasource.username=app \
+     -Dspring.datasource.password=&apos;DxIHXE%6d7sD:EXI&apos; \
+     -jar uob-todo-app-0.1.0.jar
+</code></pre><p>You&apos;ll need to embed the appropriate credentials into this command-line.</p>
+<p>You should see some output from the application as it starts up:</p>
+<pre><code>  .   ____          _            __ _ _
+ /\\ / ___&apos;_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | &apos;_ | &apos;_| | &apos;_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  &apos;  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::        (v2.0.3.RELEASE)
+&#x2026; a lot of output elided here &#x2026;
+2018-09-28 16:36:38.271  INFO 4980 --- [           main] uob_todo.Application                     : Started Application in 12.263 seconds (JVM running for 13.23)
+</code></pre><h3 id="testing-locally-with-curl">Testing locally with <em>curl</em></h3>
+<p>We can use a command-line HTTP client like <code>curl</code> to test that our application is working. Thus far, we&apos;ve done nothing to permit ingress traffic to the port that our application listens to - so, our test will have to connect locally, from <code>web1</code>. Open a second ssh session (whilst the first is still running the application), install <code>curl</code> and try it:</p>
+<pre><code>[opc@web1 ~]$ sudo yum install -y curl
+&#x2026;
+[opc@web1 ~]$ curl http://localhost:8080
+&lt;!doctype html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;My page&lt;/title&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;/styles.css&quot;&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;/main.css&quot;&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div id=&quot;app&quot;&gt;&lt;/div&gt;
+&lt;script src=&quot;/js/app.js&quot;&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre><p>Success!</p>
+<h3 id="another-look-at-the-database">Another look at the database</h3>
+<p>As our application started up, Hibernate should have set up tables in our schema. We can examine the database to confirm this. On the host <code>db1</code>, reconnect to the MySQL database as the <code>app</code> user (you&apos;ll need to paste that password in again). Let&apos;s see what the schema looks like:</p>
+<pre><code>mysql&gt; show tables;
++--------------------+
+| Tables_in_app      |
++--------------------+
+| first              |
+| hibernate_sequence |
+| todo_item          |
++--------------------+
+3 rows in set (0.00 sec)
+
+mysql&gt; describe todo_item;
++-----------+--------------+------+-----+---------+-------+
+| Field     | Type         | Null | Key | Default | Extra |
++-----------+--------------+------+-----+---------+-------+
+| id        | bigint(20)   | NO   | PRI | NULL    |       |
+| completed | bit(1)       | YES  |     | NULL    |       |
+| title     | varchar(255) | NO   |     | NULL    |       |
++-----------+--------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+</code></pre><p>Those new tables were programmatically created by our application.</p>
+<h3 id="configuring-the-java-application-to-run-as-a-daemon">Configuring the Java application to run as a daemon</h3>
+<p>The next step on <code>web1</code> is to set up our application to launch itself automatically on boot. We&apos;ll configure a <em>systemd unit</em> to do this. The plan is as follows:</p>
+<ul>
+<li>the systemd unit will be responsible for launching the application;</li>
+<li>it will read the password from a file;</li>
+<li>we&apos;ll run the application as the <code>opc</code> user (the user we&apos;ve logged in as);</li>
+<li>the application will still listen on port 8080.</li>
+</ul>
+<h4 id="put-the-password-into-a-file">Put the password into a file</h4>
+<p>On the host <code>web1</code> copy and paste the following lines:</p>
+<pre><code>cat &lt;&lt;&#x2018;EOF&#x2019; &gt; ~/app.password
+APP_PASSWORD=DxIHXE%6d7sD:EXI
+EOF
+</code></pre><p>You can check the contents of that file by typing <code>cat app.password</code>.</p>
+<h4 id="create-the-systemd-unit-file">Create the systemd unit file</h4>
+<p>A full explanation of <em>systemd</em> unit definitions is beyond the scope of this chapter - but documentation can be readily found online. We&apos;ll create the unit file by copying and pasting the following lines into the shell on <code>web1</code>:</p>
+<pre><code>cat &lt;&lt;&apos;EOF&apos; | sudo tee /etc/systemd/system/app.service
+[Unit]
+Description=Sample Java application
+After=network.service
+
+[Service]
+Type=simple
+EnvironmentFile=/home/opc/app.password
+ExecStart=/usr/bin/java \
+  -Dspring.datasource.url=jdbc:mysql://db1:3306/app \
+  -Dspring.datasource.username=app \
+  -Dspring.datasource.password=${APP_PASSWORD} \
+  -jar /home/opc/uob-todo-app-0.1.0.jar
+Restart=never
+StandardOutput=journal
+StandardError=journal
+TimeoutStartSec=300
+User=opc
+Group=opc
+
+[Install]
+WantedBy=multi-user.target
+EOF
+</code></pre><p>(The shell will probably insert a continuation prompt like <code>&gt;</code> as you go; this can be safely ignored.)</p>
+<h4 id="ensure-the-new-unit-is-set-to-run-on-reboot">Ensure the new unit is set to run on reboot</h4>
+<pre><code>[opc@web1 ~]$ sudo systemctl daemon-reload
+[opc@web1 ~]$ sudo systemctl enable app
+</code></pre><h4 id="start-the-application">Start the application</h4>
+<p>Before you start the application using <code>systemd</code>, you should ensure that the version you ran manually has been stopped. If it isn&apos;t, then the unit will fail to start, since another process will already be listening on port 8080.</p>
+<pre><code>[opc@web1 ~]$ sudo systemctl start app
+</code></pre><h4 id="check-the-units-status">Check the unit&apos;s status</h4>
+<pre><code>[opc@web1 ~]$ systemctl status app
+&#x25CF; app.service - Sample Java application
+   Loaded: loaded (/etc/systemd/system/app.service; enabled; vendor preset: disabled)
+   Active: active (running) since Fri 2018-09-28 17:18:00 GMT; 14s ago
+ Main PID: 6420 (java)
+   CGroup: /system.slice/app.service
+           &#x2514;&#x2500;6420 /usr/bin/java -Dspring.datasource.url=jdbc:mysql://db1:3306/ap...
+
+[           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat st...ext path &apos;&apos;
+Sep 28 17:18:13 web1 java[6420]: 2018-09-28 17:18:13.971  INFO 6420 --- [           main] uob_todo.Application                     : Started A...for 13.014)
+Hint: Some lines were ellipsized, use -l to show in full.
+</code></pre><p>If the application is running (you can look for the <code>java</code> line in the output of <code>ps -ef</code> and check that it&apos;s listening using <code>netstat -an46</code>), try connecting to it again:</p>
+<pre><code>[opc@web1 ~]$ curl http://localhost:8080
+&lt;!doctype html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;My page&lt;/title&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;/styles.css&quot;&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;/main.css&quot;&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div id=&quot;app&quot;&gt;&lt;/div&gt;
+&lt;script src=&quot;/js/app.js&quot;&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre><h3 id="permit-inbound-traffic-to-port-8080">Permit inbound traffic to port 8080</h3>
+<p>In order for our installed application to serve traffic over the internet, we&apos;ll need to open up the host-based firewall on <code>web1</code> to let traffic in to port 8080. Additionally, we&apos;ll need to add a security rule permitting ingress traffic from all hosts to that port.</p>
+<h4 id="the-host-based-firewall-configuration">The host-based firewall configuration</h4>
+<pre><code>[opc@web1 ~]$ sudo firewall-cmd --add-port 8080/tcp
+success
+[opc@web1 ~]$ sudo firewall-cmd --list-all
+public
+  target: default
+  icmp-block-inversion: no
+  interfaces: 
+  sources: 
+  services: ssh dhcpv6-client
+  ports: 8080/tcp
+  protocols: 
+  masquerade: no
+  forward-ports: 
+  source-ports: 
+  icmp-blocks: 
+  rich rules: 
+
+[opc@web1 ~]$ sudo firewall-cmd --runtime-to-permanent
+success
+</code></pre><h4 id="an-additional-security-rule">An additional security rule</h4>
+<p>Locate the security list via the web console again, edit all rules, and add the following entry:</p>
+<ul>
+<li>the ingress rule should not be stateless</li>
+<li>source type is <code>CIDR</code></li>
+<li>source CIDR is <code>0.0.0.0/0</code> (this means, &quot;everything&quot;)</li>
+<li>IP protocol is <code>TCP</code></li>
+<li>source port range is blank (<code>All</code>) - remember, the source port is selected randomly from the ephemeral range by the client</li>
+<li>the destination port range is <code>8080</code></li>
+</ul>
+<p><img src="port-8080-ingress-rule.png" alt=""></p>
+<p>Don&apos;t forget to save the security list.</p>
+<h4 id="check-the-connectivity">Check the connectivity</h4>
+<p>We can now try to connect to host <code>web1</code> from across the internet. We&apos;ll need to use <code>web1</code>&apos;s public IP address to do this:</p>
+<pre><code>% curl http://129.213.119.230:8080
+&lt;!doctype html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;My page&lt;/title&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;/styles.css&quot;&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;/main.css&quot;&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div id=&quot;app&quot;&gt;&lt;/div&gt;
+&lt;script src=&quot;/js/app.js&quot;&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre><p>If this works, we can put the same URL (we&apos;ll need to port specification also) into a browser: <code>http://129.2113.119.230:8080</code>.</p>
+<h3 id="troubleshooting-checklist">Troubleshooting checklist</h3>
+<p>To review: by taking small steps and checking as we progress, we have a systematic way to deploy the application.</p>
+<p>If &#x201C;it doesn&#x2019;t work!&#x201D; then we&apos;ll want a step-by-step process of diagnosis, looking to confirm that each piece of our architecture is working, slowly expanding the scope of our investigation until we discover what&apos;s broken:</p>
+<ul>
+<li>Is the process started? Is it still running?<ul>
+<li><code>systemctl status</code> or <code>ps -ef</code></li>
+</ul>
+</li>
+<li>Did it crash?<ul>
+<li>Check logs (look in /var/log or use <code>journalctl</code>)</li>
+</ul>
+</li>
+<li>Is it listening?<ul>
+<li><code>netstat -an46</code> or <code>lsof</code></li>
+</ul>
+</li>
+<li>Can I communicate to the service <em>locally</em>?<ul>
+<li><code>nc</code> or a specific protocol client, like <code>mysql</code> or <code>curl</code></li>
+</ul>
+</li>
+<li>Can I talk to it from another VM? If not:<ul>
+<li>Check the host firewall on the VM hosting the service</li>
+<li>Check the <em>ingress</em> security rules for the subnet of the target VM</li>
+<li>Check the <em>egress</em> security rules for the subnet of the client VM</li>
+</ul>
+</li>
+<li>Can I talk to it from across the internet?<ul>
+<li>Again, we can use appropriate tools here</li>
+<li>also ask: &quot;should I be able to?&quot; For instance, there&apos;s no reason why we&apos;d need to be able to make a connection to our MySQL service <em>across the internet</em>. If we <em>can</em>, then so can attackers!</li>
+</ul>
+</li>
+<li>Can this component talk to its dependencies?
+This is application-specific, but:<ul>
+<li>Are any embedded credentials correct?</li>
+<li>Can you make a connection to the same service from the same VM?</li>
+</ul>
+</li>
+</ul>
+<h2 id="locating-the-application-on-the-web">Locating the application on the web</h2>
+<p>We&apos;ve successfully published the application on the internet; but there are still some deficiencies. Most notably, IP addresses are neither memorable nor convenient. (The situation only becomes worse with IPv6 addresses, which are four times the size.)</p>
+<p>DNS has been mentioned previously as a way of hosts looking up IP addresses that correspond to names. We&apos;ve seen that the cloud provider arranges for &apos;local&apos; hostnames to be resolvable to their private IP addresses by VMs located on our subnets (<code>db1</code> mapping to <code>10.0.0.6</code>, for instance). The global <em>Domain Name System</em> lets us perform the same operation over a global, distributed database of names.</p>
+<h3 id="a-typical-dns-request---local-names">A typical DNS request - local names</h3>
+<p>Each VM has a local DNS server (whose details were supplied by DHCP). When a process on the VM wants to look up a local name, such as <code>db1</code>, it&apos;s first qualified with the configured local domain name. (In our case, this&apos;ll be something like <code>db1.sub09141050190.vcn0914105019.oraclevcn.com</code>; those names are taken from the subnet and VCN names - which were autogenerated for us when we asked for this VCN to be automatically provisioned on the boot of our first VM.) Note, this name is <em>not</em> resolvable from the wider internet - answers to lookups for this name are only served to local requests originating within our VCN.</p>
+<p>(That makes sense, since the IP addresses returned are all private ones that aren&apos;t routable over the Internet.)</p>
+<p><img src="dns-local-01.png" alt=""></p>
+<p>The local nameserver responds with an <em>A record</em>, which gives the <em>IN</em>ternet <em>A</em>ddress (or <em>A record</em>) of <code>db1</code>. The record comes with a <em>Time To Live</em> or <em>TTL</em> of 300 seconds. The host won&apos;t make another request for this name within that period.</p>
+<p><img src="dns-local-02.png" alt=""></p>
+<h3 id="a-typical-dns-request---global-names">A typical DNS request - global names</h3>
+<p>For names that are in the global DNS, the initial request hits the local resolver as before.</p>
+<p><img src="dns-global-01.png" alt=""></p>
+<p>If it doesn&apos;t already know the answer, the local resolver will ask the <em>global root server</em> the same question.</p>
+<p><img src="dns-global-02.png" alt=""></p>
+<p>The global root servers don&apos;t have an answer - but they <em>do</em> know about the <code>com.</code> <em>nameservers</em>, and respond to effectively say, &quot;you might ask here&quot;. </p>
+<p><img src="dns-global-03.png" alt=""></p>
+<p>The local reoslver continues to ask its question, directing the query as instructed.</p>
+<p><img src="dns-global-04.png" alt=""></p>
+<p>Again, the <code>com.</code> nameservers don&apos;t necessarily know the answer - but they <em>do</em> know the address of a more specific nameserver, for <code>example.com.</code>.</p>
+<p><img src="dns-global-05.png" alt=""></p>
+<p>When the local resolver asks those nameservers the same query...</p>
+<p><img src="dns-global-06.png" alt=""></p>
+<p>... they get a usable A record in response. Here, the TTL is about six hours. DNS tends to trade off the consistency of up-to-date responses for low latency; caching is built into its design.</p>
+<p><img src="dns-global-07.png" alt=""></p>
+<p>That A record is then returned to the process on the local VM, supplying the requested A record.</p>
+<p><img src="dns-global-08.png" alt=""></p>
+<h3 id="configuring-your-own-domain">Configuring your own domain</h3>
+<p>There are two parts to acquiring a new domain. The first is its registration; the second is to arrange the hosting of <em>nameservers</em> which will serve up DNS responses for your domain. Typically, most domain-name vendors will offer both of these as a package. (They&apos;ll usually offer a whole range of other services that you may not want to take advantage of.)</p>
+<h4 id="purchase-the-domain">Purchase the domain</h4>
+<p>Arguably the main challenge here is finding a good domain name that&apos;s available. Assuming we can find such a beast, we&apos;ll use an arbitrary reseller to manage the transaction.</p>
+<p><img src="domain-01.png" alt=""></p>
+<p>NOTE: the following sequence of screenshots were taken using a suggested reseller for the domain in question; no recommendation, positive or negative, should be implied. Navigating the control panel of these vendors may vary in the details, but the basic process should be similar in each case. The screenshots are illustrative; they all come from a vendor who displays the following assertion: <em>&quot;The entirety of this site is protected by copyright &#xA9; 2001&#x2013;2018 Namecheap.com.&quot;</em></p>
+<p>Let&apos;s go looking for a domain name. You&apos;re on your own here!</p>
+<p><img src="domain-02.png" alt=""></p>
+<p>For this example we just want the based registration and simple DNS hosting.</p>
+<p><img src="domain-03.png" alt=""></p>
+<p>The following should suffice...</p>
+<p><img src="domain-04.png" alt=""></p>
+<p>Time to hand over some money. As a ballpark indication of cost, this isn&apos;t far off the mark.</p>
+<p><img src="domain-05.png" alt=""></p>
+<p>Once the domain is registered, the <code>Manage</code> option is readily available. Let&apos;s try it.</p>
+<p><img src="domain-06.png" alt=""></p>
+<h4 id="set-up-one-or-more-a-records">Set up one or more A records</h4>
+<p>The domain management page offers a typical web control panel. The &quot;Advanced DNS&quot; tab looks like the one we&apos;re after. It defaults to looking like this:</p>
+<p><img src="domain-07.png" alt=""></p>
+<p>I&apos;ll add an <code>A Record</code> and then remove the <code>CNAME</code> one. The <code>Host</code> field is unusual: <code>@</code> is DNS-configuration slang for <em>this domain</em>. The value for the A Record is the public IP address of my host (or load-balancer - see below).</p>
+<p><img src="domain-08.png" alt=""></p>
+<h3 id="examining-dns-using-dig">Examining DNS using <em>dig</em></h3>
+<p>These days, the above process produces results almost immediately. We can use the <code>dig</code> tool to query for our new domain results:</p>
+<pre><code>[opc@db1 ~]$ sudo yum install -y bind-utils
+&#x2026;
+Complete!
+[opc@db1 ~]$ dig cumulonimbus.org.uk. a
+
+; &lt;&lt;&gt;&gt; DiG 9.9.4-RedHat-9.9.4-61.el7_5.1 &lt;&lt;&gt;&gt; cumulonimbus.org.uk. a
+;; global options: +cmd
+;; Got answer:
+;; -&gt;&gt;HEADER&lt;&lt;- opcode: QUERY, status: NOERROR, id: 9204
+;; flags: qr rd ra; QUERY: 1, ANSWER: 1, AUTHORITY: 2, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 4096
+;; QUESTION SECTION:
+;cumulonimbus.org.uk.        IN    A
+
+;; ANSWER SECTION:
+cumulonimbus.org.uk.    300    IN    A    129.213.13.157
+
+;; AUTHORITY SECTION:
+cumulonimbus.org.uk.    528    IN    NS    dns1.registrar-servers.com.
+cumulonimbus.org.uk.    528    IN    NS    dns2.registrar-servers.com.
+
+;; Query time: 104 msec
+;; SERVER: 169.254.169.254#53(169.254.169.254)
+;; WHEN: Wed Oct 17 13:06:31 GMT 2018
+;; MSG SIZE  rcvd: 123
+</code></pre><p>Now we can try pointing the browser at <code>http://cumulonimbus.org.uk:8080</code>; the next task is to get rid of that extra port specification.</p>
+<h3 id="summary">Summary</h3>
+<ul>
+<li>We&#x2019;ve installed the application using two VMs</li>
+<li>We can connect to it from the outside world</li>
+<li>We know how to plumb it into DNS if required.</li>
+</ul>
+<h2 id="extenstions-scalability">Extenstions: Scalability</h2>
+<p>We&apos;ve deployed the application on a single VM, talking to a single database server for persistence. This isn&apos;t completely satisfactory: we&apos;re gaining no benefit from a deployment across multiple <em>availability domains</em> for robustness; nor are we able to scale up to deal with additional load.</p>
+<p>Adding additional web servers is a straightforward task, which we&apos;ll look at next.</p>
+<p>(The scaling out of the persistence layer is a more complex topic which won&apos;t be covered here: the goal is to give a flavour of the options, not a comprehensive list. However, it&apos;s worth noting that in general, the horizontal scaling of deployment components which don&apos;t contain their own <em>shared state</em> is a simpler process. If multiple requests from a single client might be delivered to a multiple VMs, then those VMs must find a way to agree on the state that they present to the client. How can we ensure they are in sync?)</p>
+<p>For these stateless web servers, however, we can simply stand up and configure more VMs and put them behind a <em>load-balancer</em>. This involves several configuration steps within the OCI console - so let&apos;s examine a schematic first to get the goal in mind.</p>
+<h3 id="adding-a-load-balancer">Adding a load-balancer</h3>
+<p>The following diagram illustrates the configuration items that need to be set up. For the moment, we&apos;ll just focus on putting our single VM behind a load-balancer; adding additional <em>backends</em> is a mechanical process. The main advantage we&apos;ll glean from this is that the loadbalancer will forward requests aimed at the standard HTTP port, port 80, to our back ends: so, correctly configured, the URL that we&apos;re using can drop that port specification.</p>
+<p><img src="loadbalancer-schematic.png" alt=""></p>
+<p>Our VM on web1 listens on a given port, port 8080. Inside the load-balancer configuration, we have a <em>backend set</em> that coceptually collects the VM endpoints that are responsible for delivering a particular service.</p>
+<p>To the <em>backend set</em> we add a <em>backend</em>, which has a one-to-one association with our VM (and which targets the Java application listening on port 8080). The backend also has a notion of <em>health</em>; we can specify a check that the load-balancer will use to determine if a particular VM is currently capable of serving traffic.</p>
+<p>We couple this with a <em>listener</em> specification, which is configured to accept incoming requests over port 80 and distribute them over healthy backends.</p>
+<p>Finally, we&apos;ll want to update the security list configuration for our VCN. The web console can automate some of this; we want to permit the loadbalancer traffic to reach the backend VMs - and we want requests arriving from the Internet to reach our load-balancer listener.</p>
+<h3 id="adding-a-load-balancer-through-the-console">Adding a load-balancer through the console</h3>
+<p>Navigate to <code>Menu / Networking &gt; Load Balancers</code>.</p>
+<p><img src="07-00-load-balancers.png" alt=""></p>
+<p>Create a new load balancer. We&apos;ll give it another predictable name, <code>lb1</code>. We only need 100Mbps service here, although the load balancers themselves are capable of running at wire speed up to 10Gpbs.</p>
+<p><img src="07-01-load-balancer-create-a.png" alt=""></p>
+<p>We&apos;ll need to associate the loadbalancer with our VCN. For redundancy, public-facing load balancers require two subnets to attach to; we&apos;ll use our existing subnets in AD1 and AD2.</p>
+<p><img src="07-02-load-balancer-create-b.png" alt=""></p>
+<p>Once created, an (empty) loadbalancer detail is presented.</p>
+<p><img src="07-03-load-balancer-created.png" alt=""></p>
+<p>We&apos;ll need to add a backend set to it.</p>
+<p><img src="07-04-backend-sets.png" alt=""></p>
+<p>Again, we have some options to fill in. Because our backend set is distributing HTTP traffic, we&apos;ll call it <code>http</code> - although this isn&apos;t a requirement. We&apos;ll leave the other options unselected.</p>
+<p><img src="07-05-backend-set-create-a.png" alt=""></p>
+<p>Our backend set defines a health-checking policy. We&apos;ll ask it to try to make an HTTP request to each backend, every five seconds, and expect an HTTP 200 status code in response. The URL requested should ideally not require a large amount of computation from our VM - but it <em>should</em> be indicative that the service is working.</p>
+<p><img src="07-06-backend-create-b-health-check.png" alt=""></p>
+<p>This gives us an empty backend set.</p>
+<p><img src="07-07-backend-set-result.png" alt=""></p>
+<p>It has no backends. </p>
+<p><img src="07-08-backends.png" alt=""></p>
+<p>It&apos;s somewhat clunky, but we associate backends with their corresponding VM by using the VM&apos;s <em>OCID</em> (its unique identifier). Locate <code>web1</code> via <code>Menu / Compute &gt; Instances</code> and copy its OCID to the clipboard.</p>
+<p><img src="07-09-grab-instance-ocid.png" alt=""></p>
+<p>(The whole OCID is a long, random string.)</p>
+<p><img src="07-10-instance-ocid-is-long.png" alt=""></p>
+<p>Find our backend definitions again via <code>Menu / networking &gt; Load Balancers</code>. Add a backend and identify <code>web1</code> by pasting its OCID into that field. The service will be listening on port 8080.</p>
+<p><img src="07-11-edit-backends.png" alt=""></p>
+<p>As the request is submitted, we&apos;re asked if we want to add security rules automatically to support this load balancer traffic. </p>
+<p><img src="07-12-security-rules-for-backend-a.png" alt=""></p>
+<p>We absolutely want this! Hit <code>Create Rules</code>.</p>
+<p><img src="07-12-security-rules-for-backend-b.png" alt=""></p>
+<p>Now our backend set should have a single backend, associated with our running VM.</p>
+<p><img src="07-13-backends-result.png" alt=""></p>
+<p>We&apos;ll want a listener to front this.</p>
+<p><img src="07-14-listeners.png" alt=""></p>
+<p>Again, the name is pretty arbitrary. We&apos;ll ask for TCP load balancing; this makes the load balancer distribute traffic without inspecting its contents. We&apos;ll pick the backend set that we&apos;ve just created to target.</p>
+<p><img src="07-15-create-tcp-listener.png" alt=""></p>
+<p>The resulting detail page of our configured load balancer. Note, it has its own public IP address. Make a note of this!</p>
+<p><img src="07-16-lb-public-ip.png" alt=""></p>
+<p>We can examine the new ingress and egress rules that have been added to our security list. There&apos;s one more step required to enable Internet traffic to reach our load balancer.</p>
+<p><img src="07-17-lb-ingress-rules.png" alt=""></p>
+<p>We need to edit ingress rule 5 - which is the one that permitted traffic directly to the Java application on <code>web1</code> - and instead change the destination port to port 80. That&apos;s the port the listener is responding on.</p>
+<p><img src="07-18-edit-8080-offsite-to-80.png" alt=""></p>
+<h3 id="checking-via-ip-address">Checking: via IP address</h3>
+<p>To confirm that traffic is flowing, we&apos;ll try targetting the public IP address of our load balancer. From your laptop:</p>
+<pre><code>% curl http://129.213.13.157 
+&lt;!doctype html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;My page&lt;/title&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;/styles.css&quot;&gt;
+    &lt;link rel=&quot;stylesheet&quot; href=&quot;/main.css&quot;&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div id=&quot;app&quot;&gt;&lt;/div&gt;
+&lt;script src=&quot;/js/app.js&quot;&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre><h3 id="optional-checking-via-dns-name">Optional: checking via DNS name</h3>
+<p>If you&apos;ve registered a domain name, you can edit its <em>A Record</em> to have the same value. With that done, you should be able to point your browser at your new, neater URL: <code>http://cumulonimbus.org.uk</code> in our case.</p>
+<p><img src="domain-name-via-loadbalancer.png" alt=""></p>
+<h2 id="extensions-scaling-and-robustness-in-the-persistence-layer">Extensions: scaling and robustness in the persistence layer</h2>
+<p>We&apos;ll not cover this here. In the modern world, there are many strategies to spread the load over a series of persistence backends: for example, MySQL can be configured in a <em>multi-master</em> arrangement to offer an HA deployment across three ADs. Beyond that, you might want to examine what structured storage options are available via the PaaS offerings of your cloud provider. (It all depends on whether you&apos;re enjoying the <em>undifferentiated heavy lifting!</em>)</p>
+<h2 id="food-for-thought-service-continuity">Food for thought: service continuity</h2>
+<p>We&apos;ve not really touched yet on the question of service continuity and availability. Decisions here should be largely driven by the economics of one&apos;s business model - and any compliance requirements imposed upon you as a service provider.</p>
+<p>At the very least, you may want to consider taking backups of your persisted content. There are various mysql tools that can dump the state of the database to a file; this could be uploaded to a bucket in the <em>Object Storage Service</em> as a bare minimum.</p>
+<p>It&apos;s an old truism, but when looking at this you should bare in mind the following two-part adage:</p>
+<ul>
+<li>a backup plan is not complete without a recovery plan</li>
+<li>a recovery plan doesn&#x2019;t work unless you&#x2019;ve tested it</li>
+</ul>
+<p>Beyond the question of backups, however, we should really focus on the question of <em>service availability</em>. A great deal has been written about this. It may well be the case that decisions here will have an impact upon your application architecture. The kinds of questions that you should be asking yourself are:</p>
+<ul>
+<li>What does my data represent?</li>
+<li>How important is it that it&#x2019;s fresh (consistent, versus available)?</li>
+<li>How long an outage can I tolerate?</li>
+<li>&#x2026;of what fraction of data?</li>
+<li>How secure are copies?</li>
+<li>Do I need a transactional history?</li>
+</ul>
+<h2 id="extensions-regional-scalability">Extensions: regional scalability</h2>
+<p>Not all Internet traffic needs to cross the Atlantic. For reasons of geographical robustness, legal compliance, and lowering client latency (and potentially, our own traffic costs), we should consider GeoDNS.</p>
+<p>GeoDNS has a simple model in principle. As requests arrive to DNS servers, they carry a <em>source address</em> - the address of the requesting nameserver. The assumption is that that nameserver is going to be geographically closely located to the client. There exist databases that map regions of public IP address space to geographical location; from these, we can make a guess at where the client responsible for a particular request is located.</p>
+<p>If we then send a DNS response that carries the A record of a deployment in a local data-centre, the client&apos;s requests will be directed to, and can be served by, a geographically close instantiation of our infrastructure.</p>
+<p>This sounds great, but there are a couple of downsides, aside from a higher level of configuration complexity.</p>
+<p>The first issue concerns what happens if an entire region becomes unavailable. In those circumstances, the GeoDNS servers will need to be reconfigured to direct client traffic from the affected regions to a backup location. There&apos;s a tension here between the desire for liveness and the caching properties of DNS. If I want a user&apos;s traffic to be impacted for no more than 60s, that puts an upper limit on the TTL of my DNS responses. That in turn will mean a higher DNS load. It&apos;s an interesting observation that the ready availability of cloud infrastructure itself is exerting pressures on well-established technologies.</p>
+<p>The second issue raises a question of our data architecture: again, we&apos;re looking at a tradeoff between consistency (the liveness of the data we present) and latency. In particular, we should ask what happens if a user&apos;s session with one datacentre is interrupted. It&apos;s common to have an asynchronous process for replicating state between sites; we need to understand the semantics of that in terms of what the user experience is.</p>
+<p>(As an example, it&apos;s no big deal if the &quot;add this series to my list&quot; feature looks five minutes out-of-date in the case that my streaming TV provider experiences a partial outage; indeed, most users probably wouldn&apos;t notice.)</p>
+<h2 id="extensions-monitoring">Extensions: monitoring</h2>
+<p>If we&apos;re running a service, then it behooves us to be able to answer the question, &quot;is it up?&quot; There are more nuanced variations on this question, however, which rely on us establishing our <em>Service Level Objectives</em>.</p>
+<p>It&apos;s not necessarily simply the case that user requests can be serviced; we often want to guarantee that we are servicing those requests rapidly enough.</p>
+<p>We may also want to look at individual components of our deployment, rather than relying on <em>black box</em> monitoring. Is our database struggling? What kinds of query rates is it experiencing? How does that compare to a historical view?</p>
+<h3 id="from-within-a-cluster">From within a cluster</h3>
+<p>We can instrument the parts of our application to deliver metrics to a collection point. Various tools (such as <em>Prometheus</em>) are available to collect and collate this data.</p>
+<h3 id="offsite-monitoring">Offsite monitoring</h3>
+<p>We may also want to extend our black-box monitoring to alert us to problems across the wider internet; our internal monitoring process may be fine within a datacentre, but that doesn&apos;t account for problems the Internet may be experiencing in routing traffic to that datacentre.</p>
+<p>It&apos;s not an uncommon tactic, with a multi-region deployment, to have each instantiation of our architecture set up to monitor its peers.</p>
+<h2 id="extensions-security">Extensions: security</h2>
+<p>At the moment, we&apos;re delivering unencrypted HTTP traffic from port 80.</p>
+<p>In the modern world, there&apos;s an onus upon us to protect the traffic (as well as the data at rest) of our users. At the very least, we should consider enabling <em>TLS</em> service from our web application.</p>
+<p>TLS configuration is beyond the scope of this chapter, but we&apos;ll offer a basic outline of a few broad approaches. the first is to <em>terminate secure connections at the boundary</em> - that is, to configure our load balancers with TLS certificates, and to have them handle the negotiation of that secure protocol.</p>
+<p>The second option is to tunnel a client&apos;s encrypted traffic all the way to our VMs.</p>
+<p>Finally, we might use a hybrid approach: terminating external TLS at the load balancer, but delivering internally-encrypted traffic to our VMs.</p>
+<h3 id="lets-encrypt">&quot;Let&apos;s Encrypt&quot;</h3>
+<p>A simple service that enables more-or-less hands-off encryption is called &quot;Let&apos;s Encrypt&quot;. There are various tutorials that walk through the use of a Let&apos;s Encrypt certificate with a java server.</p>
+<h1 id="automation">Automation</h1>
+<p>By now, it should be clear that setting up our infrastructure using a combination of a web console and <code>ssh</code> is a painful, fiddly, and error-prone process. It&apos;s a process that we might try once, but surely there&apos;s a better way?</p>
+<p>In fact, there are a plethora of &quot;better ways&quot; that fit within the IaaS model. To begin with, the OCI console (like most other cloud providers&apos; consoles) simply fronts a REST API that will accept programatic requests. So at a bare minimum, we could effetively <em>script up</em> our infrastructure creation using tools that talk to that API (and scripted <code>ssh</code> invocations - almost everything that was done within an <code>ssh</code> session in this chapter was designed to require a limited level of interaction). Where we have configuration that needs to be shared between VMs (for instance, our MySQL password was needed on <code>db1</code> <em>and</em> <code>web1</code> - in the former case to configure the application&apos;s credentials, and in the latter to actually make client connections to the database) we can write scripts that ensure the appropriate secrets are distributed effetively and reliably.</p>
+<p>But we can go beyond this; tools that help us move towards a more declarative approach of <em>describing what we want</em> and then <em>determining the changes required</em>, and <em>applying that plan</em> are available. Largely, they will fall into two categories:</p>
+<ul>
+<li>tools that help us establish our infrastructure. These are the moral equivalent of &quot;clicking in the web console&quot;; and</li>
+<li>tools that help us configure individual VMs. These are the moral equivalent of <code>ssh</code> sessions.</li>
+</ul>
+<p>There are also tools that attempt - with more or less success - to combine both of these. Of interest may be:</p>
+<ul>
+<li><p>Terraform. This falls into the first category (although it can also run scripts over ssh sessions). It lets us define an infrastructural layout in a declarative fashion, then makes changes to a deployed architecture to make those changes live.</p>
+<p>Terraform does tend to be an all-or-nothing option, however: it is fiddly to try to get it to automate <em>some</em> pieces of a deployment whilst integrating with other, preconfigured parts. If you find yourself wanting to do this then you&apos;re probably fighting against the tool.</p>
+</li>
+<li><p>Chef, Ansible, Salt, Puppet, Fabric and other tools come from the universe host configuration management. These tend to be better at configuring VMs - and they <em>may</em> have plugins that attempt to perform infrastructure configuraiton, although often there&apos;s a bit of an impedance mismatch.</p>
+</li>
+</ul>
+<h1 id="updates">Updates</h1>
+<p>We&apos;ve left the most important question until last: but it&apos;s one you should ask yourself early during your application design. &quot;How do I update this?&quot;</p>
+<p>The question really falls into multiple parts:</p>
+<ul>
+<li><p>&#x201C;What about this critical OS update?&#x201D;</p>
+<p>A full VM comes with an OS stack that has a large number of moving parts. All of those packages need keeping up-to-date. Security vulnerabilities, however, are very common. How will you respond when a critical vulnerability comes to light?</p>
+<ul>
+<li>Are you going to patch, or blow away VMs and redeploy with a newer image?</li>
+</ul>
+</li>
+<li><p>&#x201C;How do I change my application?&#x201D;</p>
+<p>We can break this question down by looking at the deployment architecture of our application. It may well be possible to update different parts of the application at different cadences (in fact, it&apos;s this promise which motivates much of the interest in microservice architectures). But even then, some changes may be superficial, and other changes may affect our data architecture. These can be harder to work with.</p>
+</li>
+<li><p>What about database schemas?</p>
+<ul>
+<li>Hibernate offers support for database migrations; but again, these will need testing in a staging environment before being delpoyed into production.</li>
+</ul>
+</li>
+<li><p>Do I need to take everything down to bring up a new version?</p>
+<p>To answer this question you need to consider what your users will tolerate. Some SaaS offerings might build a <em>maintenance window</em> into their contractual obligations, but for many clients this might be unacceptable. If your service needs to be running continuously, you&apos;ll need a way to update parts of your architecture &quot;invisibly&quot;.</p>
+</li>
+<li><p>What about the REST API? Is it versioned? Will old clients continue to work? Does that matter?</p>
+<p>We&apos;re controlling the JavaScript client that&apos;s delivered to browsers, so it may be feasible to update this in lockstep with a server-side APi update. However, consider how older clients will behave. Do we want older clients to be able to continue working? Can we make our APIs forward- and backwards- compatible?</p>
+</li>
+<li><p>How can I manage multi-region updates?</p>
+<p>A multi-region deployment exacerbates all of these issues. No deployment is instantaneous; but having to deal with multiple regions smears the update window out significantly. Can you handle multiple, parallel deployments? Can multiple teams of developers be in the proces of releasing new versions at the same time?</p>
+</li>
+</ul>
+<p>Answers to these questions can have a large impact across your design - touching the architecture of your infrastructure, your application deployment, its API and its data definitions.</p>
+<h2 id="continuous-deployment-in-our-architecture">Continuous Deployment in our architecture</h2>
+<p>We can elide answers to these difficult questions for the moment, however, and simply focus on an easier problem: <em>how do we update our running application?</em></p>
+<p>In our case, the application behaviour is contained within a single <code>.jar</code> file. Our update process, therefore, could conceptually be very simple:</p>
+<ul>
+<li>fetch a new version of our <code>.jar</code> file from GitHub;</li>
+<li><p>make it live by restarting the application.</p>
+<p>  [opc@web1 ~]$ wget <a href="https://github.com/MadalinaPatrichi/uob-cloud-computing/releases/download/v0.1.0/uob-todo-app-0.1.0.jar" target="_blank">https://github.com/MadalinaPatrichi/uob-cloud-computing/releases/download/v0.1.0/uob-todo-app-0.1.0.jar</a> -O uob-todo-app-0.1.0.jar.new</p>
+</li>
+</ul>
+<p>We&apos;ll keep a copy of the older application in case we need to rollback:</p>
+<pre><code>[opc@web1 ~]$ cp uob-todo-app-0.1.0.jar uob-todo-app-0.1.0.jar.orig-$(date +%Y%m%d)
+</code></pre><p>Then we&apos;ll rename the downloaded version over the original <code>.jar</code> file:</p>
+<pre><code>[opc@web1 ~]$ mv uob-todo-app-0.1.0.jar.new uob-todo-app-0.1.0.jar
+</code></pre><p>Finally, we&apos;ll restart the application. This might take several seconds before it begins to respond to requests; it&apos;s in situations like this where we&apos;d benefit from a load-balanced deployment, perhaps.</p>
+<pre><code>[opc@web1 ~]$ sudo systemctl restart app
+</code></pre><h1 id="the-good-news">The good news</h1>
+<p>Well done if you&apos;ve reached this far!</p>
+<p>All of this is very fiddly. The good news is that there are simpler, more uniform, and higher-level approaches to dealing with most of the problems we&apos;ve encountered during this deployment.</p>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="../chapter_1/Chapter_1.html" class="navigation navigation-prev " aria-label="Previous page: Chapter 1 : Running an application on the internet">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="../chapter_5/01_introduction.html" class="navigation navigation-next " aria-label="Next page: Chapter 5 : Observability & Autoscaling">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"Chapter 2 : Application deployment the hard way: IaaS","level":"1.3","depth":1,"next":{"title":"Chapter 5 : Observability & Autoscaling","level":"1.4","depth":1,"path":"chapter_5/01_introduction.md","ref":"chapter_5/01_introduction.md","articles":[{"title":"Why do we need observability?","level":"1.4.1","depth":2,"path":"chapter_5/02_Why_do_we_need_observation.md","ref":"chapter_5/02_Why_do_we_need_observation.md","articles":[]}]},"previous":{"title":"Chapter 1 : Running an application on the internet","level":"1.2","depth":1,"path":"chapter_1/Chapter_1.md","ref":"chapter_1/Chapter_1.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":[],"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"chapter_2/ch2.md","mtime":"2018-10-17T15:42:41.389Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2018-10-17T15:43:19.743Z"},"basePath":"..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../gitbook/gitbook.js"></script>
+    <script src="../gitbook/theme.js"></script>
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+

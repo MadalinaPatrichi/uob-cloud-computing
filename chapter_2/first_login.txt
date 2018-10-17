@@ -1,0 +1,38 @@
+% ssh ubuntu@129.213.136.2
+The authenticity of host '129.213.136.2 (129.213.136.2)' can't be established.
+ECDSA key fingerprint is SHA256:GIoogntuQTnC+0Y87YePSdBFM/ReW+lNjQBGKhiGwAY.
+Are you sure you want to continue connecting (yes/no)? yes
+Warning: Permanently added '129.213.136.2' (ECDSA) to the list of known hosts.
+Welcome to Ubuntu 18.04.1 LTS (GNU/Linux 4.15.0-32-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+
+  System information as of Fri Sep 14 10:53:25 UTC 2018
+
+  System load:  0.4               Processes:           100
+  Usage of /:   3.1% of 44.97GB   Users logged in:     0
+  Memory usage: 1%                IP address for ens3: 10.0.0.2
+  Swap usage:   0%
+
+  Get cloud support with Ubuntu Advantage Cloud Guest:
+    http://www.ubuntu.com/business/services/cloud
+
+0 packages can be updated.
+0 updates are security updates.
+
+
+
+The programs included with the Ubuntu system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Ubuntu comes with ABSOLUTELY NO WARRANTY, to the extent permitted by
+applicable law.
+
+To run a command as administrator (user "root"), use "sudo <command>".
+See "man sudo_root" for details.
+
+ubuntu@web1:~$ 
+
