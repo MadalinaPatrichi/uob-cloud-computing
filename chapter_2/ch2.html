@@ -284,7 +284,7 @@ ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDM+UIk50jMoHOEPReFcO+hTEPe3mfq8ow1ObCF4CM2
 <p><img src="02-03-create-instance-web-result.png" alt="create instance result" title="Launch instance, result"></p>
 <p>Notice that there are two IP addresses listed for the host - a private IP address and a public IP address. It&apos;s the latter that we&apos;ll use to connect to this VM over the internet.</p>
 <h3 id="a-note-on-tags">A note on tags</h3>
-<p>Resources can be <em>tagged</em> with arbitrary labels. For a small deployment, this may seem unnecessary; however, for larger deployments, it can be useful to identify the various categories that a VM (or network) belongs to. Example divisions might be: <em>environment</em> (staging, production, ...); <em>cost centre</em>; or perhaps the particular application that a resource is associated with.</p>
+<p>Resources can be <em>tagged</em> with arbitrary labels. For a small deployment, this may seem unnecessary; however, for larger deployments, it can be useful to identify the various categories that a VM (or network) belongs to. Example divisions might be: <em>environment</em> (staging, production, &#x2026;); <em>cost centre</em>; or perhaps the particular application that a resource is associated with.</p>
 <h2 id="booting-the-second-vm">Booting the second VM</h2>
 <p>This process is very similar; we&apos;ll create the second instance (using <code>Oracle Linux 7.5</code> as the image operating system) on another small VM in the same compartment. Call it <code>db1</code>:</p>
 <p><img src="03-00-create-instance-db.png" alt="create second_instance" title="Launch instance, result"></p>
@@ -312,12 +312,12 @@ ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDM+UIk50jMoHOEPReFcO+hTEPe3mfq8ow1ObCF4CM2
 <p><img src="tcp-02.png" alt=""></p>
 <p>A client might want to make several outgoing calls to the same service at the same time. To distinguish them, the client also allocates an <em>ephemeral port</em> (typically from higher in the available range).</p>
 <p><img src="tcp-03.png" alt=""></p>
-<p>A connection is identified by a 4-tuple: (<em>local address, local port, remote address, remote port</em>). &#x2028;The local and remote ends of a TCP connection appear in a table maintained by the operating system of each host.</p>
+<p>A connection is identified by a 4-tuple: (<em>local address, local port, remote address, remote port</em>). The local and remote ends of a TCP connection appear in a table maintained by the operating system of each host.</p>
 <p>All TCP packets carry these addresses: both source, and destination.</p>
 <p><img src="tcp-04.png" alt=""></p>
-<p>Traffic from the client carries the source and destination information one way around...</p>
+<p>Traffic from the client carries the source and destination information one way around&#x2026;</p>
 <p><img src="tcp-05.png" alt=""></p>
-<p>... and the return traffic carries it the other way around.</p>
+<p>&#x2026; and the return traffic carries it the other way around.</p>
 <p><img src="tcp-06.png" alt=""></p>
 <h4 id="the-interget-gateway-network-address-translation-or-nat">The Interget Gateway: Network Address Translation, or <em>NAT</em>.</h4>
 <p>When packets traverse the internet gateway, it rewrites the corresponding destination address (or source address, for outbound packets), replacing the public IP address with its corresponding private one.</p>
@@ -335,7 +335,7 @@ Proto Recv-Q Send-Q Local Address           Foreign Address         State
 tcp        0      0 127.0.0.1:3306          0.0.0.0:*               LISTEN     
 tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN     
 tcp        0      0 192.168.99.4:44112      192.168.99.2:22         ESTABLISHED
-</code></pre><p>There are other commands that&#x2019;ll give you this information, but this is a common one, although its command-line parameters vary depending on the operating system. On a Mac: use &#x2028;<code>netstat -anf inet</code>.</p>
+</code></pre><p>There are other commands that&apos;ll give you this information, but this is a common one, although its command-line parameters vary depending on the operating system. On a Mac: use <code>netstat -anf inet</code>.</p>
 <h3 id="aside-the-runtime-configuration-of-the-vm">Aside: the runtime configuration of the VM</h3>
 <p>A VM is booted from a copy of an <em>operating system image</em>. That image has fixed contents (filesystem layout, boot-time daemons, etc.) However, each VM instance is differentiated from the next with a small number of run-time parameters that are typically injected during the boot process. In particular, each VM has its own IP address; this must be configured into the operating system somehow. Additionally, the public half of the ssh keypair that was supplied during instance creation needs to be installed in the filesystem in order to be effective.</p>
 <h4 id="dhcp">DHCP</h4>
@@ -363,7 +363,7 @@ tcp        0      0 192.168.99.4:44112      192.168.99.2:22         ESTABLISHED
 </ul>
 <h3 id="log-in">Log in</h3>
 <p>As you work between the two VMs, it can be convenient to have a shell window open with a connection to each. In two separate terminal, launch a connection to each VM.</p>
-<p>If you&#x2019;ve picked Oracle Linux, the username to log in with is opc. (For Ubuntu, it&#x2019;s &#x201C;ubuntu&#x201D;; but the firewall and package management commands will be different, so the following write-up assumes the former.)</p>
+<p>If you&apos;ve picked Oracle Linux, the username to log in with is opc. (For Ubuntu, it&apos;s &quot;ubuntu&quot;; but the firewall and package management commands will be different, so the following write-up assumes the former.)</p>
 <p>The VMs should have been configured to accept your ssh key, as we&apos;ve seen.</p>
 <p>You can log into each host by supplying the public IP address, as shown in the web console. <code>ssh</code> attempts to protect against man-in-the-middle attacks by prompting you to accept a <em>host fingerprint</em>. Once you&apos;ve accepted this fingerprint, <code>ssh</code> will silently compare it on each log-in and refuse to connect if that fingerprint differs. (A cautious sysadmin may pre-distribute a set of <em>known host</em> fingerprints through some other channel.)</p>
 <p>You should have a pair of prompts as below: one to <code>web1</code> and another to <code>db1</code>.</p>
@@ -526,10 +526,10 @@ mysql&gt;
 </code></pre><h3 id="summary">Summary</h3>
 <p>Thus far:</p>
 <ul>
-<li>we&#x2019;ve installed a database server;</li>
-<li>we&#x2019;ve added credentials for a new user to it&#x2028; (and the password isn&#x2019;t just &#x201C;secret&#x201D; :-) );</li>
-<li>we&#x2019;ve created a database schema for the application to use;</li>
-<li>we&#x2019;ve confirmed that it works <em>from the db1 host</em>.</li>
+<li>we&apos;ve installed a database server;</li>
+<li>we&apos;ve added credentials for a new user to it (and the password isn&apos;t just &quot;secret&quot; :-) );</li>
+<li>we&apos;ve created a database schema for the application to use;</li>
+<li>we&apos;ve confirmed that it works <em>from the db1 host</em>.</li>
 </ul>
 <p>However, we want the Java service that will be running on <code>web1</code> to be able to communicate to this database service, too. At the moment, there are two impediments to that: the default ingress rules on this subnet prevent the connection from succeeding, <em>and</em> a host-based firewall on <code>db1</code> will additionally prevent that communication.</p>
 <p>In order to rectify that, we&apos;ll need to address both issues together.</p>
@@ -643,7 +643,7 @@ public
   icmp-blocks: 
   rich rules: 
 </code></pre><p>If we&apos;re satisfied with that configuration, we can make it permanent; that means that it&apos;ll survive a reboot. Making these configuration changes &apos;live&apos; and only persisting them once we&apos;re satisfied that they&apos;re working is a suitable approach here: if we made an error (for instance, turning off ssh access) then we could reboot the VM through the web console to revert the firewall to a known-good state.</p>
-<pre><code>[opc@db1 ~]$ sudo firewall-cmd &#x2014;-runtime-to-permanent
+<pre><code>[opc@db1 ~]$ sudo firewall-cmd --runtime-to-permanent
 </code></pre><p>let&apos;s try that netcat check from host <code>web1</code> again:</p>
 <pre><code>[opc@web1 ~]$ nc db1 3306 &lt; /dev/null
 J
@@ -673,13 +673,13 @@ MySQL [app]&gt;
 <p>At this point:</p>
 <ul>
 <li>we have permitted enough network communication between VMs that processes on the <code>web1</code> VM can successfully get traffic through to the MySQL service running on <code>db1</code>;</li>
-<li>we&#x2019;ve <em>demonstrated</em> that we can talk to the database service from the host where we&#x2019;ll be running our application.&#x2028;&#x2028;</li>
+<li>we&apos;ve <em>demonstrated</em> that we can talk to the database service from the host where we&apos;ll be running our application.</li>
 </ul>
 <p>The implication here is that our application, appropriately configured, should also be able to communicate with the database. Let&apos;s do that next.</p>
 <h3 id="deployment-install-the-java-application">Deployment: install the Java application</h3>
 <p>We have two options for deploying the <code>.jar</code> file. We can either build it on a laptop and upload it to the <code>web1</code> VM; <em>or</em>, we can download the prebuilt <code>.jar</code> file from GitHub and use that.</p>
 <p>In order to run the Java application, we&apos;ll need a <em>JRE</em> (Java Runtime Environment). This we&apos;ll install from an OS package.</p>
-<p>With those prerequisites in place, we&#x2019;ll begin by launching the application directly from the command-line, then finally look at how we can get it to automatically restart (like the MySQL service does).</p>
+<p>With those prerequisites in place, we&apos;ll begin by launching the application directly from the command-line, then finally look at how we can get it to automatically restart (like the MySQL service does).</p>
 <h3 id="getting-the-jar-file">Getting the <code>.jar</code> file</h3>
 <p>As a pre-requisite to this stage, you should have built (and run) the application locally.</p>
 <p>Copy the jar file up to <code>web1</code> from your laptop:</p>
@@ -698,7 +698,7 @@ openjdk version &quot;1.8.0_181&quot;
 OpenJDK Runtime Environment (build 1.8.0_181-b13)
 OpenJDK 64-Bit Server VM (build 25.181-b13, mixed mode)
 </code></pre><h3 id="running-the-java-application-directly-from-the-command-line">Running the Java application directly from the command-line</h3>
-<p>We can launch the application directly - although it&#x2019;ll only run until we press Control-C or close the ssh session.&#x2028; You should be able to cut and paste a line like the following to do this. (The <code>\</code> at the end of a line tells the shell you&#x2019;ve not finished typing yet.)</p>
+<p>We can launch the application directly - although it&apos;ll only run until we press Control-C or close the ssh session. You should be able to cut and paste a line like the following to do this. (The <code>\</code> at the end of a line tells the shell you&apos;ve not finished typing yet.)</p>
 <pre><code>java \
      -Dspring.datasource.url=jdbc:mysql://db1:3306/app \
      -Dspring.datasource.username=app \
@@ -765,7 +765,7 @@ mysql&gt; describe todo_item;
 </ul>
 <h4 id="put-the-password-into-a-file">Put the password into a file</h4>
 <p>On the host <code>web1</code> copy and paste the following lines:</p>
-<pre><code>cat &lt;&lt;&#x2018;EOF&#x2019; &gt; ~/app.password
+<pre><code>cat &lt;&lt;&apos;EOF&apos; &gt; ~/app.password
 APP_PASSWORD=DxIHXE%6d7sD:EXI
 EOF
 </code></pre><p>You can check the contents of that file by typing <code>cat app.password</code>.</p>
@@ -879,7 +879,7 @@ success
 </code></pre><p>If this works, we can put the same URL (we&apos;ll need to port specification also) into a browser: <code>http://129.2113.119.230:8080</code>.</p>
 <h3 id="troubleshooting-checklist">Troubleshooting checklist</h3>
 <p>To review: by taking small steps and checking as we progress, we have a systematic way to deploy the application.</p>
-<p>If &#x201C;it doesn&#x2019;t work!&#x201D; then we&apos;ll want a step-by-step process of diagnosis, looking to confirm that each piece of our architecture is working, slowly expanding the scope of our investigation until we discover what&apos;s broken:</p>
+<p>If &quot;it doesn&apos;t work!&quot; then we&apos;ll want a step-by-step process of diagnosis, looking to confirm that each piece of our architecture is working, slowly expanding the scope of our investigation until we discover what&apos;s broken:</p>
 <ul>
 <li>Is the process started? Is it still running?<ul>
 <li><code>systemctl status</code> or <code>ps -ef</code></li>
@@ -935,9 +935,9 @@ This is application-specific, but:<ul>
 <p><img src="dns-global-04.png" alt=""></p>
 <p>Again, the <code>com.</code> nameservers don&apos;t necessarily know the answer - but they <em>do</em> know the address of a more specific nameserver, for <code>example.com.</code>.</p>
 <p><img src="dns-global-05.png" alt=""></p>
-<p>When the local resolver asks those nameservers the same query...</p>
+<p>When the local resolver asks those nameservers the same query&#x2026;</p>
 <p><img src="dns-global-06.png" alt=""></p>
-<p>... they get a usable A record in response. Here, the TTL is about six hours. DNS tends to trade off the consistency of up-to-date responses for low latency; caching is built into its design.</p>
+<p>&#x2026; they get a usable A record in response. Here, the TTL is about six hours. DNS tends to trade off the consistency of up-to-date responses for low latency; caching is built into its design.</p>
 <p><img src="dns-global-07.png" alt=""></p>
 <p>That A record is then returned to the process on the local VM, supplying the requested A record.</p>
 <p><img src="dns-global-08.png" alt=""></p>
@@ -951,7 +951,7 @@ This is application-specific, but:<ul>
 <p><img src="domain-02.png" alt=""></p>
 <p>For this example we just want the based registration and simple DNS hosting.</p>
 <p><img src="domain-03.png" alt=""></p>
-<p>The following should suffice...</p>
+<p>The following should suffice&#x2026;</p>
 <p><img src="domain-04.png" alt=""></p>
 <p>Time to hand over some money. As a ballpark indication of cost, this isn&apos;t far off the mark.</p>
 <p><img src="domain-05.png" alt=""></p>
@@ -994,7 +994,7 @@ cumulonimbus.org.uk.    528    IN    NS    dns2.registrar-servers.com.
 </code></pre><p>Now we can try pointing the browser at <code>http://cumulonimbus.org.uk:8080</code>; the next task is to get rid of that extra port specification.</p>
 <h3 id="summary">Summary</h3>
 <ul>
-<li>We&#x2019;ve installed the application using two VMs</li>
+<li>We&apos;ve installed the application using two VMs</li>
 <li>We can connect to it from the outside world</li>
 <li>We know how to plumb it into DNS if required.</li>
 </ul>
@@ -1077,12 +1077,12 @@ cumulonimbus.org.uk.    528    IN    NS    dns2.registrar-servers.com.
 <p>It&apos;s an old truism, but when looking at this you should bare in mind the following two-part adage:</p>
 <ul>
 <li>a backup plan is not complete without a recovery plan</li>
-<li>a recovery plan doesn&#x2019;t work unless you&#x2019;ve tested it</li>
+<li>a recovery plan doesn&apos;t work unless you&apos;ve tested it</li>
 </ul>
 <p>Beyond the question of backups, however, we should really focus on the question of <em>service availability</em>. A great deal has been written about this. It may well be the case that decisions here will have an impact upon your application architecture. The kinds of questions that you should be asking yourself are:</p>
 <ul>
 <li>What does my data represent?</li>
-<li>How important is it that it&#x2019;s fresh (consistent, versus available)?</li>
+<li>How important is it that it&apos;s fresh (consistent, versus available)?</li>
 <li>How long an outage can I tolerate?</li>
 <li>&#x2026;of what fraction of data?</li>
 <li>How secure are copies?</li>
@@ -1133,13 +1133,13 @@ cumulonimbus.org.uk.    528    IN    NS    dns2.registrar-servers.com.
 <p>We&apos;ve left the most important question until last: but it&apos;s one you should ask yourself early during your application design. &quot;How do I update this?&quot;</p>
 <p>The question really falls into multiple parts:</p>
 <ul>
-<li><p>&#x201C;What about this critical OS update?&#x201D;</p>
+<li><p>&quot;What about this critical OS update?&quot;</p>
 <p>A full VM comes with an OS stack that has a large number of moving parts. All of those packages need keeping up-to-date. Security vulnerabilities, however, are very common. How will you respond when a critical vulnerability comes to light?</p>
 <ul>
 <li>Are you going to patch, or blow away VMs and redeploy with a newer image?</li>
 </ul>
 </li>
-<li><p>&#x201C;How do I change my application?&#x201D;</p>
+<li><p>&quot;How do I change my application?&quot;</p>
 <p>We can break this question down by looking at the deployment architecture of our application. It may well be possible to update different parts of the application at different cadences (in fact, it&apos;s this promise which motivates much of the interest in microservice architectures). But even then, some changes may be superficial, and other changes may affect our data architecture. These can be harder to work with.</p>
 </li>
 <li><p>What about database schemas?</p>
@@ -1219,7 +1219,7 @@ cumulonimbus.org.uk.    528    IN    NS    dns2.registrar-servers.com.
     <script>
         var gitbook = gitbook || [];
         gitbook.push(function() {
-            gitbook.page.hasChanged({"page":{"title":"Chapter 2 : Application deployment the hard way: IaaS","level":"1.3","depth":1,"next":{"title":"Chapter 5 : Observability & Autoscaling","level":"1.4","depth":1,"path":"chapter_5/01_introduction.md","ref":"chapter_5/01_introduction.md","articles":[{"title":"Why do we need observability?","level":"1.4.1","depth":2,"path":"chapter_5/02_Why_do_we_need_observation.md","ref":"chapter_5/02_Why_do_we_need_observation.md","articles":[]}]},"previous":{"title":"Chapter 1 : Running an application on the internet","level":"1.2","depth":1,"path":"chapter_1/Chapter_1.md","ref":"chapter_1/Chapter_1.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":[],"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"chapter_2/ch2.md","mtime":"2018-10-17T15:42:41.389Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2018-10-17T15:43:19.743Z"},"basePath":"..","book":{"language":""}});
+            gitbook.page.hasChanged({"page":{"title":"Chapter 2 : Application deployment the hard way: IaaS","level":"1.3","depth":1,"next":{"title":"Chapter 5 : Observability & Autoscaling","level":"1.4","depth":1,"path":"chapter_5/01_introduction.md","ref":"chapter_5/01_introduction.md","articles":[{"title":"Why do we need observability?","level":"1.4.1","depth":2,"path":"chapter_5/02_Why_do_we_need_observation.md","ref":"chapter_5/02_Why_do_we_need_observation.md","articles":[]}]},"previous":{"title":"Chapter 1 : Running an application on the internet","level":"1.2","depth":1,"path":"chapter_1/Chapter_1.md","ref":"chapter_1/Chapter_1.md","articles":[]},"dir":"ltr"},"config":{"gitbook":"*","theme":"default","variables":{},"plugins":[],"pluginsConfig":{"highlight":{},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"fontsettings":{"theme":"white","family":"sans","size":2},"theme-default":{"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"styles":{"website":"styles/website.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"}},"file":{"path":"chapter_2/ch2.md","mtime":"2018-10-17T16:26:46.353Z","type":"markdown"},"gitbook":{"version":"3.2.3","time":"2018-10-17T16:27:22.567Z"},"basePath":"..","book":{"language":""}});
         });
     </script>
 </div>
