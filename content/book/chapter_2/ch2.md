@@ -171,7 +171,7 @@ A client might want to make several outgoing calls to the same service at the sa
 
 ![](tcp-03.png "")
 
-A connection is identified by a 4-tuple: (_local address, local port, remote address, remote port_).  The local and remote ends of a TCP connection appear in a table maintained by the operating system of each host.
+A connection is identified by a 4-tuple: (_local address, local port, remote address, remote port_). The local and remote ends of a TCP connection appear in a table maintained by the operating system of each host.
 
 All TCP packets carry these addresses: both source, and destination.
 
@@ -213,7 +213,7 @@ In the following except, we can see two server processes waiting for incoming cl
     tcp        0      0 192.168.99.4:44112      192.168.99.2:22         ESTABLISHED
 
 
-There are other commands that’ll give you this information, but this is a common one, although its command-line parameters vary depending on the operating system. On a Mac: use  `netstat -anf inet`.
+There are other commands that'll give you this information, but this is a common one, although its command-line parameters vary depending on the operating system. On a Mac: use  `netstat -anf inet`.
 
 ### Aside: the runtime configuration of the VM
 
@@ -264,7 +264,7 @@ It's time to review the deployment plan. Having created our initial infrastructu
 
 As you work between the two VMs, it can be convenient to have a shell window open with a connection to each. In two separate terminal, launch a connection to each VM.
 
-If you’ve picked Oracle Linux, the username to log in with is opc. (For Ubuntu, it’s “ubuntu”; but the firewall and package management commands will be different, so the following write-up assumes the former.)
+If you've picked Oracle Linux, the username to log in with is opc. (For Ubuntu, it's "ubuntu"; but the firewall and package management commands will be different, so the following write-up assumes the former.)
 
 The VMs should have been configured to accept your ssh key, as we've seen.
 
@@ -483,10 +483,10 @@ We can even create a new table:
 ### Summary
 
 Thus far:
-- we’ve installed a database server;
-- we’ve added credentials for a new user to it  (and the password isn’t just “secret” :-) );
-- we’ve created a database schema for the application to use;
-- we’ve confirmed that it works _from the db1 host_.
+- we've installed a database server;
+- we've added credentials for a new user to it (and the password isn't just "secret" :-) );
+- we've created a database schema for the application to use;
+- we've confirmed that it works _from the db1 host_.
 
 However, we want the Java service that will be running on `web1` to be able to communicate to this database service, too. At the moment, there are two impediments to that: the default ingress rules on this subnet prevent the connection from succeeding, _and_ a host-based firewall on `db1` will additionally prevent that communication.
 
@@ -695,7 +695,7 @@ Paste the password that we configured in here.
 At this point:
  
 - we have permitted enough network communication between VMs that processes on the `web1` VM can successfully get traffic through to the MySQL service running on `db1`;
-- we’ve _demonstrated_ that we can talk to the database service from the host where we’ll be running our application.  
+- we've _demonstrated_ that we can talk to the database service from the host where we'll be running our application.  
 
 The implication here is that our application, appropriately configured, should also be able to communicate with the database. Let's do that next.
 
@@ -705,7 +705,7 @@ We have two options for deploying the `.jar` file. We can either build it on a l
 
 In order to run the Java application, we'll need a _JRE_ (Java Runtime Environment). This we'll install from an OS package.
 
-With those prerequisites in place, we’ll begin by launching the application directly from the command-line, then finally look at how we can get it to automatically restart (like the MySQL service does).
+With those prerequisites in place, we'll begin by launching the application directly from the command-line, then finally look at how we can get it to automatically restart (like the MySQL service does).
 
 ### Getting the `.jar` file
 
@@ -736,7 +736,7 @@ As always, we can check progress incrementally. Confirm that the JRE is now avai
 
 ### Running the Java application directly from the command-line
 
-We can launch the application directly - although it’ll only run until we press Control-C or close the ssh session.  You should be able to cut and paste a line like the following to do this. (The `\ ` at the end of a line tells the shell you’ve not finished typing yet.)
+We can launch the application directly - although it'll only run until we press Control-C or close the ssh session.  You should be able to cut and paste a line like the following to do this. (The `\ ` at the end of a line tells the shell you've not finished typing yet.)
 
     java \
          -Dspring.datasource.url=jdbc:mysql://db1:3306/app \
@@ -819,7 +819,7 @@ The next step on `web1` is to set up our application to launch itself automatica
 
 On the host `web1` copy and paste the following lines:
 
-    cat <<‘EOF’ > ~/app.password
+    cat <<'EOF' > ~/app.password
     APP_PASSWORD=DxIHXE%6d7sD:EXI
     EOF
     
@@ -961,7 +961,7 @@ If this works, we can put the same URL (we'll need to port specification also) i
 
 To review: by taking small steps and checking as we progress, we have a systematic way to deploy the application.
 
-If “it doesn’t work!” then we'll want a step-by-step process of diagnosis, looking to confirm that each piece of our architecture is working, slowly expanding the scope of our investigation until we discover what's broken:
+If "it doesn't work!" then we'll want a step-by-step process of diagnosis, looking to confirm that each piece of our architecture is working, slowly expanding the scope of our investigation until we discover what's broken:
 
 - Is the process started? Is it still running?
   - `systemctl status` or `ps -ef`
@@ -1113,7 +1113,7 @@ Now we can try pointing the browser at `http://cumulonimbus.org.uk:8080`; the ne
 
 ### Summary
 
-- We’ve installed the application using two VMs
+- We've installed the application using two VMs
 - We can connect to it from the outside world
 - We know how to plumb it into DNS if required.
 
@@ -1260,12 +1260,12 @@ At the very least, you may want to consider taking backups of your persisted con
 It's an old truism, but when looking at this you should bare in mind the following two-part adage:
 
 - a backup plan is not complete without a recovery plan
-- a recovery plan doesn’t work unless you’ve tested it
+- a recovery plan doesn't work unless you've tested it
 
 Beyond the question of backups, however, we should really focus on the question of _service availability_. A great deal has been written about this. It may well be the case that decisions here will have an impact upon your application architecture. The kinds of questions that you should be asking yourself are:
 
 - What does my data represent?
-- How important is it that it’s fresh (consistent, versus available)?
+- How important is it that it's fresh (consistent, versus available)?
 - How long an outage can I tolerate?
 - …of what fraction of data?
 - How secure are copies?
@@ -1346,12 +1346,12 @@ We've left the most important question until last: but it's one you should ask y
 
 The question really falls into multiple parts:
 
-- “What about this critical OS update?”
+- "What about this critical OS update?"
   
   A full VM comes with an OS stack that has a large number of moving parts. All of those packages need keeping up-to-date. Security vulnerabilities, however, are very common. How will you respond when a critical vulnerability comes to light?
   - Are you going to patch, or blow away VMs and redeploy with a newer image?
 
-- “How do I change my application?”
+- "How do I change my application?"
 
   We can break this question down by looking at the deployment architecture of our application. It may well be possible to update different parts of the application at different cadences (in fact, it's this promise which motivates much of the interest in microservice architectures). But even then, some changes may be superficial, and other changes may affect our data architecture. These can be harder to work with.
 
