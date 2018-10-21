@@ -6,12 +6,18 @@ import json
 import base64
 import os
 
+# expected number of restricted users
+TOTAL_USERS = 70
+
+# total cpu and memory available on the cluster - need to change this depending on the hardware
 TOTAL_CPU = 9 * 16
 TOTAL_MEMORY = 9 * 123400336  # Ki
-TOTAL_USERS = 80
+
+# constant calculations
 CPU_PER_USER = round(TOTAL_CPU / float(TOTAL_USERS), 2)
 MEMORY_PER_USER = int(TOTAL_MEMORY / float(TOTAL_USERS))
 
+# a vague guess - this can be overridden
 EXPECTED_CONTAINERS_PER_USER = 6
 DEFAULT_CPU_PER_CONTAINER = round(CPU_PER_USER / float(EXPECTED_CONTAINERS_PER_USER), 2)
 DEFAULT_MEMORY_PER_CONTAINER = int(MEMORY_PER_USER / float(EXPECTED_CONTAINERS_PER_USER))
@@ -90,6 +96,7 @@ def main():
 
     ns = args.accountname + '-ns'
 
+    print 'Applying account manifest..'
     p = subprocess.Popen([
         'kubectl', 'apply', '-f', '-',
     ], stdin=subprocess.PIPE)
@@ -104,11 +111,16 @@ def main():
     if p.returncode != 0:
         raise Exception("Bad return code")
 
+    print 
+    print "Current Quota:"
+    subprocess.check_call(['kubectl', '-n', ns, 'describe', 'resourcequota', args.accountname + '-quota'])
+
     secret = get_secret_name_from_service_account(args.accountname, ns)
     ca_crt = get_ca_crt_from_secret(secret, ns)
     token = get_user_token_from_secret(secret, ns)
     cluster_info = get_current_cluster_info()
 
+    print 
     print "Writing kubeconfig to %s" % args.outputkubeconfig
     with open(args.outputkubeconfig, 'w') as f:
         f.write(create_kubeconfig(cluster_info, args.accountname, ns, token, ca_crt))
