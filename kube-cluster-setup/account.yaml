@@ -29,7 +29,45 @@ subjects:
   namespace: {accountnamespace}
 roleRef:
   kind: ClusterRole
-  name: edit
+  name: admin
+  apiGroup: rbac.authorization.k8s.io
+
+---
+# now we want a prometheus user role for this user
+
+kind: Role 
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: prometheus-admin
+  namespace: {accountnamespace}
+rules:
+- apiGroups:
+  - monitoring.coreos.com
+  resources:
+  - alertmanagers
+  - prometheuses
+  - prometheuses/finalizers
+  - alertmanagers/finalizers
+  - servicemonitors
+  - prometheusrules
+  verbs:
+  - '*'
+
+---
+# allow this user to do prometheusy things in their namespace
+
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1beta1
+metadata:
+  name: prometheus-role-binding
+  namespace: {accountnamespace}
+subjects:
+- kind: ServiceAccount
+  name: {account}
+  namespace: {accountnamespace}
+roleRef:
+  kind: Role
+  name: prometheus-admin
   apiGroup: rbac.authorization.k8s.io
 
 ---

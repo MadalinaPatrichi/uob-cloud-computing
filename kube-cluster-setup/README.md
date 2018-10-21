@@ -59,7 +59,16 @@ privilege escalation between users.
 kubectl apply -f security.yaml
 ```
 
-## 4. Set up accounts for each user
+## 4. Set up central prometheus operator
+
+We'll install a central prometheus operator to serve all the namespaces and accounts:
+
+```
+git clone https://github.com/coreos/prometheus-operator
+kubectl apply -f bundle.yaml
+```
+
+## 5. Set up accounts for each user
 
 This command creates a namespace and service account for each user. Edit the headers at the top of the file to specify the total amount of resources available in the cluster and the expected number of users.
 
@@ -67,7 +76,7 @@ This command creates a namespace and service account for each user. Edit the hea
 ./ensure-account.py my-user my-user.kubeconfig
 ```
 
-## 5. Optionally, remove an account
+## 6. Optionally, remove an account
 
 ```
 ./remove-account.py my-user
