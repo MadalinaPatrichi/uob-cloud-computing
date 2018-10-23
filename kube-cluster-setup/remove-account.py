@@ -12,7 +12,7 @@ def main():
     p.add_argument('accountname')
     args = p.parse_args()
     ns = args.accountname + '-ns'
-    subprocess.check_output(['kubectl', 'delete', 'ns', ns])
+    subprocess.check_call(['kubectl', 'delete', 'ns', ns])
 
 
 if __name__ == '__main__':
