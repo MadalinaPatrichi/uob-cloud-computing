@@ -62,8 +62,12 @@ build-docker:
       dockerfile: Dockerfile.multi_stage
       image-name: todoapp
 
-deploy-docker:
+build-and-push-docker:
   steps:
+    - internal/docker-build:
+      cwd: app
+      dockerfile: Dockerfile.multi_stage
+      image-name: todoapp
     - internal/docker-push:
       username: $DOCKER_USERNAME
       password: $DOCKER_PASSWORD
