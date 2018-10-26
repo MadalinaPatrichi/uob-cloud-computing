@@ -67,8 +67,10 @@ deploy-docker:
     - internal/docker-push:
       username: $DOCKER_USERNAME
       password: $DOCKER_PASSWORD
+      image-name: uobcloudcomputing/todoapp
       tag: latest
-      repository: uobcloudcomputing/todoapp
+      registry: https://iad.ocir.io
+      repository: uobtestaccount1/todoapp
     
 deploy-jar:
   box: python:2.7
