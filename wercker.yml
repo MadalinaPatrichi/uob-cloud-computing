@@ -60,17 +60,17 @@ build-docker:
     - internal/docker-build:
       cwd: app
       dockerfile: Dockerfile.multi_stage
-      image-name: uobcloudcomputing/todoapp
+      image-name: todoapp
 
 deploy-docker:
   steps:
     - internal/docker-push:
       username: $DOCKER_USERNAME
       password: $DOCKER_PASSWORD
-      image-name: uobcloudcomputing/todoapp
+      image-name: todoapp
       tag: latest
       registry: https://iad.ocir.io
-      repository: uobtestaccount1/todoapp
+      repository: iad.ocir.io/uobtestaccount1/todoapp
     
 deploy-jar:
   box: python:2.7
