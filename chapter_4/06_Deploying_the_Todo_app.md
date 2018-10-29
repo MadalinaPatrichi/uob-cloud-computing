@@ -169,14 +169,14 @@ data:
   application.properties: |
     spring.datasource.url=jdbc:mysql://mysql.todoapp-demo.svc.cluster.local:3306/uob
     spring.datasource.username=root
-    spring.datasource.password=secret
+    spring.datasource.password=\${MYSQL_ROOT_PASSWORD}
 EOF
 ```
 
 ### The app deployment
 
 ```
-$ kubectl apply -f - << "EOF"
+$ kubectl apply -f - << EOF
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -200,6 +200,12 @@ spec:
       containers:
       - name: todoapp
         image: iad.ocir.io/uobtestaccount1/todoapp:latest
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql-vars
+              key: password
         ports:
         - name: web
           containerPort: 8080
@@ -210,5 +216,48 @@ spec:
       - name: todoapp-cfg-vol
         configMap:
           name: todoapp-cfg
+EOF
+```
+
+### The app service
+
+```
+$ kubectl apply -f - << EOF
+apiVersion: v1
+kind: Service
+metadata:
+  name: todoapp-svc
+  namespace: todoapp-demo
+spec:
+  ports:
+  - port: 8080
+    targetPort: web
+  # this selector must select the pods deployed by the deployment!
+  selector:
+    app: todoapp-app
+EOF
+```
+
+### Ingress route
+
+```
+$ kubectl apply -f - << EOF
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: todoapp-ingress
+  namespace: todoapp-demo
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.org/ssl-services: "todoapp-svc"
+spec:
+  rules:
+  - host: todoapp.uob.example.local
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: todoapp-svc
+          servicePort: 8080
 EOF
 ```
