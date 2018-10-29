@@ -1,8 +1,10 @@
+# Deploying the Todo App
+
 In this section we're going to deploy our app and its database to a Kubernetes cluster.
 
 We're going to use a combination of objects that each have individual lifecycles and responsibilities.
 
-### The namespace
+## The namespace
 
 By default, when you're running a Kubernetes cluster, you authenticate and operate as the default service account in the default namespace. However in most cases, you want to deploy a unique namespace that keeps all of your objects together and organised. It also has the advantage (or disadvantage!) or tearing down all of the owned objects when it is deleted.
 
@@ -57,7 +59,7 @@ spec:
   storageClassName: oci
   selector:
     matchLabels:
-      failure-domain.beta.kubernetes.io/zone: "UK-LONDON-1-AD-1"
+      failure-domain.beta.kubernetes.io/zone: "AD-1"
   accessModes:
   - ReadWriteOnce
   resources:
@@ -96,7 +98,7 @@ spec:
     spec:
       containers:
       - name: mysql
-        image: mysql:8
+        image: mysql:5.7
         env:
         - name: MYSQL_DATABASE
           value: uob
@@ -141,5 +143,72 @@ spec:
     app: mysql-app
   # dns resolve directly to the pod IP rather than a cluster IP
   clusterIP: None
+EOF
+```
+
+Now apps in this namespace can access mysql using just the dns name `mysql`.
+
+## The Todo App
+
+Deploying the app itself is going to be a little differnet since it doesn't need its own persistent storage and the database secret has already been created. It will however need some additional objects to assist in exposing it to the internet.
+
+We're going to use a deployment here as well and set the replica count to 2. A deployment allows us to arbitrarily scale up the number of instances of our app and requests will be routed to any of them.
+
+### The app's properties
+
+We'll use a configmap to store most of the Java properties items. This file will be mounted (read-only) into all the copies of the Todoapp and made available when the app starts.
+
+```
+$ kubectl apply -f - << EOF
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: todoapp-cfg
+  namespace: todoapp-demo
+data:
+  application.properties: |
+    spring.datasource.url=jdbc:mysql://mysql.todoapp-demo.svc.cluster.local:3306/uob
+    spring.datasource.username=root
+    spring.datasource.password=secret
+EOF
+```
+
+### The app deployment
+
+```
+$ kubectl apply -f - << "EOF"
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todoapp
+  namespace: todoapp-demo
+spec:
+  # the number of replicas
+  replicas: 2
+
+  # selector that matches the template labels below
+  selector:
+    matchLabels:
+      app: todoapp-app
+
+  # the template to be used for each instance of the pod
+  template:
+    metadata:
+      labels:
+        app: todoapp-app
+    spec:
+      containers:
+      - name: todoapp
+        image: iad.ocir.io/uobtestaccount1/todoapp:latest
+        ports:
+        - name: web
+          containerPort: 8080
+        volumeMounts:
+        - name: todoapp-cfg-vol
+          mountPath: /app/config
+      volumes:
+      - name: todoapp-cfg-vol
+        configMap:
+          name: todoapp-cfg
 EOF
 ```
