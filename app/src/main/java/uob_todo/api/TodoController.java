@@ -2,6 +2,7 @@ package uob_todo.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import uob_todo.api.exceptions.BadRequestException;
@@ -63,6 +64,14 @@ public class TodoController {
         existingItem.setTitle(item.getTitle());
         existingItem = todoSource.save(existingItem);
         return existingItem;
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(value = HttpStatus.NO_CONTENT)
+    public void deleteTodo(@PathVariable("id") Long id) throws Exception {
+        this.runPenaltyIfRequired();
+        todoSource.findById(id).orElseThrow(() -> new NotFoundException("item not found"));
+        todoSource.deleteById(id);
     }
 
 }
