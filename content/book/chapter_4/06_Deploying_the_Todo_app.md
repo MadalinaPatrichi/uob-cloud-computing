@@ -252,7 +252,7 @@ metadata:
     nginx.org/ssl-services: "todoapp-svc"
 spec:
   rules:
-  - host: todoapp.uob.example.local
+  - host: <your domain name here>
     http:
       paths:
       - path: /
