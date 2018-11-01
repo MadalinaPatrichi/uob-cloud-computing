@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # exit on error and bad variables
 set -eu
