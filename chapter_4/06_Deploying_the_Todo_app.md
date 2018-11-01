@@ -38,7 +38,7 @@ metadata:
   namespace: todoapp-demo
 type: Opaque
 data:
-  password: c2VjcmV0Cg==
+  password: c2VjcmV0Cg==     # base64 encoded
 EOF
 ```
 
@@ -154,29 +154,10 @@ Deploying the app itself is going to be a little differnet since it doesn't need
 
 We're going to use a deployment here as well and set the replica count to 2. A deployment allows us to arbitrarily scale up the number of instances of our app and requests will be routed to any of them.
 
-### The app's properties
-
-We'll use a configmap to store most of the Java properties items. This file will be mounted (read-only) into all the copies of the Todoapp and made available when the app starts.
-
-```
-$ kubectl apply -f - << EOF
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: todoapp-cfg
-  namespace: todoapp-demo
-data:
-  application.properties: |
-    spring.datasource.url=jdbc:mysql://mysql.todoapp-demo.svc.cluster.local:3306/uob
-    spring.datasource.username=root
-    spring.datasource.password=\${MYSQL_ROOT_PASSWORD}
-EOF
-```
-
 ### The app deployment
 
 ```
-$ kubectl apply -f - << EOF
+$ kubectl apply -f - << 'EOF'
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -200,6 +181,11 @@ spec:
       containers:
       - name: todoapp
         image: iad.ocir.io/uobtestaccount1/todoapp:latest
+        args: [
+          "-Dspring.datasource.url=jdbc:mysql://mysql.todoapp-demo.svc.cluster.local:3306/uob",
+          "-Dspring.datasource.username=root",
+          "-Dspring.datasource.password=$(MYSQL_ROOT_PASSWORD)",
+        ]
         env:
         - name: MYSQL_ROOT_PASSWORD
           valueFrom:
@@ -209,13 +195,6 @@ spec:
         ports:
         - name: web
           containerPort: 8080
-        volumeMounts:
-        - name: todoapp-cfg-vol
-          mountPath: /app/config
-      volumes:
-      - name: todoapp-cfg-vol
-        configMap:
-          name: todoapp-cfg
 EOF
 ```
 
