@@ -1,5 +1,5 @@
 <meta halign="center" valign="center" talign="center"/>
-<meta footer="github.com/MadalinaPatrichi/uob-cloud-computing / week 5"/>
+<meta footer="github.com/MadalinaPatrichi/uob-cloud-computing / week 5 / observability"/>
 
 # Observability and Autoscaling
 
@@ -224,7 +224,7 @@ blah-20180101T060000.gz
 ...
 ```
 
-Still hard to deal with or analyse 😢
+Still hard to deal with or analyse 😢 - we need to get these logs shipped of to a central location.
 
 ---
 
@@ -307,6 +307,26 @@ Or more specifically, E._F_.K.s?
 
 ---
 
+## Sidebar : Where do Kubernetes logs go?
+
+Kubernetes doesn't try to do anything special with logs by default.
+
+All of the containers (including the Kubernetes internals) use the Docker `json` logging provider which writes lines to files on the host. The cluster admin has to hook up `logrotate` to keep these controlled.
+
+```
+$ cat /var/log/containers/kube-proxy-cbg9m_kube-system_kube-proxy-6cddcb03ee65ce1710487926d7a2db522f70743de4dcc72ec26be707d2db47cc.log | tail -1 | python -m json.tool
+
+{
+    "log": "E1105 22:12:27.664064       1 reflector.go:205] k8s.io/kubernetes/pkg/client/informers/informers_generated/internalversion/factory.go:129: Failed to list *core.Endpoints: Get https://138.1.19.87:6443/api/v1/endpoints?limit=500&resourceVersion=0: net/http: TLS handshake timeout\n",
+    "stream": "stderr",
+    "time": "2018-11-05T22:12:27.664221684Z"
+}
+```
+
+We're going to use Fluentd to read, parse and ship these lines.
+
+---
+
 ## Fluentd
 
 Basically the same as LogStash
@@ -371,7 +391,7 @@ $ kubectl apply -f es-service.yaml
 ```
 
 - **2 ElasticSearch Pods** - Active-Active cluster
-- **Ephemeral storage** - only suitable for testing and learning - you should really replace it with real PersistentVolume storage
+- **Ephemeral storage** - only suitable for testing and learning - you should really replace it with real PersistentVolume storage!
 
 ```
 elasticsearch-logging-0                 1/1     Running   0          11m
@@ -456,7 +476,7 @@ And after setting up `kibana.uob.example.local` in /etc/hosts, we can get our lo
 
 ![screenshot](kibana-screenshot.jpg#height=600px)
 
-Example of querying for all logs from `kubernetes.container_name=elasticsearch-logging` in the last 15 minutes.
+Querying for logs from `kubernetes.container_name=elasticsearch-logging` in the last 15m.
 
 ---
 <meta halign="" valign="" talign=""/>
@@ -470,3 +490,514 @@ Example of querying for all logs from `kubernetes.container_name=elasticsearch-l
 - Rich queries and graphs can be made based on logging data and elements found therein
 
 Observability++
+
+<br>
+
+**NOTE**: the way I deployed the Elastic Search storage here is bad in production! It uses RAM as its storage! So you'll quickly find yourself using hundreds of gigabytes of RAM if you leave it running for long.
+
+---
+<meta halign="center" valign="center" talign="center"/>
+
+But remember: this isn't the matrix, you can't stare at logs all day.
+
+![matrix](markus-spiske-666905-unsplash.jpg#height=450px)
+
+_Really, you shouldn't need to look at logs unless things are **really** bad_
+
+---
+<meta halign="center" valign="center" talign="center"/>
+
+## Next: metrics
+
+![measurements](fleur-treurniet-325960-unsplash.jpg#height=450px)
+
+```
+2018-01-01T00:00:00 com.blah.service.http.200 123123
+2018-01-01T00:00:10 com.blah.service.http.200 235234
+2018-01-01T00:00:20 com.blah.service.http.200 873287
+```
+
+---
+<meta halign="" valign="" talign=""/>
+
+## Intro
+
+Log lines are helpful to step through the state of an application over time and see a descriptive story of what events were processed and the order in which things took place.
+
+But there are many questions that you can't naively answer through logs:
+
+- How much memory is my process using throughout the day? Am I going to run out? _(utilization)_
+
+- How many 500's did my webserver handle in the last hour? _(errors)_
+
+- How long does it take to load our web page? _(latency)_
+
+- How many backups are left in my queue _(saturation)_
+
+---
+
+## What can we get from our logs?
+
+You can get many of these things from your logs using **post-processing**.
+
+1. Write Python script
+2. Parse log files with crazy regular expressions
+3. Use some statistics
+4. ???
+5. Profit
+
+You can do this all directly in Kibana as well! It supports a **very rich query language**.
+
+This can work fairly well and is probably a good place to start if you don't feel like deploying another group of complicated components. 
+
+But, this is fairly fragile due to your log format and only gets you so far.
+
+---
+
+## What do we _not_ get from our logs?
+
+- Node statistics
+
+    - CPU, load average, interrupts
+    - Free memory
+    - Network packets received, transmitted, dropped
+    - Disk space
+    - ...
+
+- Trends of your min, max, median, quartiles, percentiles over time
+
+- Uptimes, ie: Was my process even running at this point?
+
+- Accurate aggregation across all sources
+
+You could write specialised programs to read and log these values, but that's not really the point here!
+
+---
+
+## Time Series Database (TSDB)
+
+A common concept within any metrics stack is an efficient Time Series storage engine.
+
+This is a method of efficiently storing, indexing, and querying measurements.
+
+Generally indexed over time, into a large array of aligned time buckets.
+
+| Time | Value |
+|:----:|:------|
+| 12:00:00 | 43 |
+| 12:00:05 | 64 |
+| 12:00:10 | 7 |
+| 12:00:15 | |
+| 12:00:20 | 12 |
+
+Can be stored and indexed very efficiently. 
+
+Compressible. Easy to garbage collect or flush.
+
+---
+
+## Common class of metrics and measurements
+
+### Counters
+
+**Can only increase or be reset to 0.** Eg: how many requests have been served.
+
+### Gauges
+
+**A value that can arbitrarily increase or decrease or be set to any other value.** Eg: what is the temperature?
+
+### Histograms
+
+**Fixed counting buckets**. Eg: how many requests took between 1 and 2 seconds to fulfill?
+
+### Summaries (complex)
+
+**Streaming estimated quantiles over sliding windows**. Eg: good for arbitrary and unpredictable statistical summaries (usually you can get away with a histogram)
+
+---
+
+## Common metrics ecosystems
+
+- PUSH
+
+    Each process opens a connection to the metrics endpoint, and sends data whenever it's available or generated (eg: on each request)
+
+- PULL
+
+    Processes are responsible for doing local bucket aggregations or histgram/summary calculations. A central server requests metrics from each process on a specified interval.
+
+There is no correct or best framework, **the important thing is which one works in your architecture and whether you can get the data you need.**
+
+---
+
+<br> 
+
+![graphite](graphite-logo_color.png)
+
+- Traditional Push framework (UDP and TCP)
+
+- Subsystems: Carbon, Whisper, Graphite, Diamond(?), Graphite-Web( 🤢 )
+
+- Arbitrary retention and aggregation (10s for 24h, 1m for 6 months)
+
+- Light weight client
+
+- Very scalable (Capable of global scale)
+
+- Clients specify their metrics
+
+- Clients can cause Denial Of Service
+
+---
+
+![prometheus](prometheus-logo.png#height=200px)
+
+- Modern Pull framework (HTTP GET /metrics)
+
+- Scrapes each 'target' every interval (10 seconds usually)
+
+- Complex client code
+
+- Simple protocol and storage
+
+- Server has to know who the clients are!
+
+- High granularity data on a fixed retention window
+
+- Doesn't generate graphs - just data
+
+---
+
+## Metrics in Kubernetes
+
+Most metrics in Kubernetes are collected by an optional component called `metrics-server` (previously `heapster`).
+
+- Runs as a pod
+- Connects to the `kubelet` to retrieve pod and node `cgroup` information.
+- Adds resource use information to pods
+- Exposes `/metrics` endpoint to be scraped by Prometheus
+
+This keeps responsibilities isolated.
+
+- Allowed `kubectl top node` and `kubectl top pod` without any additional components.
+
+---
+
+## Deploying metrics server
+
+**Note**: this is something a cluster administrator would do!
+
+```
+$ git clone https://github.com/kubernetes-incubator/metrics-server.git
+
+$ kubectl apply -f kubernetes-incubator/metrics-server/deploy/1.8+/
+```
+
+Done.
+
+```
+$ kubectl -n todoapp-demo top pods
+
+NAME                       CPU(cores)   MEMORY(bytes)   
+mysql-55ffff8667-f9t6r     3m           260Mi           
+todoapp-7b9fd9b857-2kj6n   2m           3529Mi          
+todoapp-7b9fd9b857-5jdfz   2m           2881Mi 
+```
+
+Lovely!
+
+---
+
+## Option A - manual Prometheus setup
+
+- Deploy Prometheus pod
+
+- Persistent storage
+
+- Service name so that other components can access it
+
+- Manually configure it through ConfigMap and the Prometheus UI
+
+This is a perfectly appropriate solution and would probably work fine. 
+
+However, it's not very Kube-y, as it means you need to **keep reconfiguring Prometheus as you deploy or scale your applications**. Your user and namespace for your app should probably not have write access to your Prometheus configuration.
+
+# 👍
+
+There's a better solution using the Prometheus Operator.
+
+---
+
+## Option B - the Prometheus Operator
+
+Operator's perform work on custom resource definitions defined in Kubernetes.
+
+The Prometheus Operator by CoreOS exposes custom resources for:
+
+- `Prometheus` - Namespaced prometheus pods
+
+- `ServiceMonitor` - Declaratiely specify which services your Prometheus objects target.
+
+- `PrometheusRule` - Additional Prometheus Rule's regarding metrics aggregation, allow and denylists, etc..
+
+- `Alertmanager` - Companion pods for sending alerts based on Prometheus queries
+
+All of these can be defined declaratively in your manifest files alongside your App. _You don't have to reconfigure Prometheus at all!_
+
+# 👍👍👍
+
+---
+<meta halign="center" valign="center" talign="center"/>
+
+![noice](noice.jpg)
+
+---
+<meta halign="" valign="" talign=""/>
+
+## Deploying Prometheus Operator
+
+We're going to deploy the manifests from `https://github.com/coreos/prometheus-operator`. The repo has many manifets in the `/contrib/kube-prometheus/manifests/` directory which we'll deploy in stages in the rest of this presentation.
+
+First, the namespace and operator:
+
+```
+$ cd /prometheus-operator/contrib/kube-prometheus/manifests
+
+$ kubectl apply -f 00namespace-namespace.yaml
+namespace/monitoring created
+
+$ find . -type f -name '0prometheus-operator*' -exec kubectl apply -f {} \;
+clusterrolebinding.rbac.authorization.k8s.io/prometheus-operator created
+serviceaccount/prometheus-operator created
+customresourcedefinition.apiextensions.k8s.io/servicemonitors.monitoring.coreos.com created
+clusterrole.rbac.authorization.k8s.io/prometheus-operator created
+servicemonitor.monitoring.coreos.com/prometheus-operator created
+customresourcedefinition.apiextensions.k8s.io/prometheusrules.monitoring.coreos.com created
+deployment.apps/prometheus-operator created
+customresourcedefinition.apiextensions.k8s.io/alertmanagers.monitoring.coreos.com created
+service/prometheus-operator created
+customresourcedefinition.apiextensions.k8s.io/prometheuses.monitoring.coreos.com created
+```
+
+---
+
+Lets look at our operator:
+
+```
+$ kubectl get pods -n monitoring
+
+NAME                                  READY   STATUS    RESTARTS   AGE
+prometheus-operator-c4b75f7cd-7x9sl   1/1     Running   0          1m
+```
+
+and custom resources:
+
+```
+$ kubectl get customresourcedefinition
+NAME                                    CREATED AT
+alertmanagers.monitoring.coreos.com     2018-10-21T20:40:13Z
+prometheuses.monitoring.coreos.com      2018-10-21T20:40:13Z
+prometheusrules.monitoring.coreos.com   2018-10-21T20:40:13Z
+servicemonitors.monitoring.coreos.com   2018-10-21T20:40:13Z
+```
+
+```
+$ kubectl get prometheus
+No resources found.
+```
+
+_Remember that this is not Prometheus itself, this is a Kubernetes component that will deploy and configure Prometheus for us in response to custom resource definitions._
+
+---
+
+## Using the operator
+
+The Prometheus Operator comes with some useful configuration for a Prometheus deployment that gathers all of the metrics for Kubernetes. We're going to slowly deploy some parts of it in the next few slides.
+
+First the Prometheus server, its permissions, and it's rules for monitoring the Kube components, pods, and nodes.
+
+```
+$ find . -type f -name 'prometheus-*' -exec kubectl apply -f {} \;
+
+servicemonitor.monitoring.coreos.com/prometheus created
+rolebinding.rbac.authorization.k8s.io/prometheus-k8s-config created
+rolebinding.rbac.authorization.k8s.io/prometheus-k8s created
+rolebinding.rbac.authorization.k8s.io/prometheus-k8s created
+rolebinding.rbac.authorization.k8s.io/prometheus-k8s created
+servicemonitor.monitoring.coreos.com/kube-controller-manager created
+servicemonitor.monitoring.coreos.com/kube-scheduler created
+clusterrole.rbac.authorization.k8s.io/prometheus-k8s created
+role.rbac.authorization.k8s.io/prometheus-k8s created
+role.rbac.authorization.k8s.io/prometheus-k8s created
+role.rbac.authorization.k8s.io/prometheus-k8s created
+servicemonitor.monitoring.coreos.com/kubelet created
+serviceaccount/prometheus-k8s created
+prometheus.monitoring.coreos.com/k8s created
+role.rbac.authorization.k8s.io/prometheus-k8s-config created
+prometheusrule.monitoring.coreos.com/prometheus-k8s-rules created
+servicemonitor.monitoring.coreos.com/coredns created
+clusterrolebinding.rbac.authorization.k8s.io/prometheus-k8s created
+servicemonitor.monitoring.coreos.com/kube-apiserver created
+service/prometheus-k8s created
+```
+
+---
+
+Lets wait for the pod to be ready..
+
+```
+$ kubectl -n monitoring get pods
+NAME                                  READY   STATUS    RESTARTS   AGE
+prometheus-k8s-0                      3/3     Running   1          1m
+prometheus-k8s-1                      3/3     Running   1          1m
+prometheus-operator-c4b75f7cd-7x9sl   1/1     Running   0          17m
+```
+
+And now we can use our port forward trick to look at the UI:
+
+```
+$ kubectl -n monitoring port-forward svc/prometheus-k8s 9090
+```
+
+```
+http://localhost:9090/targets
+```
+
+---
+<meta halign="center" valign="center" talign="center"/>
+
+![targets](prometheus-targets.jpg#height=600px)
+
+Lots of lovely scrape targets...
+
+---
+<meta halign="" valign="" talign=""/>
+
+## Using Grafana for some graphs
+
+Before we go further, lets deploy a Grafana UI in front of this so that we can demonstrate some graphs.
+
+Again, the Prometheus Operator provides a useful setup:
+
+```
+$ find . -type f -name 'grafana-*' -exec kubectl apply -f {} \;
+service/grafana created
+secret/grafana-datasources created
+serviceaccount/grafana created
+configmap/grafana-dashboards created
+deployment.apps/grafana created
+configmap/grafana-dashboard-k8s-cluster-rsrc-use created
+configmap/grafana-dashboard-k8s-node-rsrc-use created
+configmap/grafana-dashboard-k8s-resources-cluster created
+configmap/grafana-dashboard-k8s-resources-namespace created
+configmap/grafana-dashboard-k8s-resources-pod created
+configmap/grafana-dashboard-nodes created
+configmap/grafana-dashboard-pods created
+configmap/grafana-dashboard-statefulset created
+```
+
+See if you can work out whats going on based on the list of objects above..
+
+---
+
+## Connecting to and viewing Grafana
+
+```
+$ kubectl -n monitoring get pods
+NAME                                  READY   STATUS    RESTARTS   AGE
+grafana-566fcc7956-smr54              1/1     Running   0          1m
+```
+
+Again, lets use port forward:
+
+```
+$ kubectl -n monitoring port-forward svc/grafana 3000
+```
+
+```
+http://localhost:3000
+```
+
+Login with `admin` / `admin`.
+
+**NOTE**: if this is your first time using Grafana, take some time to explore it. It's a very complex interface with complex configuration and queries. It's very powerful and being able to use it is a useful skill.
+
+---
+<meta halign="center" valign="center" talign="center"/>
+
+![grafana](grafana-screenshot.jpg#height=700px)
+
+---
+
+#### `rate(container_memory_usage_bytes{namespace="monitoring"}[1m])`
+
+<br>
+
+`container_memory_usage_bytes` - bytes of memory in use by the container
+
+`{namespace="monitoring"}` - filter by the namespace
+
+`[1m]` - each data point is calculated from a sliding window of 1 minute (range vector)
+
+`rate()` - per second average rate (convert range vector to instant vector)
+
+---
+<meta halign="" valign="" talign=""/>
+
+## Prometheus Node exporter 
+
+The `node_exporter` is a Prometheus (not Kube) component that gathers metrics from the host on which it runs and exposes them as a scrape target for Prometheus.
+
+We can expect things like CPU, memory, network, disk usage, etc..
+
+This should help to complete our metrics picture.
+
+```
+$ find . -type f -name 'node-exporter-*' -exec kubectl apply -f {} \;
+
+servicemonitor.monitoring.coreos.com/node-exporter created
+service/node-exporter created
+clusterrole.rbac.authorization.k8s.io/node-exporter created
+daemonset.apps/node-exporter created
+serviceaccount/node-exporter created
+clusterrolebinding.rbac.authorization.k8s.io/node-exporter created
+```
+
+```
+node-exporter-2nfw5                   2/2     Running   0          2m    10.0.0.2      132.145.53.105
+node-exporter-644tz                   2/2     Running   0          2m    10.0.2.4      132.145.32.222
+node-exporter-6sd9s                   2/2     Running   0          2m    10.0.0.3      132.145.54.187
+node-exporter-75g7w                   2/2     Running   0          2m    10.0.1.3      132.145.24.27
+node-exporter-mt85k                   2/2     Running   0          2m    10.0.1.2      132.145.19.31
+```
+
+--- 
+<meta halign="center" valign="center" talign="center"/>
+
+![grafana-node](grafana-node-dashboard.jpg#height=600px)
+
+Now we have our node stats in the preprepared dashboards that were deployed for us.
+
+---
+## So what do we DO with these metrics and logs now that we have them?
+
+---
+<meta halign="" valign="" talign=""/>
+
+## Things to do with metrics
+
+- Identify bottlenecks in your application
+
+- View the utilisation of your Kubernetes resources
+
+- Identify hardware failures before they happen
+
+- Provide support for your customers by diagnosing problems in production
+
+- Scale your app in response to its resource utilization and saturation
+
+- **Deploy Prometheus Operator objects to monitor your own applications**
+
+- **Autoscale your app in response to its resource usage**
+
+---
