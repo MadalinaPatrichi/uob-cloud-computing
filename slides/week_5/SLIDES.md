@@ -148,11 +148,15 @@ As we've moved the app between these compute locations we've lost our intimate v
 
 - These problems just grow as we run more and more apps.
 
-This brings us the area of _observability_:
+---
+<meta halign="center" valign="center" talign="center"/>
+
+## This brings us the area of _observability_
 
 > "Observability is a measure of how well internal states of a system can be inferred from knowledge of its external outputs"
 
 ---
+<meta halign="" valign="" talign=""/>
 
 ## Observability covers a huge range of topics
 
