@@ -944,7 +944,7 @@ Login with `admin` / `admin`.
 ---
 <meta halign="" valign="" talign=""/>
 
-## Prometheus Node exporter 
+## Prometheus Node exporter
 
 The `node_exporter` is a Prometheus (not Kube) component that gathers metrics from the host on which it runs and exposes them as a scrape target for Prometheus.
 
@@ -979,6 +979,28 @@ node-exporter-mt85k                   2/2     Running   0          2m    10.0.1.
 Now we have our node stats in the preprepared dashboards that were deployed for us.
 
 ---
+<meta halign="" valign="" talign=""/>
+
+## Application metrics
+
+There are many Prometheus client libraries that help you turn your app into a scrape target itself.
+
+This allows you to expose metrics from the application level rather than the platform:
+
+- HTTP request latencies and codes
+
+- Function call times and rates
+
+- Database call frequencies and latencies
+
+- Almost anything you want!
+
+Traditionally exposed over a `/metrics` path on an HTTP server.
+
+
+---
+<meta halign="center" valign="center" talign="center"/>
+
 ## So what do we DO with these metrics and logs now that we have them?
 
 ---
