@@ -986,18 +986,348 @@ Now we have our node stats in the preprepared dashboards that were deployed for 
 
 ## Things to do with metrics
 
-- Identify bottlenecks in your application
+- Deploy Prometheus Operator objects to **monitor your own applications**
 
-- View the utilisation of your Kubernetes resources
+- Identify **bottlenecks** in your application (but don't optimise too early!)
 
-- Identify hardware failures before they happen
+- Monitor the **utilisation** of your Kubernetes resources
 
-- Provide support for your customers by diagnosing problems in production
+- Identify hardware **failures** before they happen
 
-- Scale your app in response to its resource utilization and saturation
+- Provide support for your customers by **diagnosing** problems in production
 
-- **Deploy Prometheus Operator objects to monitor your own applications**
+- Scale your app in **response** to its resource utilization and saturation
 
-- **Autoscale your app in response to its resource usage**
+- **Autoscale your app** in response to its resource usage
 
 ---
+<meta halign="center" valign="center" talign="center"/>
+
+## Autoscaling
+
+![buildings](craig-cooper-721898-unsplash.jpg#height=600px)
+
+---
+<meta halign="" valign="" talign=""/>
+
+## Why scale?
+
+- Network cards can only handle a certain number of packets per second
+
+- Applications can only handle a certain number of concurrent connections
+
+- Requests may contain "blocking" processing like database calls, requests to other services, file uploads, etc.
+
+- SSL is vital! But has serious CPU costs on each connection handshake.
+
+- Malicious users can cause denial of service to other users
+
+---
+
+## Most systems fall somewhere in between the following scenarios:
+
+<br>
+
+### Worst case
+
+You own physical space in a datacenter and have to physically plug in machines and boot them by pressing the power button. Scaling is slow and manual.
+
+<br>
+
+### Best case
+
+Your app runs entirely in FaaS (function as a service), CDNs, edge computing, and other zero-scale platforms. Scaling is easy and you don't even need to think about it.
+
+---
+
+## What is autoscaling?
+
+- Adding more physical VM's, pods, deployments, copies of your app, load balancers, etc in response to some signal. (Horizantal scaling)
+
+- What kind of signals:
+
+    - Customer traffic
+
+    - Anticipation of customer traffic
+
+    - Time of day/week/year
+
+    - CPU usage
+
+    - Optimisations or changes in your business logic
+
+    - _A person clicking a button_
+
+The important thing here is that your management code automatically provisions and connects new infrastructure and installs your application.
+
+---
+
+## Sources of signals
+
+- ElasticSearch!
+
+- Grafana!
+
+- Monitoring built into your platform or IaaS
+
+---
+
+## Autoscaling in Kubernetes
+
+You may have already seen `Deployments` and `StatefulSets` in Kubernetes.
+
+These allow you to deploy replicas of your pods with the same image and configuration.
+
+Kubernetes also supports a `Horizantal Pod Autoscaler` (HPA).
+
+> The Horizontal Pod Autoscaler is implemented as a Kubernetes API __resource and a controller__. The resource determines the behavior of the controller. The controller __periodically adjusts the number of replicas__ in a replication controller or deployment to __match the observed average CPU utilization__ to the target specified by user.
+
+Basically:
+
+`desiredReplicas = ceil(replicas * ( currentMetricValue / desiredMetricValue ))`
+
+`= ceil(2 * (200m / 100m))`
+
+`= 4`
+
+---
+
+## Example time!
+
+- Simple Python 3 Server doing Scrypt on each POST request
+
+```python
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: scrypt-script
+data:
+  server.py: |
+      import hashlib, http.server, socketserver, base64, os
+      class ScryptHandler(http.server.BaseHTTPRequestHandler):
+          cost = int(os.environ.get('COST', '14'))
+          def do_POST(self):
+              self.send_response(200)
+              self.end_headers()
+              self.wfile.write(
+                  base64.b64encode(
+                      hashlib.scrypt(b"blah", salt=b"salt", n=(1 << self.cost), r=5, p=10)
+                  )
+              )
+
+      try:
+          server = http.server.HTTPServer(('', 8000), ScryptHandler)
+          server.serve_forever()
+      except KeyboardInterrupt:
+          server.socket.close()
+```
+
+---
+<meta halign="center" valign="center" talign="left"/>
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scrypt-server
+spec:
+  replicas: 1                                       # <- replicas
+  selector:
+    matchLabels:
+      app: scrypt-server
+  template:
+    metadata:
+      labels:
+        app: scrypt-server
+    spec:
+      containers:
+      - name: python
+        image: python:3.6
+        args: ["python", "/app/server.py"]          # <- run the script
+        resources:
+          limits:
+            cpu: 200m                               # <- resource constraint
+        ports:
+        - containerPort: 8000
+        volumeMounts:
+        - name: script-vol
+          mountPath: /app                           # <- mount the script
+      volumes:
+      - name: script-vol
+        configMap:
+          name: scrypt-script
+```
+
+---
+
+```
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: scrypt-svc
+spec:   
+  selector:
+    app: scrypt-server
+  ports:
+  - protocol: TCP
+    port: 8000
+    targetPort: 8000
+```
+
+A service to expose this pod.
+
+---
+
+An http ingress based on our loadbalanced Nginx ingress:
+
+```
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: scrypt-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+  - host: scrypt.uob.example.local
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: scrypt-svc
+          servicePort: 8000
+```
+
+And some fake local DNS to access it:
+
+```
+$ cat /etc/hosts
+...
+132.145.15.135 scrypt.uob.example.local
+```
+
+---
+<meta halign="" valign="" talign="left"/>
+
+## Lets see what it does without autoscaling
+
+In one terminal lets watch the pod metrics:
+
+```
+$ while true; do kubectl top pod -l app=scrypt-server && sleep 2; done
+NAME                             CPU(cores)   MEMORY(bytes)
+scrypt-server-5cd5f48d5b-sjjhr   1m           12Mi
+...
+```
+
+And in another, lets make requests in a loop:
+
+```
+$ while true; do time curl -X POST http://scrypt.uob.example.local; done
+XNLScy1SfT5zqH+I6kJXlAmcX0IkE9Z8GbyJJQZ9oZv4EejJUyHOSjP4BjQNrGM5V+czfulMTxQqDctL5xWkpQ==
+real    0m2.724s
+user    0m0.016s
+sys     0m0.011s
+...
+```
+
+We should see our pod reach its CPU limit (this can take 30s - 1m):
+
+```
+NAME                             CPU(cores)   MEMORY(bytes)
+scrypt-server-7cf4d7f9b5-kml5b   194m         23Mi
+```
+
+---
+
+## Now with an HPA
+
+```
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: scrypt-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: scrypt-server
+  minReplicas: 1
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      targetAverageUtilization: 50
+```
+
+> "Increase the replica count up to 10 replicas for the `scrypt-server" deployment while the cpu utilization is above 50%"
+
+---
+
+## Rerun the load test
+
+After a minute or two we should see the HPA begin reacting:
+
+```
+NAME                             CPU(cores)   MEMORY(bytes)   
+scrypt-server-7cf4d7f9b5-kml5b   15m          23Mi            
+scrypt-server-7cf4d7f9b5-xpzgm   115m         22Mi   
+```
+
+A new replica!
+
+```
+NAME         REFERENCE                  TARGETS   MINPODS   MAXPODS   REPLICAS   AGE
+scrypt-hpa   Deployment/scrypt-server   32%/50%   1         10        2          3m
+```
+
+**NOTE**: annoyingly the HPA runs on a polling loop _and_ only takes some time to ensure that the target utilization has been exceeded. This means that the metrics and replica counts can take a few minutes to reconcile. (This is usually fine!)
+
+---
+
+## Other notes
+
+- Why is the autoscaling somewhat delayed?
+
+    To prevent _Thrashing_ the autoscaler has a purposeful delay in scaling up or down. We don't want to scale our app too fast in response to what may only be a very small spike in resource utilization.
+
+- Scaling based on other resources?
+
+    You can also scale on memory usage and even your own 3rd party metrics if they support the "metrics API"
+
+- Could you implement this as a ELK/Grafana monitoring hook with a Kube API call?
+
+    Yes you totally could! But it would lack the declarative configuration that Kubernetes manifests give you.
+
+---
+<meta halign="center" valign="center" talign="left"/>
+
+# Fin!
+
+---
+<meta halign="" valign="" talign=""/>
+
+# Key takeaway points
+
+- Observability is vital in Cloud Native applications!
+
+- Metrics and logs are both important when running a production application
+
+- This is a huge space with many options and approaches and no real "best" approach
+
+- **Important thing is: can you tell how your app is performing and what it is doing?**
+
+<br>
+
+### How does this apply to your project work?
+
+- If you're writing long running applications, especially those that are web or Kubernetes based, think about using metrics and proper logging to make your system more observable.
+
+- Think about deploying a proper ELK or Prometheus stack to aggregate all of your observability items. Allow this to help drive your development in the long term.
+
+---
+<meta halign="center" valign="center" talign="left"/>
+
+# Thanks!
