@@ -2,11 +2,7 @@
 
 [![wercker status](https://app.wercker.com/status/8977e9f71e80e7d6ee3467d4d49ec881/s/master "wercker status")](https://app.wercker.com/project/byKey/8977e9f71e80e7d6ee3467d4d49ec881)
 
-This repository contains lecture material, an example app, and various tutorials related to the University of Bristol cloud native computing module.
-
-The written content backing the lectures can be found at https://madalinapatrichi.github.io/uob-cloud-computing/.
-
-See the wiki [here](https://github.com/MadalinaPatrichi/uob-cloud-computing/wiki) for more information.
+This repository contains lecture material, an example app, and various tutorials aimed for the Girls Who Code workshop on the 8th of June 2019 in Helsinki, Finland.
 
 ## Project directories
 
