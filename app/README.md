@@ -20,7 +20,7 @@ The app is not intended to be a brilliant example of either Spring Boot or Vue.j
 Ensure your gradle environment is set up:
 
 ```
-$ cd uob-cloud-computing/api/
+$ cd uob-cloud-computing/app/
 $ ./gradlew
 ```
 
