@@ -4,10 +4,10 @@ The course content source is held in a Gitbooks format. To interact with this co
 
 The suggested development method is the following:
 
-1. Install `gitbooks-cli` NPM package (you'll need node, and npm setup on your machine
-2. To start the server execute `gitbooks serve ./book`.
+1. Install `gitbook-cli` NPM package (you'll need node, and npm setup on your machine
+2. To start the server execute `gitbook serve ./content/book`.
 
-Alternatively you can have gitbooks as a container:
+Alternatively you can have gitbook as a container:
 
 1. in the `book` directory, run `docker run --rm -v "$PWD:/gitbook" -p 4000:4000 billryan/gitbook gitbook serve`
 
