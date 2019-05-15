@@ -1,4 +1,4 @@
-##Lecture outline
+## Lecture outline
 
 1. Containers
 2. Docker overview
@@ -8,7 +8,7 @@
 6. Using Docker in the real world
 7. Container orchestration with Docker
 
-##The Goal
+## The Goal
   Let’s move our application into a Docker container.
   ![create instance](goal_1.png)
   Previously, we had our app deployed in a VM in OCI.
@@ -33,10 +33,10 @@ Since container orchestration is a much newer space, only growing since the adop
 
 Containerisation changed how software was developed and packaged; container orchestration is changing how containers are deployed into bigger useful systems.
 
-###What is a container?
+### What is a container?
 
 ![app_lifecycle](app_lifecycle.png)
-###Difference between containers and VMs
+### Difference between containers and VMs
 
 Important distinction:
 
@@ -48,27 +48,27 @@ Image = filesystem/libraries
 Containers run on the same kernel, but on different/same images.
 
 In depth analysis: https://www.youtube.com/watch?v=L1ie8negCjc
-###Why are we only talking about Docker?
+### Why are we only talking about Docker?
 
-##Docker overview
-###The Docker platform
+## Docker overview
+### The Docker platform
 
-###Docker Engine
+### Docker Engine
 ![docker_components_1](docker_components_1.png)
 ![docker_components_2](docker_components_2.png)
-###What can I use Docker for?
-###Docker architecture
+### What can I use Docker for?
+### Docker architecture
 ![docker_architecture](docker_architecture.png)
 
-##Develop with Docker
+## Develop with Docker
 Follow the install instructions for your Operating System:
 https://docs.docker.com/install/
 Add your user to the docker group (make life easier) Verify version: docker --version
-###Prepare Docker environment
-####Install Docker
-####Verify version
-####Verify installation (docker run hello-world)
-###Build an image from a Dockerfile
+### Prepare Docker environment
+#### Install Docker
+#### Verify version
+#### Verify installation (docker run hello-world)
+### Build an image from a Dockerfile
 
 Run hello-world container
 ```$ docker run hello-world
@@ -86,14 +86,14 @@ Run hello-world container
    Share images, automate workflows, and more with a free Docker ID: https://hub.docker.com/
    For more examples and ideas, visit: https://docs.docker.com/get-started/
 ```
-####What is a Dockerfile?
+#### What is a Dockerfile?
 A way to build a new Docker image
 Starting from a base image we define a set of instructions to build a new image. Each instructions generates a new docker layer
 Simplest docker file:
 ![dockerfile_alpine](dockerfile_alpine.png)
 ![dockerfile_layers](dockerfile_layers.png)
 
-####Start with basic Dockerfile
+#### Start with basic Dockerfile
 ![dockerfile_1](dockerfile_1.png)
 ![dockerfile_2](dockerfile_2.png)
 ![dockerfile_3](dockerfile_3.png)
@@ -102,51 +102,51 @@ Simplest docker file:
 ![dockerfile_6](dockerfile_6.png)
 ![dockerfile_7](dockerfile_7.png)
 
-####Build the app
+#### Build the app
 docker build -t <name_of_the-generated_image> <docker_build_context>
-####Where is my image?
+#### Where is my image?
 
-####Run the app
-###Publish the image
-####Publish image to Docker
-#####Log into Docker (hub.docker.com)
-#####Tag image
-#####Publish the image
-#####Pull and run the image from the remote repo
-####Publish image to OCI registry
-#####Overview of the OCI registry and user credentails
-#####Log in with Docker to OCI registry
-#####Tag image
-#####Publish the image
-#####Pull and run the image from the remote repo
-###Interact with a container
-####Exec into a container
-####Test out container connectivity with the outside world
+#### Run the app
+### Publish the image
+#### Publish image to Docker
+##### Log into Docker (hub.docker.com)
+##### Tag image
+##### Publish the image
+##### Pull and run the image from the remote repo
+#### Publish image to OCI registry
+##### Overview of the OCI registry and user credentails
+##### Log in with Docker to OCI registry
+##### Tag image
+##### Publish the image
+##### Pull and run the image from the remote repo
+### Interact with a container
+#### Exec into a container
+#### Test out container connectivity with the outside world
 
-##Use multi-stage builds
-###Why use multi-stage builds?
-###Use multi-stage builds
-###Cleanup: Name build stages
-###Stop at a specific build stage (optional)
-###Use an external image as a stage
+## Use multi-stage builds
+### Why use multi-stage builds?
+### Use multi-stage builds
+### Cleanup: Name build stages
+### Stop at a specific build stage (optional)
+### Use an external image as a stage
 
-##Managing application data
-###Storage options (volumes, bind mounts and tmpfs)
-###Volumes
-####Description for volumes, what are they useful for?
-####Instances where volumes should be used
-####Create a volume and attach to the container
-###Bind mounts
-####Description for bind mounts, what are they useful for?
-####Instances where bind mounts should be used
-####Exemplify how a directory on the host machine is mounted into a container
-###Tmpfs
-####Description for tmpfs mounts, what is it useful for?
-####Instances where tmpfs mounts should be used
-####Use a tmpfs mount in a container
+## Managing application data [Advanced]
+### Storage options (volumes, bind mounts and tmpfs)
+### Volumes
+#### Description for volumes, what are they useful for?
+#### Instances where volumes should be used
+#### Create a volume and attach to the container
+### Bind mounts
+#### Description for bind mounts, what are they useful for?
+#### Instances where bind mounts should be used
+#### Exemplify how a directory on the host machine is mounted into a container
+### Tmpfs
+#### Description for tmpfs mounts, what is it useful for?
+#### Instances where tmpfs mounts should be used
+#### Use a tmpfs mount in a container
 
-##Run application in production
-###Configure the daemon (dockerrd)
-###Configure the containers
-###Start containers automatically
+## Run application in production
+### Configure the daemon (dockerrd)
+### Configure the containers
+### Start containers automatically
 
