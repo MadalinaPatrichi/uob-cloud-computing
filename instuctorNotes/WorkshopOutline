@@ -23,17 +23,21 @@ Building the Java app (~30mins)
 ---Section 3:---
 Container Theory (~1 hour)
 
-1. Why containers are one of the fundamental building blocks of cloud native development
-2. How they enable developer productivity and DevOps
-3. Container architecture
-4. What are the basics of operation and commands:
+1. What are containers?
+2. Container architecture
+3. What are the basics of operation and commands (Demo):
    -Running
    -Building
    -Repositories
    -Pushing/pulling
    -Networking
+   -Tips
+4. Why containers are one of the fundamental building blocks of cloud native development
+   How they enable developer productivity and DevOps
+   Microservices - do I really need to use containers?
+      - use case
 5. Orchestration basics. 
-6. Troubleshooting and security.
+6. Troubleshooting and security?
 
 ---Section 4:---
 Containerizing your app (~1.5 hours)
