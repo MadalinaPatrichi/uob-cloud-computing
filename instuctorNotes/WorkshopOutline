@@ -12,8 +12,9 @@ B) Prerequisites (~15mins)
 1. Set up online Github account
 2. Access to an SSH client & instructions (i.e. Putty, terminal, shell)
 3. Chrome browser & set up of Eclipse Che
+4. Docker Hub account
 
---- Section 2:---
+--- Section 2:--- NEEDS REVISION
 Building the Java app (~30mins)
 
 1. Creating a functional 'To-Do' java app
