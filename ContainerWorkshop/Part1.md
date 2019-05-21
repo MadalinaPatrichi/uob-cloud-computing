@@ -14,9 +14,17 @@ Essentially Docker allows you to wrap up a piece of software in a complete files
 the application needs in order to run; for example the code, the system libraries, the runtime environment, any binaries, 
 anything you can install on a server, and docker allows you to wrap this all up into what is known as a software container.
 
+![alt text](https://github.com/nishalad95/WHCHelsinkiWorkshop/blob/master/instuctorNotes/Images/container-what-is-container.png)
+
 This means that it guarantees the application will run the exact same regardless of the underlying infrastructure and 
 is independent of the underlying OS. So you don’t get any OS specific compilation problems or runtime errors when running 
 the application.
+
+Docker containers are:
+
+* Standard: Docker created the industry standard for containers, so they could be portable anywhere
+* Lightweight: Containers share the machine’s OS system kernel and therefore do not require an OS per application, driving higher server efficiencies and reducing server and licensing costs
+* Secure: Applications are safer in containers and Docker provides the strongest default isolation capabilities in the industry
 
 And Docker is really simple to use! Throughout this workshop we will be working through containerizing an application to
 run on a Docker container & setting up the neccessary infrastructure for this!
