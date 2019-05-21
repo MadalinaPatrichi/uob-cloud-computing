@@ -5,6 +5,7 @@ Welcome to the WHC Finland Container Workshop!
 Here is the first container workshop you will work through along with your instructors. There is a mixture of commands
 and theory within this workshop, so follow along and ask your instructors for help!
 
+TODO:
 What does this workshop aim to do?
 The main objectives & agenda
 Link to setup prerequisites
