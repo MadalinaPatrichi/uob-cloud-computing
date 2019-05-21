@@ -51,4 +51,4 @@ in userspace on the host OS and share the kernel with other containers.
 
 Containers can run on any computer, infrastructure and the cloud.
 
-Continue to [Part 2] (https://github.com/nishalad95/WHCHelsinkiWorkshop/blob/master/ContainerWorkshop/Part2.md)
+Continue to [Part 2](Part2.md)
