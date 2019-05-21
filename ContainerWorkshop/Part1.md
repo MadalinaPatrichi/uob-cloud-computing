@@ -8,7 +8,7 @@ is Docker.
 
 The key benefit of Docker is that it allows users to package an application with all of its dependencies into a 
 standardized unit for software development. Unlike virtual machines, containers do not have the high overhead and hence 
-enable more efficient usage of the underlying system and resources.
+enable more efficient usage of the underlying system and resources. For more information on Docker see: [Docker Resources](https://www.docker.com/resources/what-container)
 
 Essentially Docker allows you to wrap up a piece of software in a complete filesystem alongside all dependencies that 
 the application needs in order to run; for example the code, the system libraries, the runtime environment, any binaries, 
@@ -35,7 +35,7 @@ provide most of the isolation of virtual machines at a fraction of the computing
 
 For example, take a look at the image below:
 
-INSERT IMAGE HERE
+![alt text](https://github.com/nishalad95/WHCHelsinkiWorkshop/blob/master/instuctorNotes/Images/Container-vs-VMs.jpg "VMs vs. Containers")
 
 In the VM world, each VM includes the application, the necessary binaries & libraries and an entire operating system, 
 which can amount to tens of GBs.
