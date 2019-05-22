@@ -21,6 +21,8 @@ Some of the key uses of containers are:
 
 In organizations that adopt Docker, deployments tend to increase steadily in scale long after the initial rollout. Deployments are also growing faster than they have in the past—the average size of a 10-month-old Docker deployment has increased 75% since last year.
 
-![alt text](https://github.com/nishalad95/WHCHelsinkiWorkshop/blob/master/instuctorNotes/Images/docker-deployment-percentage.png)
+![alt text](../instuctorNotes/Images/docker-deployment-percentage.png)
 
 <A couple example use cases?>
+
+Continue to [Part 3](Part3.md)
