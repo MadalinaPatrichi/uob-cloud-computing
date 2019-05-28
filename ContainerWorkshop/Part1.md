@@ -31,7 +31,7 @@ Containers take a different approach: by leveraging the low-level mechanics of t
 
 For example, take a look at the image below:
 
-![alt text](../instuctorNotes/Images/Container-vs-VMs.jpg "VMs vs. Containers")
+![alt text](../InstructorNotes/Images/Container-vs-VMs.jpg "VMs vs. Containers")
 
 In the VM world, each VM includes the application, the necessary binaries & libraries and an entire operating system, which can amount to tens of GBs.
 
