@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "vue": "^2.5.3",
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "todomvc-app-css": "^2.1.2"
   },
   "devDependencies": {
