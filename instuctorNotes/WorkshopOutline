@@ -1,0 +1,53 @@
+---Section 1:---
+
+A) Introduction (~15mins)
+
+1. Overall introduction to the workshop
+2. Introduction to instructors
+3. Objectives & goals
+4. Brief agenda
+
+B) Prerequisites (~15mins)
+
+1. Set up online Github account
+2. Access to an SSH client & instructions (i.e. Putty, terminal, shell)
+3. Chrome browser & set up of Eclipse Che
+
+--- Section 2:---
+Building the Java app (~30mins)
+
+1. Creating a functional 'To-Do' java app
+2. Basic functionality, can be extended for more advanced programmers
+
+---Section 3:---
+Container Theory (~1 hour)
+
+1. Why containers are one of the fundamental building blocks of cloud native development
+2. How they enable developer productivity and DevOps
+3. Container architecture
+4. What are the basics of operation and commands:
+   -Running
+   -Building
+   -Repositories
+   -Pushing/pulling
+   -Networking
+5. Orchestration basics. 
+6. Troubleshooting and security.
+
+---Section 4:---
+Containerizing your app (~1.5 hours)
+
+1. Moving your app over to the VM
+2. Creating the necessary Docker infrastructure to containerize the app
+3. Successfully running the app in the container
+4. Potential extension of having two containers talk to each other for advanced programmers
+
+---Section 5:---
+Container Orchestration (~1 hour 15mins)
+
+1. What is Container Orchestration
+2. Kubernetes theory & best practices
+3. Orchestrate your app using Kubernetes
+
+---Section 6:---
+Summary, questions & close (15mins)
